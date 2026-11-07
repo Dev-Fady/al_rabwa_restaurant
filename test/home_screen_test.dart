@@ -1,9 +1,11 @@
+import 'package:al_rabwa_restaurant/core/error/failure.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,10 +19,15 @@ class _FakeRepository implements SettingsRepository {
   Object? error;
 
   @override
-  Future<RestaurantSettings> fetchSettings({String lang = 'ar'}) async {
+  Future<Either<Failure, RestaurantSettings>> fetchSettings({
+    String lang = 'ar',
+  }) async {
     final failure = error;
-    if (failure != null) throw failure;
-    return result!;
+    if (failure != null) {
+      if (failure is Failure) return Left(failure);
+      throw failure;
+    }
+    return Right(result!);
   }
 }
 
@@ -123,7 +130,7 @@ void main() {
     expect(find.text('2.5%'), findsOneWidget);
     expect(find.text('رسوم الخدمة'), findsOneWidget);
     expect(find.text('10%'), findsOneWidget);
-    expect(find.text('متاح'), findsOneWidget);
+    expect(find.text('متاح'), findsNWidgets(2));
     expect(find.text('ساعات العمل'), findsOneWidget);
     expect(find.text('تحديد الموقع'), findsOneWidget);
     expect(find.text('مطلوب'), findsOneWidget);

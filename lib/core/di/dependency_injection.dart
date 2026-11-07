@@ -1,10 +1,13 @@
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
+import 'package:al_rabwa_restaurant/core/helper_functions/cache_hive.dart';
 import 'package:al_rabwa_restaurant/core/services/api/api_service.dart';
 import 'package:al_rabwa_restaurant/core/services/api/dio_config.dart';
+import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_local_data_source.dart';
+import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/repositories/settings_repository_impl.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
-import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
+import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -20,6 +23,13 @@ Future<void> setupGetIt() async {
   await cacheHelper.init();
   getIt.registerSingleton<CacheHelper>(cacheHelper);
 
+  try {
+    await CacheHive.init();
+  } catch (_) {
+    // Hive is only used for the offline settings cache. If it cannot open,
+    // keep the app running and let the repository fall back to the network.
+  }
+
   getIt.registerLazySingleton<FlutterSecureStorage>(
     () => const FlutterSecureStorage(
       iOptions: IOSOptions(
@@ -34,8 +44,19 @@ Future<void> setupGetIt() async {
 
   getIt.registerLazySingleton<ApiService>(() => ApiService(getIt<Dio>()));
 
+  getIt.registerLazySingleton<SettingsRemoteDataSource>(
+    () => SettingsRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<SettingsLocalDataSource>(
+    SettingsLocalDataSourceImpl.new,
+  );
+
   getIt.registerLazySingleton<SettingsRepository>(
-    () => SettingsRepositoryImpl(getIt<ApiService>(), getIt<CacheHelper>()),
+    () => SettingsRepositoryImpl(
+      remoteDataSource: getIt<SettingsRemoteDataSource>(),
+      localDataSource: getIt<SettingsLocalDataSource>(),
+    ),
   );
 
   getIt.registerFactory<StoreConfigCubit>(

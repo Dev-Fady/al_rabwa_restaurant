@@ -29,13 +29,22 @@ class StoreConfigCubit extends Cubit<StoreConfigState> {
     );
 
     try {
-      final settings = await _repository.fetchSettings(lang: targetLang);
+      final result = await _repository.fetchSettings(lang: targetLang);
       if (isClosed) return;
-      emit(
-        StoreConfigState(
-          status: StoreConfigStatus.success,
-          settings: settings,
-          lang: targetLang,
+
+      result.fold(
+        (failure) => emit(
+          state.copyWith(
+            status: StoreConfigStatus.failure,
+            errorMessage: failure.message,
+          ),
+        ),
+        (settings) => emit(
+          StoreConfigState(
+            status: StoreConfigStatus.success,
+            settings: settings,
+            lang: targetLang,
+          ),
         ),
       );
     } on Failure catch (failure) {

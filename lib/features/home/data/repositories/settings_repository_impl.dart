@@ -1,84 +1,69 @@
-import 'dart:convert';
-
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
-import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
-import 'package:al_rabwa_restaurant/core/services/api/api_service.dart';
+import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_local_data_source.dart';
+import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/models/restaurant_settings_response.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 /// Fetches the storefront settings and keeps the last successful payload in
 /// local storage, so a cold start without network still renders the menu's
 /// branding instead of an error screen.
 class SettingsRepositoryImpl implements SettingsRepository {
-  SettingsRepositoryImpl(this._apiService, [this._cacheHelper]);
+  SettingsRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+  });
 
-  final ApiService _apiService;
-  final CacheHelper? _cacheHelper;
-
-  static const String _cacheKeyPrefix = 'restaurant_settings_';
+  final SettingsRemoteDataSource remoteDataSource;
+  final SettingsLocalDataSource localDataSource;
 
   @override
-  Future<RestaurantSettings> fetchSettings({String lang = 'ar'}) async {
+  Future<Either<Failure, RestaurantSettings>> fetchSettings({
+    String lang = 'ar',
+  }) async {
     try {
-      final response = await _apiService.getSettings(lang: lang, xLocale: lang);
-      final raw = _asMap(response.data);
-      final parsed = raw == null
-          ? null
-          : RestaurantSettingsResponse.fromJson(raw);
-      final settings = parsed?.toEntity();
+      final response = await remoteDataSource.getSettings(lang: lang);
+      final settings = response.response.toEntity();
 
       if (settings == null) {
         throw const FormatException('Empty settings payload');
       }
 
-      await _saveToCache(lang, raw!);
-      return settings;
+      await _cacheSettings(lang, response.raw);
+      return Right(settings);
+    } on Failure catch (failure) {
+      return _readCacheOr(failure, lang);
     } on DioException catch (error) {
-      final cached = await _readFromCache(lang);
-      if (cached != null) return cached;
-      throw ServerFailure.fromDioException(error);
-    } on Failure {
-      rethrow;
+      return _readCacheOr(ServerFailure.fromDioException(error), lang);
     } catch (error) {
-      final cached = await _readFromCache(lang);
-      if (cached != null) return cached;
-      throw ServerFailure.fromError(error);
+      return _readCacheOr(ServerFailure.fromError(error), lang);
     }
   }
 
-  Map<String, dynamic>? _asMap(dynamic data) {
-    if (data is Map<String, dynamic>) return data;
-    if (data is Map) return Map<String, dynamic>.from(data);
-    if (data is String && data.trim().isNotEmpty) {
-      final decoded = jsonDecode(data);
-      return _asMap(decoded);
-    }
-    return null;
+  Either<Failure, RestaurantSettings> _readCacheOr(
+    Failure failure,
+    String lang,
+  ) {
+    final cached = _readFromCache(lang);
+    if (cached != null) return Right(cached);
+    return Left(failure);
   }
 
-  String _cacheKey(String lang) => '$_cacheKeyPrefix$lang';
-
-  Future<void> _saveToCache(String lang, Map<String, dynamic> raw) async {
-    final cache = _cacheHelper;
-    if (cache == null) return;
+  Future<void> _cacheSettings(String lang, Map<String, dynamic> raw) async {
     try {
-      await cache.saveData(key: _cacheKey(lang), value: jsonEncode(raw));
+      await localDataSource.save(lang: lang, payload: raw);
     } catch (_) {
       // Caching is best-effort; the fresh response is already in hand.
     }
   }
 
-  Future<RestaurantSettings?> _readFromCache(String lang) async {
-    final cache = _cacheHelper;
-    if (cache == null) return null;
+  RestaurantSettings? _readFromCache(String lang) {
     try {
-      final raw = cache.getDataString(key: _cacheKey(lang));
-      if (raw == null || raw.trim().isEmpty) return null;
-      final decoded = _asMap(raw);
-      if (decoded == null) return null;
-      return RestaurantSettingsResponse.fromJson(decoded).toEntity();
+      final raw = localDataSource.read(lang: lang);
+      if (raw == null) return null;
+      return RestaurantSettingsResponse.fromJson(raw).toEntity();
     } catch (_) {
       return null;
     }

@@ -39,10 +39,7 @@ class HomeSearchBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: colors.outlineVariant,
-                width: 1.2,
-              ),
+              border: Border.all(color: colors.outlineVariant, width: 1.2),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x06000000),

@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:al_rabwa_restaurant/core/widget/app_network_image.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
@@ -86,72 +87,73 @@ class _HomeContentState extends State<_HomeContent> {
             _HomeBackgroundImage(url: backgroundImage),
           LayoutBuilder(
             builder: (context, constraints) {
-              final horizontalPadding =
-                  constraints.maxWidth >= 600 ? 32.0 : 16.0;
+              final horizontalPadding = constraints.maxWidth >= 600
+                  ? 32.0
+                  : 16.0;
 
               return Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 760),
                   child: ListView(
-                // ignore: deprecated_member_use
-                cacheExtent: 2500,
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.fromLTRB(
-                  horizontalPadding,
-                  12,
-                  horizontalPadding,
-                  32,
-                ),
-                    children: [
-                  // 1. Header with title, language toggle, and logo
-                  HomeHeader(settings: settings),
-                  const SizedBox(height: 14),
-
-                  // 2. Delivery location selection bar
-                  HomeDeliveryLocationBar(
-                    onTap: () {
-                      // Handled by location picker feature
-                    },
-                  ),
-                  const SizedBox(height: 12),
-
-                  // 3. Order type toggle (Delivery / Takeaway / ...)
-                  if (settings.ordering.orderTypes.isNotEmpty) ...[
-                    HomeOrderTypeSelector(
-                      options: settings.ordering.orderTypes,
-                      selectedType: _selectedOrderType,
-                      onChanged: (type) {
-                        setState(() {
-                          _selectedOrderType = type;
-                        });
-                      },
+                    // ignore: deprecated_member_use
+                    cacheExtent: 2500,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      12,
+                      horizontalPadding,
+                      32,
                     ),
-                    const SizedBox(height: 12),
-                  ],
+                    children: [
+                      // 1. Header with title, language toggle, and logo
+                      HomeHeader(settings: settings),
+                      const SizedBox(height: 14),
 
-                  // 4. Search bar ("ماذا تشتهي اليوم؟")
-                  HomeSearchBar(onTap: () => context.go(AppRoutes.menu)),
-                  const SizedBox(height: 18),
+                      // 2. Delivery location selection bar
+                      HomeDeliveryLocationBar(
+                        onTap: () {
+                          // Handled by location picker feature
+                        },
+                      ),
+                      const SizedBox(height: 12),
 
-                  // 5. Promotional Hero Banners
-                  if (settings.home.showBanner) ...[
-                    if (banners.isEmpty)
-                      HomeHeroBanner(
-                        banner: null,
-                        restaurant: settings.restaurant,
-                        onTap: () => context.go(AppRoutes.menu),
-                      )
-                    else
-                      for (var i = 0; i < banners.length; i++) ...[
-                        if (i > 0) const SizedBox(height: 12),
-                        HomeHeroBanner(
-                          banner: banners[i],
-                          restaurant: settings.restaurant,
-                          onTap: () => _openBanner(context, banners[i]),
+                      // 3. Order type toggle (Delivery / Takeaway / ...)
+                      if (settings.ordering.orderTypes.isNotEmpty) ...[
+                        HomeOrderTypeSelector(
+                          options: settings.ordering.orderTypes,
+                          selectedType: _selectedOrderType,
+                          onChanged: (type) {
+                            setState(() {
+                              _selectedOrderType = type;
+                            });
+                          },
                         ),
+                        const SizedBox(height: 12),
                       ],
-                    const SizedBox(height: 18),
-                  ],
+
+                      // 4. Search bar ("ماذا تشتهي اليوم؟")
+                      HomeSearchBar(onTap: () => context.go(AppRoutes.menu)),
+                      const SizedBox(height: 18),
+
+                      // 5. Promotional Hero Banners
+                      if (settings.home.showBanner) ...[
+                        if (banners.isEmpty)
+                          HomeHeroBanner(
+                            banner: null,
+                            restaurant: settings.restaurant,
+                            onTap: () => context.go(AppRoutes.menu),
+                          )
+                        else
+                          for (var i = 0; i < banners.length; i++) ...[
+                            if (i > 0) const SizedBox(height: 12),
+                            HomeHeroBanner(
+                              banner: banners[i],
+                              restaurant: settings.restaurant,
+                              onTap: () => _openBanner(context, banners[i]),
+                            ),
+                          ],
+                        const SizedBox(height: 18),
+                      ],
                     ],
                   ),
                 ),
@@ -174,11 +176,10 @@ class _HomeBackgroundImage extends StatelessWidget {
     return IgnorePointer(
       child: Opacity(
         opacity: 0.12,
-        child: Image.network(
-          url,
-          fit: BoxFit.cover,
-          excludeFromSemantics: true,
-          errorBuilder: (_, _, _) => const SizedBox.shrink(),
+        child: AppNetworkImage(
+          url: url,
+          width: double.infinity,
+          height: double.infinity,
         ),
       ),
     );

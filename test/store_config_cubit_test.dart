@@ -3,6 +3,7 @@ import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_set
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/settings_fixtures.dart';
@@ -16,12 +17,17 @@ class _FakeRepository implements SettingsRepository {
   String? lastLang;
 
   @override
-  Future<RestaurantSettings> fetchSettings({String lang = 'ar'}) async {
+  Future<Either<Failure, RestaurantSettings>> fetchSettings({
+    String lang = 'ar',
+  }) async {
     calls++;
     lastLang = lang;
     final failure = error;
-    if (failure != null) throw failure;
-    return result!;
+    if (failure != null) {
+      if (failure is Failure) return Left(failure);
+      throw failure;
+    }
+    return Right(result!);
   }
 }
 

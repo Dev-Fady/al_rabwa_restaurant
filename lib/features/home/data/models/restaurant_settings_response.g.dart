@@ -113,6 +113,11 @@ RestaurantThemeModel _$RestaurantThemeModelFromJson(
   textColor: json['text_color'] as String?,
   titleColor: json['title_color'] as String?,
   fontFamily: json['font_family'] as String?,
+  fontUrl: json['font_url'] as String?,
+  template: json['template'] as String?,
+  categoryLayout: json['category_layout'] as String?,
+  backgroundImage: json['background_image'] as String?,
+  menuBackground: json['menu_background'] as String?,
 );
 
 Map<String, dynamic> _$RestaurantThemeModelToJson(
@@ -124,6 +129,11 @@ Map<String, dynamic> _$RestaurantThemeModelToJson(
   'text_color': instance.textColor,
   'title_color': instance.titleColor,
   'font_family': instance.fontFamily,
+  'font_url': instance.fontUrl,
+  'template': instance.template,
+  'category_layout': instance.categoryLayout,
+  'background_image': instance.backgroundImage,
+  'menu_background': instance.menuBackground,
 };
 
 RestaurantHomeModel _$RestaurantHomeModelFromJson(Map<String, dynamic> json) =>
@@ -216,6 +226,7 @@ RestaurantOrderingModel _$RestaurantOrderingModelFromJson(
   enabled: json['enabled'] as bool?,
   acceptingOrdersNow: json['accepting_orders_now'] as bool?,
   closedMessage: json['closed_message'] as String?,
+  workingHours: json['working_hours'] as Map<String, dynamic>?,
   orderTypes: (json['order_types'] as List<dynamic>?)
       ?.map((e) => OrderTypeModel.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -227,6 +238,9 @@ RestaurantOrderingModel _$RestaurantOrderingModelFromJson(
   taxPercent: json['tax_percent'] as num?,
   servicePercent: json['service_percent'] as num?,
   deliveryFee: json['delivery_fee'] as num?,
+  deliveryZones: (json['delivery_zones'] as List<dynamic>?)
+      ?.map((e) => e as Map<String, dynamic>)
+      .toList(),
 );
 
 Map<String, dynamic> _$RestaurantOrderingModelToJson(
@@ -235,6 +249,7 @@ Map<String, dynamic> _$RestaurantOrderingModelToJson(
   'enabled': instance.enabled,
   'accepting_orders_now': instance.acceptingOrdersNow,
   'closed_message': instance.closedMessage,
+  'working_hours': instance.workingHours,
   'order_types': instance.orderTypes,
   'payment_methods': instance.paymentMethods,
   'require_customer_location': instance.requireCustomerLocation,
@@ -242,6 +257,7 @@ Map<String, dynamic> _$RestaurantOrderingModelToJson(
   'tax_percent': instance.taxPercent,
   'service_percent': instance.servicePercent,
   'delivery_fee': instance.deliveryFee,
+  'delivery_zones': instance.deliveryZones,
 };
 
 OrderTypeModel _$OrderTypeModelFromJson(Map<String, dynamic> json) =>

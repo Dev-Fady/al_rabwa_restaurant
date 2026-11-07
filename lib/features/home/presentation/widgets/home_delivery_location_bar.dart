@@ -5,11 +5,7 @@ import 'package:flutter/material.dart';
 /// Delivery location selection bar matching the design:
 /// [Dropdown arrow] ... [Deliver to: Select your location] [Red Pin Icon]
 class HomeDeliveryLocationBar extends StatelessWidget {
-  const HomeDeliveryLocationBar({
-    super.key,
-    this.selectedAddress,
-    this.onTap,
-  });
+  const HomeDeliveryLocationBar({super.key, this.selectedAddress, this.onTap});
 
   final String? selectedAddress;
   final VoidCallback? onTap;
@@ -21,7 +17,8 @@ class HomeDeliveryLocationBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final brandColor = context.appColors.brandGreen;
 
-    final locationText = (selectedAddress != null && selectedAddress!.trim().isNotEmpty)
+    final locationText =
+        (selectedAddress != null && selectedAddress!.trim().isNotEmpty)
         ? selectedAddress!
         : l10n.selectLocation;
 
@@ -39,10 +36,7 @@ class HomeDeliveryLocationBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: colors.outlineVariant,
-                width: 1.2,
-              ),
+              border: Border.all(color: colors.outlineVariant, width: 1.2),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x08000000),
@@ -53,11 +47,7 @@ class HomeDeliveryLocationBar extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.arrow_drop_down,
-                  color: brandColor,
-                  size: 26,
-                ),
+                Icon(Icons.arrow_drop_down, color: brandColor, size: 26),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Row(
@@ -123,11 +113,7 @@ class _CustomLocationPin extends StatelessWidget {
           ),
           Positioned(
             top: 2,
-            child: Icon(
-              Icons.location_on,
-              size: 22,
-              color: color,
-            ),
+            child: Icon(Icons.location_on, size: 22, color: color),
           ),
           Positioned(
             top: 7,

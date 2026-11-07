@@ -47,19 +47,19 @@ class HomeHeroBanner extends StatelessWidget {
                 constraints: BoxConstraints(minHeight: bannerHeight),
                 color: primaryColor,
                 child: Stack(
-              children: [
+                  children: [
                     // 1. Food image layer
-                Positioned.fill(
-                  child: hasImage
-                      ? AppNetworkImage(
-                          url: banner!.image,
+                    Positioned.fill(
+                      child: hasImage
+                          ? AppNetworkImage(
+                              url: banner!.image,
                               fit: BoxFit.cover,
                               backgroundColor: primaryColor,
                               fallbackColor: colors.onPrimary.withValues(
                                 alpha: 0.24,
                               ),
-                          fallbackIconSize: 42,
-                        )
+                              fallbackIconSize: 42,
+                            )
                           : _BannerFallback(
                               brandGreen: primaryColor,
                               foregroundColor: colors.onPrimary,
@@ -68,22 +68,22 @@ class HomeHeroBanner extends StatelessWidget {
 
                     // 2. Horizontal gradient overlay (solid dark green over text on start, fading to clear over image on end)
                     Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
                             begin: AlignmentDirectional.centerStart,
-                            end: AlignmentDirectional.centerEnd,
-                            stops: const [0.0, 0.48, 0.78, 1.0],
+                            end: AlignmentDirectional.centerEnd / 3,
+                            stops: const [0.0, 0.48, 0.78, 0.5],
                             colors: [
                               primaryColor,
                               primaryColor,
-                              primaryColor.withValues(alpha: 0.56),
+                              primaryColor.withValues(alpha: 0.10),
                               Colors.transparent,
                             ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
 
                     // 3. Text & CTA Button content
                     Align(
@@ -143,8 +143,8 @@ class HomeHeroBanner extends StatelessWidget {
                               // Lime-green CTA pill button ("اطلب الآن >")
                               Container(
                                 constraints: const BoxConstraints(
-                                  minWidth: 160,
-                                  minHeight: 54,
+                                  minWidth: 80,
+                                  minHeight: 48,
                                 ),
                                 decoration: BoxDecoration(
                                   color: accentColor,
@@ -218,9 +218,7 @@ class _BannerFallback extends StatelessWidget {
         gradient: LinearGradient(
           begin: AlignmentDirectional.topStart,
           end: AlignmentDirectional.bottomEnd,
-          colors: [
-            brandGreen, Color.lerp(brandGreen, Colors.black, 0.35)!,
-          ],
+          colors: [brandGreen, Color.lerp(brandGreen, Colors.black, 0.35)!],
         ),
       ),
       child: Align(

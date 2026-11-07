@@ -30,7 +30,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeWelcomeTitle => 'أهلاً بك في مطعم الربوة';
 
   @override
-  String get homeWelcomeSubtitle => 'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
+  String get homeWelcomeSubtitle =>
+      'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
 
   @override
   String get storeOpenNow => 'مفتوح الآن — نستقبل طلباتك';
@@ -57,7 +58,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retry => 'إعادة المحاولة';
 
   @override
-  String get storeSettingsError => 'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
+  String get storeSettingsError =>
+      'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
 
   @override
   String get loadingStore => 'جارٍ تحميل المطعم...';

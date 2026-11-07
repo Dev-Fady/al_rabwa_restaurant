@@ -232,8 +232,7 @@ class HomeBanner {
   bool get opensMenu => linkType == 'category' || linkType == 'item';
 
   bool get opensExternalUrl =>
-      (linkType == 'url' || linkType == 'external') &&
-      url.trim().isNotEmpty;
+      (linkType == 'url' || linkType == 'external') && url.trim().isNotEmpty;
 
   HomeBanner copyWith({
     int? id,

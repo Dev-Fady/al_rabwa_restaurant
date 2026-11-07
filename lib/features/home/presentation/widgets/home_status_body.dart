@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 
 /// Loading indicator and retry error screen when storefront settings fail to load.
 class HomeStatusBody extends StatelessWidget {
-  const HomeStatusBody({
-    super.key,
-    required this.state,
-    required this.onRetry,
-  });
+  const HomeStatusBody({super.key, required this.state, required this.onRetry});
 
   final StoreConfigState state;
   final VoidCallback onRetry;
@@ -81,4 +77,3 @@ class HomeStatusBody extends StatelessWidget {
     );
   }
 }
-

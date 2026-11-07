@@ -2,11 +2,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class CacheHive {
   static late Box box;
+  static bool _isInitialized = false;
 
   //! Initialize Hive
   static Future<void> init() async {
+    if (_isInitialized) return;
     await Hive.initFlutter();
     box = await Hive.openBox('appBox');
+    _isInitialized = true;
   }
 
   //! Get String data

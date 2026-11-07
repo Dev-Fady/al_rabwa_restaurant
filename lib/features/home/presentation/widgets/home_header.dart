@@ -78,10 +78,7 @@ class _LanguageSwitcherPill extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: colors.outlineVariant,
-            width: 1.2,
-          ),
+          border: Border.all(color: colors.outlineVariant, width: 1.2),
           boxShadow: const [
             BoxShadow(
               color: Color(0x0A000000),
@@ -94,11 +91,7 @@ class _LanguageSwitcherPill extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(width: 4),
-            Icon(
-              Icons.language,
-              size: 18,
-              color: brandColor,
-            ),
+            Icon(Icons.language, size: 18, color: brandColor),
             const SizedBox(width: 3),
             // Arabic option
             _LanguageOption(
@@ -196,11 +189,11 @@ class _RestaurantLogoBadge extends StatelessWidget {
     return Semantics(
       label: restaurant.name,
       child: Container(
-        width: 42,
-        height: 42,
+        width: 48,
+        height: 48,
         decoration: BoxDecoration(
           color: brandColor,
-          borderRadius: BorderRadius.circular(12),
+          // borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: brandColor.withValues(alpha: 0.2),
             width: 1.5,

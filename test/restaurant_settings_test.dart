@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helpers/settings_fixtures.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('RestaurantSettingsResponse', () {
     test('maps the restaurant payload to the domain entity', () {
       final settings = RestaurantSettingsResponse.fromJson(
@@ -104,7 +106,7 @@ void main() {
       expect(settings.onlinePaymentGateway, 'visa');
       expect(settings.contact.hasAny, isTrue);
       expect(settings.contact.phone, '+97433363803');
-      expect(settings.contact.hasSocialLinks, isFalse);
+      expect(settings.contact.hasSocialLinks, isTrue);
     });
 
     test('falls back to safe defaults for empty and malformed payloads', () {
@@ -134,25 +136,33 @@ void main() {
   });
 
   group('AppTheme.parseHexColor', () {
-    test('uses the restaurant theme values to build the app color scheme', () {
-      final theme = AppTheme.light(
-        primaryHex: '#123456',
-        accentHex: '#ABCDEF',
-        backgroundHex: '#F1F2F3',
-        textHex: '#101112',
-        titleHex: '#654321',
-        fontFamily: 'Cairo',
-      );
+    testWidgets(
+      'uses the restaurant theme values to build the app color scheme',
+      (tester) async {
+        final theme = AppTheme.light(
+          primaryHex: '#123456',
+          accentHex: '#ABCDEF',
+          backgroundHex: '#F1F2F3',
+          textHex: '#101112',
+          titleHex: '#654321',
+          fontFamily: 'Cairo',
+        );
 
-      expect(theme.colorScheme.primary, const Color(0xFF123456));
-      expect(theme.colorScheme.secondary, const Color(0xFFABCDEF));
-      expect(theme.scaffoldBackgroundColor, const Color(0xFFF1F2F3));
-      expect(theme.colorScheme.onSurface, const Color(0xFF101112));
-      expect(
-        theme.extension<AppColors>()!.titleColor,
-        const Color(0xFF654321),
-      );
-    });
+        await tester.pumpWidget(
+          MaterialApp(theme: theme, home: const Scaffold()),
+        );
+        await tester.pumpAndSettle();
+
+        expect(theme.colorScheme.primary, const Color(0xFF123456));
+        expect(theme.colorScheme.secondary, const Color(0xFFABCDEF));
+        expect(theme.scaffoldBackgroundColor, const Color(0xFFF1F2F3));
+        expect(theme.colorScheme.onSurface, const Color(0xFF101112));
+        expect(
+          theme.extension<AppColors>()!.titleColor,
+          const Color(0xFF654321),
+        );
+      },
+    );
 
     test('parses short and long hex values', () {
       expect(AppTheme.parseHexColor('#174722'), const Color(0xFF174722));
