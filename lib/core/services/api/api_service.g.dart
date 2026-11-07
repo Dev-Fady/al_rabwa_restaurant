@@ -45,9 +45,12 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<HttpResponse<dynamic>> getSettings({String? xLocale}) async {
+  Future<HttpResponse<dynamic>> getSettings({
+    String? lang,
+    String? xLocale,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'lang': lang};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{r'x-locale': xLocale};
     _headers.removeWhere((k, v) => v == null);

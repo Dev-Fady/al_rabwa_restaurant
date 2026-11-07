@@ -34,6 +34,43 @@ class AppLocalizationsAr extends AppLocalizations {
       'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
 
   @override
+  String get storeOpenNow => 'مفتوح الآن — نستقبل طلباتك';
+
+  @override
+  String get storeOpenShort => 'مفتوح';
+
+  @override
+  String get storeClosed => 'مغلق حالياً';
+
+  @override
+  String get orderStatus => 'حالة الطلب';
+
+  @override
+  String get orderOptionsTitle => 'طرق الطلب';
+
+  @override
+  String get browseMenu => 'تصفح المنيو';
+
+  @override
+  String get orderNow => 'اطلب الآن';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get storeSettingsError =>
+      'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
+
+  @override
+  String get loadingStore => 'جارٍ تحميل المطعم...';
+
+  @override
+  String get currencyLabel => 'العملة';
+
+  @override
+  String get paymentLabel => 'الدفع';
+
+  @override
   String get sectionComingSoon => 'قريباً';
 
   @override

@@ -21,10 +21,10 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color textPrimary;
 
   static const light = AppColors(
-    brandGreen: Color(0xFF0F3B1C),
-    background: Color(0xFFFBFAF6),
+    brandGreen: Color(0xFF174722),
+    background: Color(0xFFFAF9F5),
     surface: Colors.white,
-    textPrimary: Color(0xFF1D2A1E),
+    textPrimary: Color(0xFF161A17),
   );
 
   static const dark = AppColors(

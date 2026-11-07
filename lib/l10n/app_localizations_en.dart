@@ -34,6 +34,43 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick your favorite dishes from the menu and enjoy a special dining experience.';
 
   @override
+  String get storeOpenNow => 'Open now — taking orders';
+
+  @override
+  String get storeOpenShort => 'Open';
+
+  @override
+  String get storeClosed => 'Currently closed';
+
+  @override
+  String get orderStatus => 'Order status';
+
+  @override
+  String get orderOptionsTitle => 'Order options';
+
+  @override
+  String get browseMenu => 'Browse the menu';
+
+  @override
+  String get orderNow => 'Order now';
+
+  @override
+  String get retry => 'Try again';
+
+  @override
+  String get storeSettingsError =>
+      'Couldn\'t load the restaurant. Check your connection and try again.';
+
+  @override
+  String get loadingStore => 'Loading the restaurant...';
+
+  @override
+  String get currencyLabel => 'Currency';
+
+  @override
+  String get paymentLabel => 'Payment';
+
+  @override
   String get sectionComingSoon => 'Coming soon';
 
   @override

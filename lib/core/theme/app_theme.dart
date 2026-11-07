@@ -6,33 +6,73 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData light() {
+  /// Accent used when the backend does not provide one.
+  static const Color _defaultAccent = Color(0xFFC7DF39);
+
+  /// Builds the light theme from the restaurant's brand colors.
+  ///
+  /// Every argument is the raw hex string returned by `GET /api/settings`;
+  /// null/blank/invalid values fall back to the default restaurant palette so
+  /// the app still renders before the settings request finishes.
+  static ThemeData light({
+    String? primaryHex,
+    String? accentHex,
+    String? backgroundHex,
+    String? textHex,
+    String? titleHex,
+  }) {
+    final primary = _hexOr(primaryHex, AppColors.light.brandGreen);
+    final accent = _hexOr(accentHex, _defaultAccent);
+    final background = _hexOr(backgroundHex, AppColors.light.background);
+    final text = _hexOr(textHex, AppColors.light.textPrimary);
+    final title = _hexOr(titleHex, primary);
+
+    final onPrimary = _onColor(primary);
+    final surface = Color.alphaBlend(
+      Colors.white.withValues(alpha: 0.72),
+      background,
+    );
+    final primaryContainer = Color.alphaBlend(
+      accent.withValues(alpha: 0.22),
+      Colors.white,
+    );
+    final outlineVariant = Color.lerp(background, text, 0.12)!;
+    final onSurfaceVariant = Color.lerp(text, background, 0.38)!;
+
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: AppColors.light.brandGreen,
+          seedColor: primary,
           brightness: Brightness.light,
-          surface: AppColors.light.surface,
+          surface: surface,
         ).copyWith(
-          primary: AppColors.light.brandGreen,
-          onPrimary: Colors.white,
-          primaryContainer: const Color(0xFFEDF6DA),
-          onPrimaryContainer: AppColors.light.brandGreen,
-          outlineVariant: const Color(0xFFECEBE3),
+          primary: primary,
+          onPrimary: onPrimary,
+          primaryContainer: primaryContainer,
+          onPrimaryContainer: primary,
+          secondary: accent,
+          onSecondary: _onColor(accent),
+          tertiary: accent,
+          onTertiary: _onColor(accent),
+          surface: surface,
+          onSurface: text,
+          onSurfaceVariant: onSurfaceVariant,
+          outlineVariant: outlineVariant,
         );
 
     final base = ThemeData(
       brightness: Brightness.light,
       useMaterial3: true,
-      scaffoldBackgroundColor: AppColors.light.background,
+      scaffoldBackgroundColor: background,
       colorScheme: scheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.light.background,
-        foregroundColor: AppColors.light.textPrimary,
+        backgroundColor: background,
+        foregroundColor: text,
+        titleTextStyle: _titleStyle(title),
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
       cardTheme: CardThemeData(
-        color: AppColors.light.surface,
+        color: surface,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
@@ -80,5 +120,45 @@ class AppTheme {
       textTheme: GoogleFonts.cairoTextTheme(base.textTheme),
       primaryTextTheme: GoogleFonts.cairoTextTheme(base.primaryTextTheme),
     );
+  }
+
+  static TextStyle _titleStyle(Color color) {
+    return GoogleFonts.cairo(
+      fontSize: 20,
+      fontWeight: FontWeight.w700,
+      color: color,
+    );
+  }
+
+  /// `#RGB`, `#RRGGBB` and `#AARRGGBB` (with or without `#`).
+  static Color _hexOr(String? value, Color fallback) {
+    final parsed = parseHexColor(value);
+    return parsed ?? fallback;
+  }
+
+  /// Parses a backend hex color, returning null for blank/invalid values.
+  static Color? parseHexColor(String? value) {
+    var hex = value?.trim() ?? '';
+    if (hex.isEmpty) return null;
+    if (hex.startsWith('#')) hex = hex.substring(1);
+    if (hex.length == 3) {
+      hex = '${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}';
+    }
+    if (hex.length == 6) {
+      final rgb = int.tryParse(hex, radix: 16);
+      return rgb == null ? null : Color(0xFF000000 | rgb);
+    }
+    if (hex.length == 8) {
+      final argb = int.tryParse(hex, radix: 16);
+      return argb == null ? null : Color(argb);
+    }
+    return null;
+  }
+
+  /// Black or white, whichever is readable on [color].
+  static Color _onColor(Color color) {
+    return ThemeData.estimateBrightnessForColor(color) == Brightness.dark
+        ? Colors.white
+        : const Color(0xFF161A17);
   }
 }

@@ -146,6 +146,78 @@ abstract class AppLocalizations {
   /// **'Pick your favorite dishes from the menu and enjoy a special dining experience.'**
   String get homeWelcomeSubtitle;
 
+  /// No description provided for @storeOpenNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Open now — taking orders'**
+  String get storeOpenNow;
+
+  /// No description provided for @storeOpenShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get storeOpenShort;
+
+  /// No description provided for @storeClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently closed'**
+  String get storeClosed;
+
+  /// No description provided for @orderStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Order status'**
+  String get orderStatus;
+
+  /// No description provided for @orderOptionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order options'**
+  String get orderOptionsTitle;
+
+  /// No description provided for @browseMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse the menu'**
+  String get browseMenu;
+
+  /// No description provided for @orderNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Order now'**
+  String get orderNow;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get retry;
+
+  /// No description provided for @storeSettingsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the restaurant. Check your connection and try again.'**
+  String get storeSettingsError;
+
+  /// No description provided for @loadingStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the restaurant...'**
+  String get loadingStore;
+
+  /// No description provided for @currencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currencyLabel;
+
+  /// No description provided for @paymentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentLabel;
+
   /// No description provided for @sectionComingSoon.
   ///
   /// In en, this message translates to:

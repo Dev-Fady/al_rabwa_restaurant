@@ -1,8 +1,10 @@
 import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_router.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
-import 'package:al_rabwa_restaurant/features/presentation/cubit/settings_cubit.dart';
-import 'package:al_rabwa_restaurant/features/presentation/cubit/settings_state.dart';
+import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_state.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,26 +26,57 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<SettingsCubit>(
-      create: (context) => getIt<SettingsCubit>(),
-      child: ScreenUtilInit(
-        designSize: const Size(375, 812),
-        minTextAdapt: true,
-        splitScreenMode: true,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SettingsCubit>(
+          create: (context) => getIt<SettingsCubit>(),
+        ),
+        BlocProvider<StoreConfigCubit>(
+          create: (context) => getIt<StoreConfigCubit>(),
+        ),
+      ],
+      child: BlocListener<SettingsCubit, SettingsState>(
+        listenWhen: (previous, current) =>
+            previous.locale.languageCode != current.locale.languageCode,
+        listener: (context, state) {
+          // The backend localizes names and menu content, so reload the
+          // storefront configuration in the newly selected language.
+          context.read<StoreConfigCubit>().load(
+            lang: state.locale.languageCode,
+          );
+        },
         child: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, state) {
-            final bool isDark = state.darkModeEnabled;
-            return MaterialApp.router(
-              onGenerateTitle: (context) =>
-                  AppLocalizations.of(context)!.appTitle,
-              debugShowCheckedModeBanner: false,
-              locale: state.locale,
-              theme: AppTheme.light(),
-              darkTheme: AppTheme.dark(),
-              themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              routerConfig: AppRouter.router,
+          builder: (context, settingsState) {
+            return BlocBuilder<StoreConfigCubit, StoreConfigState>(
+              builder: (context, storeState) {
+                final brand = storeState.settings?.theme;
+                final bool isDark = settingsState.darkModeEnabled;
+
+                return ScreenUtilInit(
+                  designSize: const Size(375, 812),
+                  minTextAdapt: true,
+                  splitScreenMode: true,
+                  child: MaterialApp.router(
+                    onGenerateTitle: (context) =>
+                        AppLocalizations.of(context)!.appTitle,
+                    debugShowCheckedModeBanner: false,
+                    locale: settingsState.locale,
+                    theme: AppTheme.light(
+                      primaryHex: brand?.primaryColor,
+                      accentHex: brand?.accentColor,
+                      backgroundHex: brand?.backgroundColor,
+                      textHex: brand?.textColor,
+                      titleHex: brand?.titleColor,
+                    ),
+                    darkTheme: AppTheme.dark(),
+                    themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    routerConfig: AppRouter.router,
+                  ),
+                );
+              },
             );
           },
         ),

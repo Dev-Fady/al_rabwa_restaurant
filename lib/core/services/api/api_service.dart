@@ -15,6 +15,7 @@ abstract class ApiService {
 
   @GET(ApiConstants.settings)
   Future<HttpResponse<dynamic>> getSettings({
+    @Query('lang') String? lang,
     @Header('x-locale') String? xLocale,
   });
 
