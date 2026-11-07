@@ -371,6 +371,66 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load the menu categories.'**
   String get homeCategoriesError;
 
+  /// No description provided for @menuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menuTitle;
+
+  /// No description provided for @menuSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for your favorite dish'**
+  String get menuSearchHint;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get clearSearch;
+
+  /// No description provided for @menuItemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No items} one{1 item} other{{count} items}}'**
+  String menuItemsCount(int count);
+
+  /// No description provided for @menuBrowseAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse all categories'**
+  String get menuBrowseAllCategories;
+
+  /// No description provided for @menuChooseDishHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick your dish and add it to your cart'**
+  String get menuChooseDishHint;
+
+  /// No description provided for @menuAllCategoriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All categories'**
+  String get menuAllCategoriesTitle;
+
+  /// No description provided for @menuItemsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the dishes.'**
+  String get menuItemsError;
+
+  /// No description provided for @menuEmptyCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'No dishes in this category yet.'**
+  String get menuEmptyCategory;
+
+  /// No description provided for @menuSearchNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No dishes match your search.'**
+  String get menuSearchNoResults;
+
   /// No description provided for @arabic.
   ///
   /// In en, this message translates to:

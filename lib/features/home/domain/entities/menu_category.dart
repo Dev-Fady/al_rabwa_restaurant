@@ -42,11 +42,16 @@ class MenuCategory {
 }
 
 /// `display_style` as exposed by the API.
-enum CategoryDisplayStyle { large, list }
+enum CategoryDisplayStyle { large, list, grid }
 
 /// Unknown/missing values fall back to the compact list presentation.
 CategoryDisplayStyle categoryDisplayStyleFrom(String? value) {
-  return value?.trim().toLowerCase() == 'large'
-      ? CategoryDisplayStyle.large
-      : CategoryDisplayStyle.list;
+  switch (value?.trim().toLowerCase()) {
+    case 'large':
+      return CategoryDisplayStyle.large;
+    case 'grid':
+      return CategoryDisplayStyle.grid;
+    default:
+      return CategoryDisplayStyle.list;
+  }
 }

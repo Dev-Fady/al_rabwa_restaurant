@@ -147,6 +147,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeCategoriesError => 'Couldn\'t load the menu categories.';
 
   @override
+  String get menuTitle => 'Menu';
+
+  @override
+  String get menuSearchHint => 'Search for your favorite dish';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String menuItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+      zero: 'No items',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get menuBrowseAllCategories => 'Browse all categories';
+
+  @override
+  String get menuChooseDishHint => 'Pick your dish and add it to your cart';
+
+  @override
+  String get menuAllCategoriesTitle => 'All categories';
+
+  @override
+  String get menuItemsError => 'Couldn\'t load the dishes.';
+
+  @override
+  String get menuEmptyCategory => 'No dishes in this category yet.';
+
+  @override
+  String get menuSearchNoResults => 'No dishes match your search.';
+
+  @override
   String get arabic => 'عربي';
 
   @override

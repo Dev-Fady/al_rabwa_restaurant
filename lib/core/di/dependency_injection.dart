@@ -11,6 +11,10 @@ import 'package:al_rabwa_restaurant/features/home/domain/repositories/menu_categ
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
+import 'package:al_rabwa_restaurant/features/menu/data/datasources/menu_items_remote_data_source.dart';
+import 'package:al_rabwa_restaurant/features/menu/data/repositories/menu_items_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/repositories/menu_items_repository.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -79,5 +83,22 @@ Future<void> setupGetIt() async {
 
   getIt.registerFactory<HomeCategoriesCubit>(
     () => HomeCategoriesCubit(getIt<MenuCategoriesRepository>()),
+  );
+
+  getIt.registerLazySingleton<MenuItemsRemoteDataSource>(
+    () => MenuItemsRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<MenuItemsRepository>(
+    () => MenuItemsRepositoryImpl(
+      remoteDataSource: getIt<MenuItemsRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerFactory<MenuCubit>(
+    () => MenuCubit(
+      getIt<MenuCategoriesRepository>(),
+      getIt<MenuItemsRepository>(),
+    ),
   );
 }

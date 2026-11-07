@@ -147,6 +147,48 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeCategoriesError => 'تعذر تحميل أقسام المنيو.';
 
   @override
+  String get menuTitle => 'المنيو';
+
+  @override
+  String get menuSearchHint => 'ابحث عن طبقك المفضل';
+
+  @override
+  String get clearSearch => 'مسح البحث';
+
+  @override
+  String menuItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count صنف',
+      many: '$count صنفًا',
+      few: '$count أصناف',
+      two: 'صنفان',
+      one: 'صنف واحد',
+      zero: 'لا أصناف',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get menuBrowseAllCategories => 'تصفح جميع الأقسام';
+
+  @override
+  String get menuChooseDishHint => 'اختر طبقك وأضف لسلة';
+
+  @override
+  String get menuAllCategoriesTitle => 'جميع الأقسام';
+
+  @override
+  String get menuItemsError => 'تعذر تحميل الأطباق.';
+
+  @override
+  String get menuEmptyCategory => 'لا توجد أطباق في هذا القسم حالياً.';
+
+  @override
+  String get menuSearchNoResults => 'لا توجد أطباق مطابقة لبحثك.';
+
+  @override
   String get arabic => 'عربي';
 
   @override

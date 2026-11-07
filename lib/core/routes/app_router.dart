@@ -1,6 +1,7 @@
 import 'package:al_rabwa_restaurant/core/layout/main_shell.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_screen.dart';
 import 'package:al_rabwa_restaurant/features/shell/presentation/screens/section_placeholder_screen.dart';
 import 'package:al_rabwa_restaurant/features/splash/presentation/screens/splash_screen.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
@@ -47,10 +48,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: AppRoutes.menu,
-                builder: (context, state) => SectionPlaceholderScreen(
-                  title: AppLocalizations.of(context)!.navMenu,
-                  icon: Icons.restaurant_outlined,
-                ),
+                builder: (context, state) => const MenuScreen(),
               ),
             ],
           ),

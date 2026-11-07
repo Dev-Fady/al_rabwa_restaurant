@@ -6,6 +6,7 @@ import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/setting
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_cubit.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<HomeCategoriesCubit>(
           create: (context) => getIt<HomeCategoriesCubit>(),
         ),
+        BlocProvider<MenuCubit>(create: (context) => getIt<MenuCubit>()),
       ],
       child: BlocListener<SettingsCubit, SettingsState>(
         listenWhen: (previous, current) =>
@@ -48,6 +50,10 @@ class MyApp extends StatelessWidget {
           final lang = state.locale.languageCode;
           context.read<StoreConfigCubit>().load(lang: lang);
           context.read<HomeCategoriesCubit>().load(lang: lang);
+          final menuCubit = context.read<MenuCubit>();
+          if (menuCubit.state.hasLoaded) {
+            menuCubit.load(lang: lang);
+          }
         },
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, settingsState) {

@@ -46,6 +46,21 @@
   "homeCategoriesViewAll": "View all",
   "homeCategoriesHint": "Swipe the categories or tap one to open it",
   "homeCategoriesError": "Couldn't load the menu categories.",
+  "menuTitle": "Menu",
+  "menuSearchHint": "Search for your favorite dish",
+  "clearSearch": "Clear search",
+  "menuItemsCount": "{count, plural, =0{No items} one{1 item} other{{count} items}}",
+  "@menuItemsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "menuBrowseAllCategories": "Browse all categories",
+  "menuChooseDishHint": "Pick your dish and add it to your cart",
+  "menuAllCategoriesTitle": "All categories",
+  "menuItemsError": "Couldn't load the dishes.",
+  "menuEmptyCategory": "No dishes in this category yet.",
+  "menuSearchNoResults": "No dishes match your search.",
   "arabic": "عربي",
   "english": "EN"
 }
