@@ -20,6 +20,7 @@ class AppTheme {
     String? backgroundHex,
     String? textHex,
     String? titleHex,
+    String? fontFamily,
   }) {
     final primary = _hexOr(primaryHex, AppColors.light.brandGreen);
     final accent = _hexOr(accentHex, _defaultAccent);
@@ -38,6 +39,14 @@ class AppTheme {
     );
     final outlineVariant = Color.lerp(background, text, 0.12)!;
     final onSurfaceVariant = Color.lerp(text, background, 0.38)!;
+    final appColors = AppColors(
+      brandGreen: primary,
+      accent: accent,
+      titleColor: title,
+      background: background,
+      surface: surface,
+      textPrimary: text,
+    );
 
     final scheme =
         ColorScheme.fromSeed(
@@ -67,7 +76,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         backgroundColor: background,
         foregroundColor: text,
-        titleTextStyle: _titleStyle(title),
+        titleTextStyle: _titleStyle(title, fontFamily),
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
@@ -76,11 +85,11 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      extensions: const [AppColors.light, StoreColors.light],
+      extensions: [appColors, StoreColors.light],
     );
     return base.copyWith(
-      textTheme: GoogleFonts.cairoTextTheme(base.textTheme),
-      primaryTextTheme: GoogleFonts.cairoTextTheme(base.primaryTextTheme),
+      textTheme: _textTheme(base.textTheme, fontFamily),
+      primaryTextTheme: _textTheme(base.primaryTextTheme, fontFamily),
     );
   }
 
@@ -122,12 +131,24 @@ class AppTheme {
     );
   }
 
-  static TextStyle _titleStyle(Color color) {
-    return GoogleFonts.cairo(
+  static TextStyle _titleStyle(Color color, String? fontFamily) {
+    return GoogleFonts.getFont(
+      _resolveFontFamily(fontFamily),
       fontSize: 20,
       fontWeight: FontWeight.w700,
       color: color,
     );
+  }
+
+  /// Google Fonts only contains a subset of families. Unknown values fall back
+  /// to Cairo, the restaurant default.
+  static TextTheme _textTheme(TextTheme base, String? fontFamily) {
+    return GoogleFonts.getTextTheme(_resolveFontFamily(fontFamily), base);
+  }
+
+  static String _resolveFontFamily(String? fontFamily) {
+    final name = fontFamily?.trim() ?? '';
+    return GoogleFonts.asMap().containsKey(name) ? name : 'Cairo';
   }
 
   /// `#RGB`, `#RRGGBB` and `#AARRGGBB` (with or without `#`).

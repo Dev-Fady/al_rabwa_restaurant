@@ -67,6 +67,7 @@ class MyApp extends StatelessWidget {
                       backgroundHex: brand?.backgroundColor,
                       textHex: brand?.textColor,
                       titleHex: brand?.titleColor,
+                      fontFamily: brand?.fontFamily,
                     ),
                     darkTheme: AppTheme.dark(),
                     themeMode: isDark ? ThemeMode.dark : ThemeMode.light,

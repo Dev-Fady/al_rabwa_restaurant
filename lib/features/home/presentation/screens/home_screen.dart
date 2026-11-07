@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
 import 'package:al_rabwa_restaurant/core/widget/app_network_image.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
@@ -7,6 +8,7 @@ import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Landing tab of the shell.
 ///
@@ -255,7 +257,7 @@ class _HomeContent extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final horizontalPadding = constraints.maxWidth >= 600 ? 32.0 : 16.0;
-          final banner = settings.primaryBanner;
+          final banners = settings.home.banners;
 
           return Center(
             child: ConstrainedBox(
@@ -269,12 +271,23 @@ class _HomeContent extends StatelessWidget {
                   28,
                 ),
                 children: [
-                  if (settings.home.showBanner)
-                    _HeroBanner(
-                      banner: banner,
-                      restaurant: settings.restaurant,
-                      onTap: () => context.go(AppRoutes.menu),
-                    ),
+                  if (settings.home.showBanner) ...[
+                    if (banners.isEmpty)
+                      _HeroBanner(
+                        banner: null,
+                        restaurant: settings.restaurant,
+                        onTap: () => context.go(AppRoutes.menu),
+                      )
+                    else
+                      for (var i = 0; i < banners.length; i++) ...[
+                        if (i > 0) const SizedBox(height: 12),
+                        _HeroBanner(
+                          banner: banners[i],
+                          restaurant: settings.restaurant,
+                          onTap: () => _openBanner(context, banners[i]),
+                        ),
+                      ],
+                  ],
                   if (settings.home.showWelcomeMessage) ...[
                     const SizedBox(height: 24),
                     _WelcomeSection(settings: settings),
@@ -287,6 +300,10 @@ class _HomeContent extends StatelessWidget {
                   ],
                   const SizedBox(height: 20),
                   _StoreInfoCard(settings: settings),
+                  if (settings.contact.hasAny) ...[
+                    const SizedBox(height: 20),
+                    _ContactSection(contact: settings.contact),
+                  ],
                   const SizedBox(height: 20),
                   FilledButton.icon(
                     onPressed: () => context.go(AppRoutes.menu),
@@ -524,7 +541,7 @@ class _WelcomeSection extends StatelessWidget {
                 title,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: scheme.onSurface,
+                  color: context.appColors.titleColor,
                   height: 1.3,
                 ),
               ),
@@ -556,7 +573,7 @@ class _SectionTitle extends StatelessWidget {
       text,
       style: theme.textTheme.titleMedium?.copyWith(
         fontWeight: FontWeight.w800,
-        color: theme.colorScheme.onSurface,
+        color: context.appColors.titleColor,
       ),
     );
   }
@@ -648,6 +665,13 @@ class _StoreInfoCard extends StatelessWidget {
         .map((method) => method.label)
         .where((label) => label.trim().isNotEmpty)
         .toList();
+    if (settings.onlinePaymentEnabled) {
+      final gateway = settings.onlinePaymentGateway.trim();
+      payments.add(
+        gateway.isEmpty ? l10n.onlinePaymentLabel : gateway,
+      );
+    }
+    final ordering = settings.ordering;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -716,6 +740,62 @@ class _StoreInfoCard extends StatelessWidget {
             label: l10n.currencyLabel,
             value: '${settings.currency.symbol} · ${settings.currency.code}',
           ),
+          if (settings.reservationsEnabled) ...[
+            const SizedBox(height: 10),
+            _DetailRow(
+              icon: Icons.event_available_outlined,
+              label: l10n.reservationsLabel,
+              value: l10n.availableLabel,
+            ),
+          ],
+          if (ordering.hasWorkingHours) ...[
+            const SizedBox(height: 10),
+            // _DetailRow(
+            //   icon: Icons.schedule,
+            //   label: l10n.workingHoursLabel,
+            //   value: l10n.availableLabel,
+            // ),
+          ],
+          if (ordering.requireCustomerLocation) ...[
+            const SizedBox(height: 10),
+            // _DetailRow(
+            //   icon: Icons.location_on_outlined,
+            //   label: l10n.locationRequiredLabel,
+            //   value: l10n.requiredLabel,
+            // ),
+          ],
+          if (ordering.deliveryFee > 0) ...[
+            const SizedBox(height: 10),
+            _DetailRow(
+              icon: Icons.delivery_dining_outlined,
+              label: l10n.deliveryFeeLabel,
+              value: settings.currency.format(ordering.deliveryFee),
+            ),
+          ],
+          if (ordering.taxPercent > 0) ...[
+            const SizedBox(height: 10),
+            _DetailRow(
+              icon: Icons.percent,
+              label: l10n.taxLabel,
+              value: _formatPercent(ordering.taxPercent),
+            ),
+          ],
+          if (ordering.servicePercent > 0) ...[
+            const SizedBox(height: 10),
+            _DetailRow(
+              icon: Icons.room_service_outlined,
+              label: l10n.serviceLabel,
+              value: _formatPercent(ordering.servicePercent),
+            ),
+          ],
+          if (ordering.hasDeliveryZones) ...[
+            const SizedBox(height: 10),
+            _DetailRow(
+              icon: Icons.map_outlined,
+              label: l10n.deliveryZonesLabel,
+              value: '${ordering.deliveryZones.length}',
+            ),
+          ],
         ],
       ),
     );
@@ -763,6 +843,196 @@ class _DetailRow extends StatelessWidget {
       ],
     );
   }
+}
+
+class _ContactSection extends StatelessWidget {
+  const _ContactSection({required this.contact});
+
+  final StoreContact contact;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final entries = <_ContactEntry>[
+      if (contact.phone.trim().isNotEmpty)
+        _ContactEntry(
+          icon: Icons.call_outlined,
+          label: l10n.phoneLabel,
+          value: contact.phone,
+          uri: _tryUri('tel:${contact.phone.trim()}'),
+        ),
+      if (contact.whatsapp.trim().isNotEmpty)
+        _ContactEntry(
+          icon: Icons.chat_bubble_outline,
+          label: l10n.whatsappLabel,
+          value: contact.whatsapp,
+          uri: _whatsappUri(contact.whatsapp),
+        ),
+      if (contact.instagram.trim().isNotEmpty)
+        _ContactEntry(
+          icon: Icons.camera_alt_outlined,
+          label: l10n.instagramLabel,
+          value: contact.instagram,
+          uri: _socialUri(contact.instagram, 'https://instagram.com/'),
+        ),
+      if (contact.facebook.trim().isNotEmpty)
+        _ContactEntry(
+          icon: Icons.facebook,
+          label: l10n.facebookLabel,
+          value: contact.facebook,
+          uri: _socialUri(contact.facebook, 'https://facebook.com/'),
+        ),
+      if (contact.location.trim().isNotEmpty)
+        _ContactEntry(
+          icon: Icons.location_on_outlined,
+          label: l10n.locationLabel,
+          value: contact.location,
+          uri: _locationUri(contact.location),
+        ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: scheme.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.contactTitle,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: context.appColors.titleColor,
+            ),
+          ),
+          const SizedBox(height: 6),
+          for (final entry in entries) _ContactRow(entry: entry),
+        ],
+      ),
+    );
+  }
+}
+
+class _ContactEntry {
+  const _ContactEntry({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.uri,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Uri? uri;
+}
+
+class _ContactRow extends StatelessWidget {
+  const _ContactRow({required this.entry});
+
+  final _ContactEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final uri = entry.uri;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: uri == null ? null : () => _launchExternal(uri),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Icon(entry.icon, size: 18, color: scheme.primary),
+            const SizedBox(width: 10),
+            Text(
+              entry.label,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                entry.value,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: scheme.onSurface,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> _launchExternal(Uri uri) async {
+  try {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (_) {
+    // A missing dialer/browser must never break the screen.
+  }
+}
+
+Uri? _tryUri(String value) => Uri.tryParse(value);
+
+Uri? _whatsappUri(String value) {
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return null;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return Uri.tryParse(trimmed);
+  }
+  final digits = trimmed.replaceAll(RegExp(r'[^0-9]'), '');
+  return digits.isEmpty ? null : Uri.tryParse('https://wa.me/$digits');
+}
+
+Uri? _socialUri(String value, String base) {
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return null;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return Uri.tryParse(trimmed);
+  }
+  return Uri.tryParse('$base${trimmed.replaceFirst(RegExp(r'^@'), '')}');
+}
+
+Uri? _locationUri(String value) {
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return null;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return Uri.tryParse(trimmed);
+  }
+  return Uri.tryParse(
+    'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(trimmed)}',
+  );
+}
+
+void _openBanner(BuildContext context, HomeBanner banner) {
+  if (banner.opensExternalUrl) {
+    final uri = Uri.tryParse(banner.url.trim());
+    if (uri != null) {
+      _launchExternal(uri);
+      return;
+    }
+  }
+  context.go(AppRoutes.menu);
+}
+
+String _formatPercent(double value) {
+  return value == value.roundToDouble()
+      ? '${value.toInt()}%'
+      : '${value.toStringAsFixed(1)}%';
 }
 
 String _firstNonEmpty(List<String?> values) {

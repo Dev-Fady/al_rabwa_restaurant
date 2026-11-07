@@ -15,6 +15,7 @@ class RestaurantSettings {
     this.contact = const StoreContact(),
     this.reservationsEnabled = false,
     this.onlinePaymentEnabled = false,
+    this.onlinePaymentGateway = '',
   });
 
   final RestaurantBrand restaurant;
@@ -26,6 +27,7 @@ class RestaurantSettings {
   final StoreContact contact;
   final bool reservationsEnabled;
   final bool onlinePaymentEnabled;
+  final String onlinePaymentGateway;
 
   /// True only when ordering is enabled and the restaurant is accepting
   /// orders right now.
@@ -49,6 +51,7 @@ class RestaurantSettings {
     StoreContact? contact,
     bool? reservationsEnabled,
     bool? onlinePaymentEnabled,
+    String? onlinePaymentGateway,
   }) {
     return RestaurantSettings(
       restaurant: restaurant ?? this.restaurant,
@@ -60,6 +63,7 @@ class RestaurantSettings {
       contact: contact ?? this.contact,
       reservationsEnabled: reservationsEnabled ?? this.reservationsEnabled,
       onlinePaymentEnabled: onlinePaymentEnabled ?? this.onlinePaymentEnabled,
+      onlinePaymentGateway: onlinePaymentGateway ?? this.onlinePaymentGateway,
     );
   }
 }
@@ -119,6 +123,11 @@ class BrandTheme {
     this.textColor = '#161A17',
     this.titleColor = '#174722',
     this.fontFamily = 'Cairo',
+    this.fontUrl = '',
+    this.template = 'classic',
+    this.categoryLayout = 'grid',
+    this.backgroundImage = '',
+    this.menuBackground = '',
   });
 
   final String primaryColor;
@@ -127,6 +136,11 @@ class BrandTheme {
   final String textColor;
   final String titleColor;
   final String fontFamily;
+  final String fontUrl;
+  final String template;
+  final String categoryLayout;
+  final String backgroundImage;
+  final String menuBackground;
 
   BrandTheme copyWith({
     String? primaryColor,
@@ -135,6 +149,11 @@ class BrandTheme {
     String? textColor,
     String? titleColor,
     String? fontFamily,
+    String? fontUrl,
+    String? template,
+    String? categoryLayout,
+    String? backgroundImage,
+    String? menuBackground,
   }) {
     return BrandTheme(
       primaryColor: primaryColor ?? this.primaryColor,
@@ -143,6 +162,11 @@ class BrandTheme {
       textColor: textColor ?? this.textColor,
       titleColor: titleColor ?? this.titleColor,
       fontFamily: fontFamily ?? this.fontFamily,
+      fontUrl: fontUrl ?? this.fontUrl,
+      template: template ?? this.template,
+      categoryLayout: categoryLayout ?? this.categoryLayout,
+      backgroundImage: backgroundImage ?? this.backgroundImage,
+      menuBackground: menuBackground ?? this.menuBackground,
     );
   }
 }
@@ -206,6 +230,10 @@ class HomeBanner {
 
   /// The banner opens the menu until the categories feature lands.
   bool get opensMenu => linkType == 'category' || linkType == 'item';
+
+  bool get opensExternalUrl =>
+      (linkType == 'url' || linkType == 'external') &&
+      url.trim().isNotEmpty;
 
   HomeBanner copyWith({
     int? id,
@@ -280,6 +308,8 @@ class OrderingSettings {
     this.taxPercent = 0,
     this.servicePercent = 0,
     this.deliveryFee = 0,
+    this.workingHours = const {},
+    this.deliveryZones = const [],
   });
 
   final bool enabled;
@@ -292,6 +322,21 @@ class OrderingSettings {
   final double taxPercent;
   final double servicePercent;
   final double deliveryFee;
+
+  /// Raw `working_hours` object from the API; the shape depends on the
+  /// storefront configuration, so it is kept as-is.
+  final Map<String, dynamic> workingHours;
+
+  /// Raw `delivery_zones` list from the API; empty means the restaurant
+  /// delivers everywhere it accepts orders.
+  final List<Map<String, dynamic>> deliveryZones;
+
+  bool get hasWorkingHours => workingHours.isNotEmpty;
+
+  bool get hasDeliveryZones => deliveryZones.isNotEmpty;
+
+  bool get hasExtraFees =>
+      taxPercent > 0 || servicePercent > 0 || deliveryFee > 0;
 }
 
 class OrderOption {
@@ -329,4 +374,7 @@ class StoreContact {
       instagram.trim().isNotEmpty ||
       facebook.trim().isNotEmpty ||
       location.trim().isNotEmpty;
+
+  bool get hasSocialLinks =>
+      instagram.trim().isNotEmpty || facebook.trim().isNotEmpty;
 }

@@ -78,6 +78,7 @@ class RestaurantSettingsData {
       contact: contact?.toEntity() ?? const StoreContact(),
       reservationsEnabled: reservations?.enabled ?? false,
       onlinePaymentEnabled: onlinePayment?.enabled ?? false,
+      onlinePaymentGateway: onlinePayment?.gateway ?? '',
     );
   }
 }
@@ -138,6 +139,20 @@ class RestaurantThemeModel {
   @JsonKey(name: 'font_family')
   final String? fontFamily;
 
+  @JsonKey(name: 'font_url')
+  final String? fontUrl;
+
+  final String? template;
+
+  @JsonKey(name: 'category_layout')
+  final String? categoryLayout;
+
+  @JsonKey(name: 'background_image')
+  final String? backgroundImage;
+
+  @JsonKey(name: 'menu_background')
+  final String? menuBackground;
+
   const RestaurantThemeModel({
     this.primaryColor,
     this.accentColor,
@@ -145,6 +160,11 @@ class RestaurantThemeModel {
     this.textColor,
     this.titleColor,
     this.fontFamily,
+    this.fontUrl,
+    this.template,
+    this.categoryLayout,
+    this.backgroundImage,
+    this.menuBackground,
   });
 
   factory RestaurantThemeModel.fromJson(Map<String, dynamic> json) =>
@@ -161,6 +181,11 @@ class RestaurantThemeModel {
       textColor: _nonEmpty(textColor, fallback.textColor),
       titleColor: _nonEmpty(titleColor, fallback.titleColor),
       fontFamily: _nonEmpty(fontFamily, fallback.fontFamily),
+      fontUrl: fontUrl ?? '',
+      template: _nonEmpty(template, fallback.template),
+      categoryLayout: _nonEmpty(categoryLayout, fallback.categoryLayout),
+      backgroundImage: backgroundImage ?? '',
+      menuBackground: menuBackground ?? '',
     );
   }
 }
@@ -317,6 +342,9 @@ class RestaurantOrderingModel {
   @JsonKey(name: 'closed_message')
   final String? closedMessage;
 
+  @JsonKey(name: 'working_hours')
+  final Map<String, dynamic>? workingHours;
+
   @JsonKey(name: 'order_types')
   final List<OrderTypeModel>? orderTypes;
 
@@ -338,10 +366,14 @@ class RestaurantOrderingModel {
   @JsonKey(name: 'delivery_fee')
   final num? deliveryFee;
 
+  @JsonKey(name: 'delivery_zones')
+  final List<Map<String, dynamic>>? deliveryZones;
+
   const RestaurantOrderingModel({
     this.enabled,
     this.acceptingOrdersNow,
     this.closedMessage,
+    this.workingHours,
     this.orderTypes,
     this.paymentMethods,
     this.requireCustomerLocation,
@@ -349,6 +381,7 @@ class RestaurantOrderingModel {
     this.taxPercent,
     this.servicePercent,
     this.deliveryFee,
+    this.deliveryZones,
   });
 
   factory RestaurantOrderingModel.fromJson(Map<String, dynamic> json) =>
@@ -360,6 +393,7 @@ class RestaurantOrderingModel {
     enabled: enabled ?? false,
     acceptingOrdersNow: acceptingOrdersNow ?? false,
     closedMessage: closedMessage ?? '',
+    workingHours: workingHours ?? const {},
     orderTypes: [
       for (final option in orderTypes ?? const []) option.toEntity(),
     ],
@@ -371,6 +405,7 @@ class RestaurantOrderingModel {
     taxPercent: (taxPercent ?? 0).toDouble(),
     servicePercent: (servicePercent ?? 0).toDouble(),
     deliveryFee: (deliveryFee ?? 0).toDouble(),
+    deliveryZones: deliveryZones ?? const [],
   );
 }
 

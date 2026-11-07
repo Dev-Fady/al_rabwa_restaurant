@@ -30,8 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWelcomeTitle => 'Welcome to Al Rabwa Restaurant';
 
   @override
-  String get homeWelcomeSubtitle =>
-      'Pick your favorite dishes from the menu and enjoy a special dining experience.';
+  String get homeWelcomeSubtitle => 'Pick your favorite dishes from the menu and enjoy a special dining experience.';
 
   @override
   String get storeOpenNow => 'Open now — taking orders';
@@ -58,8 +57,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Try again';
 
   @override
-  String get storeSettingsError =>
-      'Couldn\'t load the restaurant. Check your connection and try again.';
+  String get storeSettingsError => 'Couldn\'t load the restaurant. Check your connection and try again.';
 
   @override
   String get loadingStore => 'Loading the restaurant...';
@@ -69,6 +67,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentLabel => 'Payment';
+
+  @override
+  String get deliveryFeeLabel => 'Delivery fee';
+
+  @override
+  String get taxLabel => 'Tax';
+
+  @override
+  String get serviceLabel => 'Service charge';
+
+  @override
+  String get deliveryZonesLabel => 'Delivery zones';
+
+  @override
+  String get reservationsLabel => 'Reservations';
+
+  @override
+  String get availableLabel => 'Available';
+
+  @override
+  String get onlinePaymentLabel => 'Online payment';
+
+  @override
+  String get contactTitle => 'Contact us';
+
+  @override
+  String get phoneLabel => 'Phone';
+
+  @override
+  String get whatsappLabel => 'WhatsApp';
+
+  @override
+  String get instagramLabel => 'Instagram';
+
+  @override
+  String get facebookLabel => 'Facebook';
+
+  @override
+  String get locationLabel => 'Location';
 
   @override
   String get sectionComingSoon => 'Coming soon';

@@ -19,6 +19,12 @@ void main() {
       expect(settings.theme.primaryColor, '#174722');
       expect(settings.theme.accentColor, '#c7df39');
       expect(settings.theme.backgroundColor, '#faf9f5');
+      expect(settings.theme.fontFamily, 'Cairo');
+      expect(settings.theme.fontUrl, contains('fonts.bunny.net'));
+      expect(settings.theme.template, 'classic');
+      expect(settings.theme.categoryLayout, 'grid');
+      expect(settings.theme.backgroundImage, '');
+      expect(settings.theme.menuBackground, '');
 
       expect(settings.home.showWelcomeMessage, isTrue);
       expect(settings.home.showBanner, isTrue);
@@ -48,7 +54,56 @@ void main() {
 
       expect(settings.reservationsEnabled, isFalse);
       expect(settings.onlinePaymentEnabled, isFalse);
+      expect(settings.onlinePaymentGateway, '');
       expect(settings.contact.hasAny, isFalse);
+      expect(settings.ordering.workingHours, isEmpty);
+      expect(settings.ordering.deliveryZones, isEmpty);
+    });
+
+    test('maps optional configuration sections when present', () {
+      final payload = settingsPayload();
+      final data = payload['data'] as Map<String, dynamic>;
+      (data['theme'] as Map<String, dynamic>)['background_image'] =
+          'https://example.com/bg.jpg';
+      (data['theme'] as Map<String, dynamic>)['menu_background'] =
+          'https://example.com/menu.jpg';
+      (data['ordering'] as Map<String, dynamic>)['working_hours'] = {
+        'friday': {'open': '13:00', 'close': '23:00'},
+      };
+      (data['ordering'] as Map<String, dynamic>)['delivery_zones'] = [
+        {'id': 1, 'name': 'الدوحة', 'fee': 5},
+      ];
+      (data['ordering'] as Map<String, dynamic>)['delivery_fee'] = 5;
+      (data['ordering'] as Map<String, dynamic>)['tax_percent'] = 2.5;
+      (data['ordering'] as Map<String, dynamic>)['service_percent'] = 10;
+      (data['ordering'] as Map<String, dynamic>)['require_customer_location'] =
+          true;
+      (data['reservations'] as Map<String, dynamic>)['enabled'] = true;
+      (data['online_payment'] as Map<String, dynamic>)['enabled'] = true;
+      (data['online_payment'] as Map<String, dynamic>)['gateway'] = 'visa';
+      data['contact'] = {
+        'phone': '+97433363803',
+        'whatsapp': '97433363803',
+        'instagram': 'alrabwah',
+        'facebook': 'https://facebook.com/alrabwah',
+        'location': 'الدوحة، قطر',
+      };
+
+      final settings = RestaurantSettingsResponse.fromJson(payload).toEntity()!;
+
+      expect(settings.theme.backgroundImage, 'https://example.com/bg.jpg');
+      expect(settings.theme.menuBackground, 'https://example.com/menu.jpg');
+      expect(settings.ordering.hasWorkingHours, isTrue);
+      expect(settings.ordering.hasDeliveryZones, isTrue);
+      expect(settings.ordering.deliveryZones.single['name'], 'الدوحة');
+      expect(settings.ordering.requireCustomerLocation, isTrue);
+      expect(settings.ordering.hasExtraFees, isTrue);
+      expect(settings.reservationsEnabled, isTrue);
+      expect(settings.onlinePaymentEnabled, isTrue);
+      expect(settings.onlinePaymentGateway, 'visa');
+      expect(settings.contact.hasAny, isTrue);
+      expect(settings.contact.phone, '+97433363803');
+      expect(settings.contact.hasSocialLinks, isFalse);
     });
 
     test('falls back to safe defaults for empty and malformed payloads', () {

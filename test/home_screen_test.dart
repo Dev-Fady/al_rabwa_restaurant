@@ -77,6 +77,72 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('renders optional fees, reservations and contact details', (
+    tester,
+  ) async {
+    final base = sampleSettingsWithoutImages();
+    final settings = base.copyWith(
+      ordering: OrderingSettings(
+        enabled: true,
+        acceptingOrdersNow: true,
+        orderTypes: base.ordering.orderTypes,
+        paymentMethods: base.ordering.paymentMethods,
+        deliveryFee: 5,
+        taxPercent: 2.5,
+        servicePercent: 10,
+        requireCustomerLocation: true,
+        workingHours: const {
+          'friday': {'open': '13:00', 'close': '23:00'},
+        },
+        deliveryZones: const [
+          {'id': 1, 'name': 'الدوحة'},
+        ],
+      ),
+      contact: const StoreContact(
+        phone: '+97433363803',
+        whatsapp: '97433363803',
+        instagram: 'alrabwah',
+        location: 'الدوحة، قطر',
+      ),
+      reservationsEnabled: true,
+      onlinePaymentEnabled: true,
+      onlinePaymentGateway: 'visa',
+    );
+
+    await _pumpHome(tester, repository: _FakeRepository(result: settings));
+
+    await tester.scrollUntilVisible(
+      find.text('رسوم التوصيل'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.text('رسوم التوصيل'), findsOneWidget);
+    expect(find.text('5.000 ر.ق'), findsOneWidget);
+    expect(find.text('الضريبة'), findsOneWidget);
+    expect(find.text('2.5%'), findsOneWidget);
+    expect(find.text('رسوم الخدمة'), findsOneWidget);
+    expect(find.text('10%'), findsOneWidget);
+    expect(find.text('متاح'), findsOneWidget);
+    expect(find.text('ساعات العمل'), findsOneWidget);
+    expect(find.text('تحديد الموقع'), findsOneWidget);
+    expect(find.text('مطلوب'), findsOneWidget);
+    expect(find.text('نقدًا • visa'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('تواصل معنا'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.text('الهاتف'), findsOneWidget);
+    expect(find.text('واتساب'), findsOneWidget);
+    expect(find.text('إنستغرام'), findsOneWidget);
+    expect(find.text('الموقع'), findsOneWidget);
+    expect(find.text('+97433363803'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('shows the failure state and recovers on retry', (tester) async {
     final repository = _FakeRepository(error: Exception('offline'));
     await _pumpHome(tester, repository: repository);
