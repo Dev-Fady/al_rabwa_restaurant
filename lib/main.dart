@@ -1,6 +1,7 @@
 import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_router.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_state.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
@@ -40,6 +41,10 @@ class MyApp extends StatelessWidget {
           create: (context) => getIt<HomeCategoriesCubit>(),
         ),
         BlocProvider<MenuCubit>(create: (context) => getIt<MenuCubit>()),
+        BlocProvider<CartCubit>(
+          create: (context) => getIt<CartCubit>(),
+          lazy: false,
+        ),
       ],
       child: BlocListener<SettingsCubit, SettingsState>(
         listenWhen: (previous, current) =>

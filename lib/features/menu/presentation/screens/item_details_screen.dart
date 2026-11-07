@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
@@ -45,11 +46,19 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     setState(() => _quantity = value);
   }
 
-  void _addToCart(BuildContext context) {
+  void _addToCart(BuildContext context, MenuItemDetails details) {
+    if (details.item.id == null) return;
+
+    context.read<CartCubit>().add(
+      details.item,
+      quantity: _quantity,
+      notes: _notesController.text,
+    );
+
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l10n.sectionComingSoon)));
+      ..showSnackBar(SnackBar(content: Text(l10n.addedToCart)));
   }
 
   @override
@@ -86,7 +95,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               quantity: _quantity,
               notesController: _notesController,
               onQuantityChanged: _changeQuantity,
-              onAddToCart: () => _addToCart(context),
+              onAddToCart: () => _addToCart(context, details),
             );
           },
         );

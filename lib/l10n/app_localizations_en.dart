@@ -30,8 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWelcomeTitle => 'Welcome to Al Rabwa Restaurant';
 
   @override
-  String get homeWelcomeSubtitle =>
-      'Pick your favorite dishes from the menu and enjoy a special dining experience.';
+  String get homeWelcomeSubtitle => 'Pick your favorite dishes from the menu and enjoy a special dining experience.';
 
   @override
   String get storeOpenNow => 'Open now — taking orders';
@@ -58,8 +57,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Try again';
 
   @override
-  String get storeSettingsError =>
-      'Couldn\'t load the restaurant. Check your connection and try again.';
+  String get storeSettingsError => 'Couldn\'t load the restaurant. Check your connection and try again.';
 
   @override
   String get loadingStore => 'Loading the restaurant...';
@@ -191,6 +189,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backLabel => 'Back';
 
   @override
+  String get viewCart => 'View cart';
+
+  @override
+  String get addToCartLabel => 'Add to cart';
+
+  @override
+  String get addedToCart => 'Added to the cart';
+
+  @override
   String get itemDetailsError => 'Couldn\'t load the dish details.';
 
   @override
@@ -203,8 +210,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemDetailsSpecialInstructions => 'Special instructions';
 
   @override
-  String get itemDetailsSpecialInstructionsHint =>
-      'e.g. no onions, cooking level...';
+  String get itemDetailsSpecialInstructionsHint => 'e.g. no onions, cooking level...';
 
   @override
   String get itemDetailsIncreaseQuantity => 'Increase quantity';

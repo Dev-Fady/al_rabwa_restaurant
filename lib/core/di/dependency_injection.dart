@@ -1,6 +1,7 @@
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_hive.dart';
 import 'package:al_rabwa_restaurant/core/services/api/api_service.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/core/services/api/dio_config.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/menu_categories_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_local_data_source.dart';
@@ -27,6 +28,9 @@ Future<void> setupGetIt() async {
   // Register the settings cubit first so the app can still build if storage
   // initialization below fails.
   getIt.registerFactory<SettingsCubit>(() => SettingsCubit());
+
+  // One cart instance for the whole app (menu, details and nav badge).
+  getIt.registerLazySingleton<CartCubit>(CartCubit.new);
 
   final cacheHelper = CacheHelper();
   await cacheHelper.init();

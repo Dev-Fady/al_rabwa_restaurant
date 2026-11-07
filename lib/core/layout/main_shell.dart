@@ -1,6 +1,9 @@
 import 'package:al_rabwa_restaurant/core/layout/widgets/shell_navigation_rail.dart';
+import 'package:al_rabwa_restaurant/features/cart/domain/entities/cart.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/core/widget/app_bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class MainShell extends StatelessWidget {
@@ -48,13 +51,14 @@ class _PhoneShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      // The cart badge is wired here once the cart feature exposes its
-      // badge count; the bar itself already supports it.
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: (index) => navigationShell.goBranch(
-          index,
-          initialLocation: index == navigationShell.currentIndex,
+      bottomNavigationBar: BlocBuilder<CartCubit, Cart>(
+        builder: (context, cart) => AppBottomNavBar(
+          currentIndex: navigationShell.currentIndex,
+          cartBadgeCount: cart.itemsCount,
+          onTap: (index) => navigationShell.goBranch(
+            index,
+            initialLocation: index == navigationShell.currentIndex,
+          ),
         ),
       ),
     );

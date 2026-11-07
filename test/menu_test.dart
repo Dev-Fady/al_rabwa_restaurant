@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/menu_category.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
@@ -101,6 +102,7 @@ Future<MenuCubit> _pumpMenu(
   WidgetTester tester, {
   _FakeCategoriesRepository? categoriesRepository,
   _FakeItemsRepository? itemsRepository,
+  CartCubit? cartCubit,
   Size size = const Size(390, 844),
   double textScale = 1,
 }) async {
@@ -119,6 +121,8 @@ Future<MenuCubit> _pumpMenu(
   addTearDown(storeCubit.close);
   final menuCubit = MenuCubit(categories, items);
   addTearDown(menuCubit.close);
+  final cart = cartCubit ?? CartCubit();
+  addTearDown(cart.close);
 
   await tester.pumpWidget(
     MaterialApp(
@@ -136,6 +140,7 @@ Future<MenuCubit> _pumpMenu(
         providers: [
           BlocProvider.value(value: storeCubit),
           BlocProvider.value(value: menuCubit),
+          BlocProvider.value(value: cart),
         ],
         child: const MenuScreen(),
       ),
@@ -335,6 +340,48 @@ void main() {
       expect(find.text('بيتزا مارغريتا'), findsOneWidget);
       expect(find.byKey(const ValueKey('menu-grid-70')), findsOneWidget);
       expect(find.byKey(const ValueKey('menu-grid-71')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('adds dishes to the cart from the list and totals them', (
+      tester,
+    ) async {
+      final cart = CartCubit();
+      await _pumpMenu(tester, cartCubit: cart);
+
+      await tester.ensureVisible(find.text('أطباق ساخنة'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('أطباق ساخنة'));
+      await tester.pumpAndSettle();
+
+      final tile = find.byKey(const ValueKey('menu-list-60'));
+      await tester.tap(
+        find.descendant(of: tile, matching: find.byIcon(Icons.add)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(cart.state.itemsCount, 1);
+      expect(cart.state.subtotal, 15);
+      expect(find.text('عرض السلة'), findsOneWidget);
+      expect(find.text('صنف واحد'), findsOneWidget);
+      // Dish price + cart total.
+      expect(find.text('15.000 ر.ق'), findsNWidgets(2));
+
+      await tester.tap(
+        find.descendant(of: tile, matching: find.byIcon(Icons.add)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(cart.state.totalQuantity, 2);
+      expect(cart.state.subtotal, 30);
+      expect(find.text('30.000 ر.ق'), findsOneWidget);
+
+      await tester.tap(
+        find.descendant(of: tile, matching: find.byIcon(Icons.remove)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(cart.state.totalQuantity, 1);
       expect(tester.takeException(), isNull);
     });
 

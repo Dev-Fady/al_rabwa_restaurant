@@ -4,6 +4,7 @@ import 'package:al_rabwa_restaurant/features/home/domain/entities/menu_category.
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_state.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/dish_add_control.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -13,10 +14,18 @@ class MenuDishLargeCard extends StatelessWidget {
     super.key,
     required this.item,
     required this.currency,
+    this.quantity = 0,
+    this.onAdd,
+    this.onIncrement,
+    this.onDecrement,
   });
 
   final MenuItem item;
   final StoreCurrency currency;
+  final int quantity;
+  final VoidCallback? onAdd;
+  final VoidCallback? onIncrement;
+  final VoidCallback? onDecrement;
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +60,26 @@ class MenuDishLargeCard extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 10),
-                _DishPrice(
-                  currency: currency,
-                  item: item,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: _DishPrice(
+                        currency: currency,
+                        item: item,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                    if (onAdd != null) ...[
+                      const SizedBox(width: 8),
+                      DishAddControl(
+                        quantity: quantity,
+                        onAdd: onAdd!,
+                        onIncrement: onIncrement,
+                        onDecrement: onDecrement,
+                      ),
+                    ],
+                  ],
                 ),
               ],
             ),
@@ -70,10 +95,18 @@ class MenuDishListTile extends StatelessWidget {
     super.key,
     required this.item,
     required this.currency,
+    this.quantity = 0,
+    this.onAdd,
+    this.onIncrement,
+    this.onDecrement,
   });
 
   final MenuItem item;
   final StoreCurrency currency;
+  final int quantity;
+  final VoidCallback? onAdd;
+  final VoidCallback? onIncrement;
+  final VoidCallback? onDecrement;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +145,27 @@ class MenuDishListTile extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 8),
-                _DishPrice(currency: currency, item: item),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: _DishPrice(
+                        currency: currency,
+                        item: item,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                    if (onAdd != null) ...[
+                      const SizedBox(width: 8),
+                      DishAddControl(
+                        quantity: quantity,
+                        onAdd: onAdd!,
+                        onIncrement: onIncrement,
+                        onDecrement: onDecrement,
+                      ),
+                    ],
+                  ],
+                ),
               ],
             ),
           ),
@@ -127,10 +180,18 @@ class MenuDishGridCard extends StatelessWidget {
     super.key,
     required this.item,
     required this.currency,
+    this.quantity = 0,
+    this.onAdd,
+    this.onIncrement,
+    this.onDecrement,
   });
 
   final MenuItem item;
   final StoreCurrency currency;
+  final int quantity;
+  final VoidCallback? onAdd;
+  final VoidCallback? onIncrement;
+  final VoidCallback? onDecrement;
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +220,19 @@ class MenuDishGridCard extends StatelessWidget {
                   item: item,
                   crossAxisAlignment: CrossAxisAlignment.start,
                 ),
+                if (onAdd != null) ...[
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: DishAddControl(
+                      quantity: quantity,
+                      onAdd: onAdd!,
+                      onIncrement: onIncrement,
+                      onDecrement: onDecrement,
+                      buttonSize: 32,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -304,6 +378,10 @@ class SliverMenuItems extends StatelessWidget {
     required this.horizontalPadding,
     required this.gridColumns,
     this.onItemTap,
+    this.quantityOf,
+    this.onAddItem,
+    this.onIncrementItem,
+    this.onDecrementItem,
   });
 
   final MenuStatus status;
@@ -315,6 +393,10 @@ class SliverMenuItems extends StatelessWidget {
   final double horizontalPadding;
   final int gridColumns;
   final ValueChanged<MenuItem>? onItemTap;
+  final int Function(MenuItem item)? quantityOf;
+  final ValueChanged<MenuItem>? onAddItem;
+  final ValueChanged<MenuItem>? onIncrementItem;
+  final ValueChanged<MenuItem>? onDecrementItem;
 
   @override
   Widget build(BuildContext context) {
@@ -366,6 +448,16 @@ class SliverMenuItems extends StatelessWidget {
                 key: ValueKey('menu-large-${items[index].id ?? index}'),
                 item: items[index],
                 currency: currency,
+                quantity: quantityOf?.call(items[index]) ?? 0,
+                onAdd: onAddItem == null
+                    ? null
+                    : () => onAddItem!(items[index]),
+                onIncrement: onIncrementItem == null
+                    ? null
+                    : () => onIncrementItem!(items[index]),
+                onDecrement: onDecrementItem == null
+                    ? null
+                    : () => onDecrementItem!(items[index]),
               ),
             ),
             separatorBuilder: (context, index) => const SizedBox(height: 14),
@@ -383,6 +475,16 @@ class SliverMenuItems extends StatelessWidget {
                 key: ValueKey('menu-list-${items[index].id ?? index}'),
                 item: items[index],
                 currency: currency,
+                quantity: quantityOf?.call(items[index]) ?? 0,
+                onAdd: onAddItem == null
+                    ? null
+                    : () => onAddItem!(items[index]),
+                onIncrement: onIncrementItem == null
+                    ? null
+                    : () => onIncrementItem!(items[index]),
+                onDecrement: onDecrementItem == null
+                    ? null
+                    : () => onDecrementItem!(items[index]),
               ),
             ),
             separatorBuilder: (context, index) => const SizedBox(height: 10),
@@ -415,6 +517,16 @@ class SliverMenuItems extends StatelessWidget {
                             ),
                             item: items[index],
                             currency: currency,
+                            quantity: quantityOf?.call(items[index]) ?? 0,
+                            onAdd: onAddItem == null
+                                ? null
+                                : () => onAddItem!(items[index]),
+                            onIncrement: onIncrementItem == null
+                                ? null
+                                : () => onIncrementItem!(items[index]),
+                            onDecrement: onDecrementItem == null
+                                ? null
+                                : () => onDecrementItem!(items[index]),
                           ),
                         ),
                       ),

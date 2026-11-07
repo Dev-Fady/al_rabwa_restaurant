@@ -1,4 +1,7 @@
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:al_rabwa_restaurant/features/cart/domain/entities/cart.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/widgets/cart_summary_bar.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
@@ -101,6 +104,7 @@ class _MenuScreenState extends State<MenuScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      bottomNavigationBar: const _MenuCartSummaryBar(),
       body: SafeArea(
         bottom: false,
         child: BlocBuilder<StoreConfigCubit, StoreConfigState>(
@@ -250,17 +254,28 @@ class _MenuScreenState extends State<MenuScreen> {
                                   ),
                                 ),
                               ],
-                              SliverMenuItems(
-                                status: state.itemsStatus,
-                                items: items,
-                                displayStyle: selectedCategory.displayStyle,
-                                currency: currency,
-                                emptyMessage: emptyMessage,
-                                onRetry: () =>
-                                    context.read<MenuCubit>().retryItems(),
-                                horizontalPadding: horizontalPadding,
-                                gridColumns: gridColumns,
-                                onItemTap: _openItem,
+                              BlocBuilder<CartCubit, Cart>(
+                                builder: (context, cart) {
+                                  final cartCubit = context.read<CartCubit>();
+
+                                  return SliverMenuItems(
+                                    status: state.itemsStatus,
+                                    items: items,
+                                    displayStyle: selectedCategory.displayStyle,
+                                    currency: currency,
+                                    emptyMessage: emptyMessage,
+                                    onRetry: () =>
+                                        context.read<MenuCubit>().retryItems(),
+                                    horizontalPadding: horizontalPadding,
+                                    gridColumns: gridColumns,
+                                    onItemTap: _openItem,
+                                    quantityOf: (item) =>
+                                        cart.quantityOf(item.id),
+                                    onAddItem: cartCubit.add,
+                                    onIncrementItem: cartCubit.increment,
+                                    onDecrementItem: cartCubit.decrement,
+                                  );
+                                },
                               ),
                             ],
                           ],
@@ -274,6 +289,35 @@ class _MenuScreenState extends State<MenuScreen> {
           },
         ),
       ),
+    );
+  }
+}
+
+/// Cart summary that appears above the bottom navigation once a dish is added.
+class _MenuCartSummaryBar extends StatelessWidget {
+  const _MenuCartSummaryBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CartCubit, Cart>(
+      builder: (context, cart) {
+        if (cart.isEmpty) return const SizedBox.shrink();
+
+        return BlocBuilder<StoreConfigCubit, StoreConfigState>(
+          builder: (context, storeState) {
+            final currency =
+                storeState.settings?.currency ?? const StoreCurrency();
+
+            return CartSummaryBar(
+              itemsLabel: AppLocalizations.of(
+                context,
+              )!.menuItemsCount(cart.itemsCount),
+              totalLabel: currency.format(cart.subtotal),
+              onViewCart: () => context.go(AppRoutes.cart),
+            );
+          },
+        );
+      },
     );
   }
 }

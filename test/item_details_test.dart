@@ -1,5 +1,6 @@
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_router.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
@@ -78,6 +79,7 @@ MenuItemDetails _sampleDetails({String image = ''}) {
 Future<ItemDetailsCubit> _pumpDetails(
   WidgetTester tester, {
   _FakeItemsRepository? repository,
+  CartCubit? cartCubit,
   Size size = const Size(390, 844),
   double textScale = 1,
 }) async {
@@ -93,6 +95,8 @@ Future<ItemDetailsCubit> _pumpDetails(
     40,
   );
   addTearDown(cubit.close);
+  final cart = cartCubit ?? CartCubit();
+  addTearDown(cart.close);
 
   await tester.pumpWidget(
     MaterialApp(
@@ -110,6 +114,7 @@ Future<ItemDetailsCubit> _pumpDetails(
         providers: [
           BlocProvider.value(value: storeCubit),
           BlocProvider.value(value: cubit),
+          BlocProvider.value(value: cart),
         ],
         child: const ItemDetailsScreen(),
       ),
@@ -222,15 +227,21 @@ void main() {
       expect(find.text('أضف إلى السلة - 35.000 ر.ق'), findsOneWidget);
     });
 
-    testWidgets('shows the coming soon note from the cart button', (
+    testWidgets('adds the dish with its quantity and notes to the cart', (
       tester,
     ) async {
-      await _pumpDetails(tester);
+      final cart = CartCubit();
+      await _pumpDetails(tester, cartCubit: cart);
 
-      await tester.tap(find.text('أضف إلى السلة - 35.000 ر.ق'));
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('أضف إلى السلة - 70.000 ر.ق'));
       await tester.pumpAndSettle();
 
-      expect(find.text('قريباً'), findsOneWidget);
+      expect(cart.state.itemsCount, 1);
+      expect(cart.state.totalQuantity, 2);
+      expect(cart.state.subtotal, 70);
+      expect(find.text('أُضيف إلى السلة'), findsOneWidget);
     });
 
     testWidgets('retries after the dish fails to load', (tester) async {

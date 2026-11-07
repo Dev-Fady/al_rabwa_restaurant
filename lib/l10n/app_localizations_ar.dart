@@ -30,8 +30,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeWelcomeTitle => 'أهلاً بك في مطعم الربوة';
 
   @override
-  String get homeWelcomeSubtitle =>
-      'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
+  String get homeWelcomeSubtitle => 'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
 
   @override
   String get storeOpenNow => 'مفتوح الآن — نستقبل طلباتك';
@@ -58,8 +57,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retry => 'إعادة المحاولة';
 
   @override
-  String get storeSettingsError =>
-      'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
+  String get storeSettingsError => 'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
 
   @override
   String get loadingStore => 'جارٍ تحميل المطعم...';
@@ -143,8 +141,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeCategoriesViewAll => 'عرض الكل';
 
   @override
-  String get homeCategoriesHint =>
-      'اسحب الأقسام يمينًا ويسارًا أو اضغط على قسم لفتحه';
+  String get homeCategoriesHint => 'اسحب الأقسام يمينًا ويسارًا أو اضغط على قسم لفتحه';
 
   @override
   String get homeCategoriesError => 'تعذر تحميل أقسام المنيو.';
@@ -195,6 +192,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get backLabel => 'رجوع';
 
   @override
+  String get viewCart => 'عرض السلة';
+
+  @override
+  String get addToCartLabel => 'أضف إلى السلة';
+
+  @override
+  String get addedToCart => 'أُضيف إلى السلة';
+
+  @override
   String get itemDetailsError => 'تعذر تحميل تفاصيل الطبق.';
 
   @override
@@ -207,8 +213,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get itemDetailsSpecialInstructions => 'تعليمات خاصة';
 
   @override
-  String get itemDetailsSpecialInstructionsHint =>
-      'مثل: بدون بصل، مستوى الطهي...';
+  String get itemDetailsSpecialInstructionsHint => 'مثل: بدون بصل، مستوى الطهي...';
 
   @override
   String get itemDetailsIncreaseQuantity => 'زيادة الكمية';

@@ -1,5 +1,6 @@
 import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_router.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
@@ -63,12 +64,15 @@ void main() {
     addTearDown(store.close);
     final menu = MenuCubit(_Categories(), _Repo());
     addTearDown(menu.close);
+    final cart = CartCubit();
+    addTearDown(cart.close);
 
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
           BlocProvider.value(value: store),
           BlocProvider.value(value: menu),
+          BlocProvider.value(value: cart),
         ],
         child: MaterialApp.router(
           routerConfig: AppRouter.router,
