@@ -9,5 +9,6 @@ class ApiConstants {
   static const String settings = 'settings';
   static const String categories = 'categories';
   static const String categoryItems = 'categories/{id}/items';
+  static const String itemDetails = 'items/{id}';
   static const String orders = 'orders';
 }

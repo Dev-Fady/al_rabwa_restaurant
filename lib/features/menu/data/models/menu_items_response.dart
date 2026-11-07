@@ -87,6 +87,10 @@ class MenuItemModel {
 
   final String? name;
   final String? description;
+
+  /// Only present on the single-item endpoint (`GET /items/{id}`).
+  final MenuCategoryRefModel? category;
+
   final num? price;
 
   @JsonKey(name: 'compare_at_price')
@@ -110,6 +114,7 @@ class MenuItemModel {
     this.categoryId,
     this.name,
     this.description,
+    this.category,
     this.price,
     this.compareAtPrice,
     this.image,

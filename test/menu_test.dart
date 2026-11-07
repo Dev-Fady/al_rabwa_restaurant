@@ -7,6 +7,8 @@ import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_r
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/data/models/menu_items_response.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_category_items.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item_details.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/repositories/menu_items_repository.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_state.dart';
@@ -44,7 +46,7 @@ class _FakeCategoriesRepository implements MenuCategoriesRepository {
 }
 
 class _FakeItemsRepository implements MenuItemsRepository {
-  _FakeItemsRepository({this.result = const {}, this.error});
+  _FakeItemsRepository({this.result = const {}});
 
   Map<int, MenuCategoryItems> result;
   Object? error;
@@ -66,6 +68,19 @@ class _FakeItemsRepository implements MenuItemsRepository {
       throw failure;
     }
     return Right(result[categoryId] ?? const MenuCategoryItems(items: []));
+  }
+
+  @override
+  Future<Either<Failure, MenuItemDetails>> fetchItemDetails({
+    required int itemId,
+    String lang = 'ar',
+  }) async {
+    final failure = error;
+    if (failure != null) {
+      if (failure is Failure) return Left(failure);
+      throw failure;
+    }
+    return Right(MenuItemDetails(item: MenuItem(id: itemId)));
   }
 }
 
@@ -298,18 +313,22 @@ void main() {
     testWidgets('switches to the list display style', (tester) async {
       await _pumpMenu(tester);
 
+      await tester.ensureVisible(find.text('أطباق ساخنة'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('أطباق ساخنة'));
       await tester.pumpAndSettle();
 
       expect(find.text('شوربة عدس'), findsOneWidget);
       expect(find.byKey(const ValueKey('menu-list-60')), findsOneWidget);
-      expect(find.text('2 صنفان'), findsOneWidget);
+      expect(find.text('صنفان'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
     testWidgets('switches to the grid display style', (tester) async {
       await _pumpMenu(tester);
 
+      await tester.ensureVisible(find.text('أطباق غربية'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('أطباق غربية'));
       await tester.pumpAndSettle();
 

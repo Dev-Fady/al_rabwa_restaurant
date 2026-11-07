@@ -61,6 +61,20 @@
   "menuItemsError": "تعذر تحميل الأطباق.",
   "menuEmptyCategory": "لا توجد أطباق في هذا القسم حالياً.",
   "menuSearchNoResults": "لا توجد أطباق مطابقة لبحثك.",
+  "backLabel": "رجوع",
+  "itemDetailsError": "تعذر تحميل تفاصيل الطبق.",
+  "itemDetailsFreshlyPrepared": "يُحضّر طازجًا عند الطلب",
+  "itemDetailsQuantity": "الكمية",
+  "itemDetailsSpecialInstructions": "تعليمات خاصة",
+  "itemDetailsSpecialInstructionsHint": "مثل: بدون بصل، مستوى الطهي...",
+  "itemDetailsIncreaseQuantity": "زيادة الكمية",
+  "itemDetailsDecreaseQuantity": "تقليل الكمية",
+  "itemDetailsAddToCartPrice": "أضف إلى السلة - {price}",
+  "@itemDetailsAddToCartPrice": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
   "arabic": "عربي",
   "english": "EN"
 }

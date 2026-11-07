@@ -303,6 +303,7 @@ class SliverMenuItems extends StatelessWidget {
     required this.onRetry,
     required this.horizontalPadding,
     required this.gridColumns,
+    this.onItemTap,
   });
 
   final MenuStatus status;
@@ -313,6 +314,7 @@ class SliverMenuItems extends StatelessWidget {
   final VoidCallback onRetry;
   final double horizontalPadding;
   final int gridColumns;
+  final ValueChanged<MenuItem>? onItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -357,10 +359,14 @@ class SliverMenuItems extends StatelessWidget {
           padding: padding,
           sliver: SliverList.separated(
             itemCount: items.length,
-            itemBuilder: (context, index) => MenuDishLargeCard(
-              key: ValueKey('menu-large-${items[index].id ?? index}'),
+            itemBuilder: (context, index) => _TapTarget(
               item: items[index],
-              currency: currency,
+              onItemTap: onItemTap,
+              child: MenuDishLargeCard(
+                key: ValueKey('menu-large-${items[index].id ?? index}'),
+                item: items[index],
+                currency: currency,
+              ),
             ),
             separatorBuilder: (context, index) => const SizedBox(height: 14),
           ),
@@ -370,10 +376,14 @@ class SliverMenuItems extends StatelessWidget {
           padding: padding,
           sliver: SliverList.separated(
             itemCount: items.length,
-            itemBuilder: (context, index) => MenuDishListTile(
-              key: ValueKey('menu-list-${items[index].id ?? index}'),
+            itemBuilder: (context, index) => _TapTarget(
               item: items[index],
-              currency: currency,
+              onItemTap: onItemTap,
+              child: MenuDishListTile(
+                key: ValueKey('menu-list-${items[index].id ?? index}'),
+                item: items[index],
+                currency: currency,
+              ),
             ),
             separatorBuilder: (context, index) => const SizedBox(height: 10),
           ),
@@ -396,12 +406,16 @@ class SliverMenuItems extends StatelessWidget {
                     for (var index = 0; index < items.length; index++)
                       SizedBox(
                         width: cardWidth,
-                        child: MenuDishGridCard(
-                          key: ValueKey(
-                            'menu-grid-${items[index].id ?? index}',
-                          ),
+                        child: _TapTarget(
                           item: items[index],
-                          currency: currency,
+                          onItemTap: onItemTap,
+                          child: MenuDishGridCard(
+                            key: ValueKey(
+                              'menu-grid-${items[index].id ?? index}',
+                            ),
+                            item: items[index],
+                            currency: currency,
+                          ),
                         ),
                       ),
                   ],
@@ -411,6 +425,31 @@ class SliverMenuItems extends StatelessWidget {
           ),
         );
     }
+  }
+}
+
+/// Makes a dish card open its details page while keeping the same look.
+class _TapTarget extends StatelessWidget {
+  const _TapTarget({
+    required this.item,
+    required this.onItemTap,
+    required this.child,
+  });
+
+  final MenuItem item;
+  final ValueChanged<MenuItem>? onItemTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final onTap = onItemTap;
+    if (onTap == null) return child;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () => onTap(item),
+      child: child,
+    );
   }
 }
 

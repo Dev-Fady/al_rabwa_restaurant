@@ -26,4 +26,11 @@ abstract class ApiService {
     @Query('lang') String? lang,
     @Header('x-locale') String? xLocale,
   });
+
+  @GET(ApiConstants.itemDetails)
+  Future<HttpResponse<dynamic>> getItemDetails({
+    @Path('id') required int itemId,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
 }

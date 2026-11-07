@@ -14,6 +14,7 @@ import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_confi
 import 'package:al_rabwa_restaurant/features/menu/data/datasources/menu_items_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/menu/data/repositories/menu_items_repository_impl.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/repositories/menu_items_repository.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:dio/dio.dart';
@@ -100,5 +101,10 @@ Future<void> setupGetIt() async {
       getIt<MenuCategoriesRepository>(),
       getIt<MenuItemsRepository>(),
     ),
+  );
+
+  getIt.registerFactoryParam<ItemDetailsCubit, int, String>(
+    (itemId, lang) =>
+        ItemDetailsCubit(getIt<MenuItemsRepository>(), itemId, lang: lang),
   );
 }

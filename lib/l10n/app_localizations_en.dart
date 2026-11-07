@@ -30,7 +30,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWelcomeTitle => 'Welcome to Al Rabwa Restaurant';
 
   @override
-  String get homeWelcomeSubtitle => 'Pick your favorite dishes from the menu and enjoy a special dining experience.';
+  String get homeWelcomeSubtitle =>
+      'Pick your favorite dishes from the menu and enjoy a special dining experience.';
 
   @override
   String get storeOpenNow => 'Open now — taking orders';
@@ -57,7 +58,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Try again';
 
   @override
-  String get storeSettingsError => 'Couldn\'t load the restaurant. Check your connection and try again.';
+  String get storeSettingsError =>
+      'Couldn\'t load the restaurant. Check your connection and try again.';
 
   @override
   String get loadingStore => 'Loading the restaurant...';
@@ -184,6 +186,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get menuSearchNoResults => 'No dishes match your search.';
+
+  @override
+  String get backLabel => 'Back';
+
+  @override
+  String get itemDetailsError => 'Couldn\'t load the dish details.';
+
+  @override
+  String get itemDetailsFreshlyPrepared => 'Freshly prepared to order';
+
+  @override
+  String get itemDetailsQuantity => 'Quantity';
+
+  @override
+  String get itemDetailsSpecialInstructions => 'Special instructions';
+
+  @override
+  String get itemDetailsSpecialInstructionsHint =>
+      'e.g. no onions, cooking level...';
+
+  @override
+  String get itemDetailsIncreaseQuantity => 'Increase quantity';
+
+  @override
+  String get itemDetailsDecreaseQuantity => 'Decrease quantity';
+
+  @override
+  String itemDetailsAddToCartPrice(String price) {
+    return 'Add to cart - $price';
+  }
 
   @override
   String get arabic => 'عربي';

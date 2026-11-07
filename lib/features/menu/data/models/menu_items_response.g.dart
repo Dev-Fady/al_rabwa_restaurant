@@ -54,6 +54,11 @@ MenuItemModel _$MenuItemModelFromJson(Map<String, dynamic> json) =>
       categoryId: (json['category_id'] as num?)?.toInt(),
       name: json['name'] as String?,
       description: json['description'] as String?,
+      category: json['category'] == null
+          ? null
+          : MenuCategoryRefModel.fromJson(
+              json['category'] as Map<String, dynamic>,
+            ),
       price: json['price'] as num?,
       compareAtPrice: json['compare_at_price'] as num?,
       image: json['image'] as String?,
@@ -71,6 +76,7 @@ Map<String, dynamic> _$MenuItemModelToJson(MenuItemModel instance) =>
       'category_id': instance.categoryId,
       'name': instance.name,
       'description': instance.description,
+      'category': instance.category,
       'price': instance.price,
       'compare_at_price': instance.compareAtPrice,
       'image': instance.image,

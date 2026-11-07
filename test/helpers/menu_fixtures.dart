@@ -56,6 +56,33 @@ Map<int, MenuCategoryItems> menuItemsFixture() {
   };
 }
 
+/// Payload copied from `GET /api/items/40?lang=ar`.
+///
+/// Pass `image: ''` for widget tests that must not request the network.
+Map<String, dynamic> itemDetailsPayload({
+  String? image =
+      'https://al-rabwah.smartmenues.com/storage/restaurants/2/items/1742219720_1.jpg',
+}) {
+  return {
+    'data': {
+      'id': 40,
+      'category_id': 11,
+      'category': {'id': 11, 'name': 'مشاوي علي الفحم'},
+      'name': 'دجاج مسحب (700 غ)',
+      'description': null,
+      'price': 35,
+      'compare_at_price': null,
+      'image': image,
+      'video': null,
+      'has_large_photo': false,
+      'sold_by_weight': false,
+      'weight': null,
+      'options': <dynamic>[],
+      'addons': <dynamic>[],
+    },
+  };
+}
+
 /// Payload copied from `GET /api/categories/11/items?lang=ar` (one item).
 Map<String, dynamic> menuItemsPayloadWithImages() {
   return {

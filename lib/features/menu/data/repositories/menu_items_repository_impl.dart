@@ -1,6 +1,7 @@
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
 import 'package:al_rabwa_restaurant/features/menu/data/datasources/menu_items_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_category_items.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item_details.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/repositories/menu_items_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -21,6 +22,30 @@ class MenuItemsRepositoryImpl implements MenuItemsRepository {
         lang: lang,
       );
       return Right(response.toEntity());
+    } on Failure catch (failure) {
+      return Left(failure);
+    } on DioException catch (error) {
+      return Left(ServerFailure.fromDioException(error));
+    } catch (error) {
+      return Left(ServerFailure.fromError(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MenuItemDetails>> fetchItemDetails({
+    required int itemId,
+    String lang = 'ar',
+  }) async {
+    try {
+      final response = await remoteDataSource.getItemDetails(
+        itemId: itemId,
+        lang: lang,
+      );
+      final details = response.toEntity();
+      if (details == null) {
+        return Left(ServerFailure('Empty response from server.'));
+      }
+      return Right(details);
     } on Failure catch (failure) {
       return Left(failure);
     } on DioException catch (error) {

@@ -1,11 +1,15 @@
+import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/layout/main_shell.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_cubit.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/screens/item_details_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_screen.dart';
 import 'package:al_rabwa_restaurant/features/shell/presentation/screens/section_placeholder_screen.dart';
 import 'package:al_rabwa_restaurant/features/splash/presentation/screens/splash_screen.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
@@ -49,6 +53,34 @@ class AppRouter {
               GoRoute(
                 path: AppRoutes.menu,
                 builder: (context, state) => const MenuScreen(),
+                routes: [
+                  GoRoute(
+                    path: AppRoutes.menuItemSegment,
+                    builder: (context, state) {
+                      final itemId = int.tryParse(
+                        state.pathParameters['itemId'] ?? '',
+                      );
+                      if (itemId == null) {
+                        return SectionPlaceholderScreen(
+                          title: AppLocalizations.of(context)!.pageNotFound,
+                          icon: Icons.error_outline,
+                        );
+                      }
+
+                      // Read the locale here: the provider's `create` runs
+                      // during mount and must not subscribe to inherited widgets.
+                      final lang = Localizations.localeOf(context).languageCode;
+
+                      return BlocProvider<ItemDetailsCubit>(
+                        create: (_) => getIt<ItemDetailsCubit>(
+                          param1: itemId,
+                          param2: lang,
+                        )..load(),
+                        child: const ItemDetailsScreen(),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

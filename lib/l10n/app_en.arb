@@ -61,6 +61,20 @@
   "menuItemsError": "Couldn't load the dishes.",
   "menuEmptyCategory": "No dishes in this category yet.",
   "menuSearchNoResults": "No dishes match your search.",
+  "backLabel": "Back",
+  "itemDetailsError": "Couldn't load the dish details.",
+  "itemDetailsFreshlyPrepared": "Freshly prepared to order",
+  "itemDetailsQuantity": "Quantity",
+  "itemDetailsSpecialInstructions": "Special instructions",
+  "itemDetailsSpecialInstructionsHint": "e.g. no onions, cooking level...",
+  "itemDetailsIncreaseQuantity": "Increase quantity",
+  "itemDetailsDecreaseQuantity": "Decrease quantity",
+  "itemDetailsAddToCartPrice": "Add to cart - {price}",
+  "@itemDetailsAddToCartPrice": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
   "arabic": "عربي",
   "english": "EN"
 }

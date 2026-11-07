@@ -191,7 +191,7 @@ class _MenuLogoBadge extends StatelessWidget {
         height: 52,
         decoration: BoxDecoration(
           color: brandColor,
-          borderRadius: BorderRadius.circular(14),
+          // borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: brandColor.withValues(alpha: 0.2),
             width: 1.5,

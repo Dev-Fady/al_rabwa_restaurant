@@ -1,3 +1,4 @@
+import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/menu_sear
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 /// Menu tab: categories on top, then the selected category's dishes rendered
 /// according to its `display_style` (`large`, `list` or `grid`).
@@ -50,6 +52,12 @@ class _MenuScreenState extends State<MenuScreen> {
   void _clearSearch() {
     _searchController.clear();
     _onSearchChanged('');
+  }
+
+  void _openItem(MenuItem item) {
+    final id = item.id;
+    if (id == null) return;
+    context.push(AppRoutes.menuItemPath(id));
   }
 
   List<MenuItem> _visibleItems(List<MenuItem> items) {
@@ -252,6 +260,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     context.read<MenuCubit>().retryItems(),
                                 horizontalPadding: horizontalPadding,
                                 gridColumns: gridColumns,
+                                onItemTap: _openItem,
                               ),
                             ],
                           ],
