@@ -1,3 +1,4 @@
+import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
 import 'package:al_rabwa_restaurant/features/home/data/models/restaurant_settings_response.dart';
 import 'package:flutter/material.dart';
@@ -133,6 +134,26 @@ void main() {
   });
 
   group('AppTheme.parseHexColor', () {
+    test('uses the restaurant theme values to build the app color scheme', () {
+      final theme = AppTheme.light(
+        primaryHex: '#123456',
+        accentHex: '#ABCDEF',
+        backgroundHex: '#F1F2F3',
+        textHex: '#101112',
+        titleHex: '#654321',
+        fontFamily: 'Cairo',
+      );
+
+      expect(theme.colorScheme.primary, const Color(0xFF123456));
+      expect(theme.colorScheme.secondary, const Color(0xFFABCDEF));
+      expect(theme.scaffoldBackgroundColor, const Color(0xFFF1F2F3));
+      expect(theme.colorScheme.onSurface, const Color(0xFF101112));
+      expect(
+        theme.extension<AppColors>()!.titleColor,
+        const Color(0xFF654321),
+      );
+    });
+
     test('parses short and long hex values', () {
       expect(AppTheme.parseHexColor('#174722'), const Color(0xFF174722));
       expect(AppTheme.parseHexColor('c7df39'), const Color(0xFFC7DF39));

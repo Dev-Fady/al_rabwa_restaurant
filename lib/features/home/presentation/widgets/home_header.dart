@@ -65,6 +65,7 @@ class _LanguageSwitcherPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brandColor = context.appColors.brandGreen;
+    final colors = Theme.of(context).colorScheme;
     final currentLocale = Localizations.localeOf(context);
     final isArabic = currentLocale.languageCode == 'ar';
 
@@ -75,10 +76,10 @@ class _LanguageSwitcherPill extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 36),
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: const Color(0xFFE2E8F0),
+            color: colors.outlineVariant,
             width: 1.2,
           ),
           boxShadow: const [
@@ -154,8 +155,8 @@ class _LanguageOption extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
             fontSize: 12,
             fontWeight: FontWeight.w800,
             height: 1.2,
@@ -216,11 +217,11 @@ class _RestaurantLogoBadge extends StatelessWidget {
         child: restaurant.hasLogo
             ? AppNetworkImage(
                 url: restaurant.logo,
-                width: 42,
-                height: 42,
+                width: 38,
+                height: 38,
                 fit: BoxFit.cover,
                 backgroundColor: brandColor,
-                fallbackColor: Colors.white,
+                fallbackColor: Theme.of(context).colorScheme.surface,
                 fallbackIconSize: 20,
               )
             : Center(

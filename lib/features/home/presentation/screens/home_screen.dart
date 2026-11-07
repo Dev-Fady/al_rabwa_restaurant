@@ -75,17 +75,24 @@ class _HomeContentState extends State<_HomeContent> {
     final cubit = context.read<StoreConfigCubit>();
     final settings = widget.settings;
     final banners = settings.home.banners;
+    final backgroundImage = settings.theme.backgroundImage.trim();
 
     return RefreshIndicator(
       onRefresh: cubit.refresh,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final horizontalPadding = constraints.maxWidth >= 600 ? 32.0 : 16.0;
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (backgroundImage.isNotEmpty)
+            _HomeBackgroundImage(url: backgroundImage),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final horizontalPadding =
+                  constraints.maxWidth >= 600 ? 32.0 : 16.0;
 
-          return Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 760),
-              child: ListView(
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 760),
+                  child: ListView(
                 // ignore: deprecated_member_use
                 cacheExtent: 2500,
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -95,7 +102,7 @@ class _HomeContentState extends State<_HomeContent> {
                   horizontalPadding,
                   32,
                 ),
-                children: [
+                    children: [
                   // 1. Header with title, language toggle, and logo
                   HomeHeader(settings: settings),
                   const SizedBox(height: 14),
@@ -145,15 +152,39 @@ class _HomeContentState extends State<_HomeContent> {
                       ],
                     const SizedBox(height: 18),
                   ],
-                ],
-              ),
-            ),
-          );
-        },
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 }
+
+class _HomeBackgroundImage extends StatelessWidget {
+  const _HomeBackgroundImage({required this.url});
+
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Opacity(
+        opacity: 0.12,
+        child: Image.network(
+          url,
+          fit: BoxFit.cover,
+          excludeFromSemantics: true,
+          errorBuilder: (_, _, _) => const SizedBox.shrink(),
+        ),
+      ),
+    );
+  }
+}
+
 void _openBanner(BuildContext context, HomeBanner banner) {
   if (banner.opensExternalUrl) {
     final uri = Uri.tryParse(banner.url.trim());

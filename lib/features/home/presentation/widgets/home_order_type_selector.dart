@@ -76,13 +76,14 @@ class _OrderTypeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brandColor = context.appColors.brandGreen;
+    final colors = Theme.of(context).colorScheme;
 
     return Semantics(
       button: true,
       selected: isSelected,
       label: option.label,
       child: Material(
-        color: isSelected ? brandColor : Colors.white,
+        color: isSelected ? brandColor : colors.surface,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
@@ -93,7 +94,7 @@ class _OrderTypeButton extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected ? brandColor : const Color(0xFFE5E7EB),
+                color: isSelected ? brandColor : colors.outlineVariant,
                 width: 1.2,
               ),
               boxShadow: isSelected
@@ -120,7 +121,7 @@ class _OrderTypeButton extends StatelessWidget {
                   option.label,
                   softWrap: false,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : const Color(0xFF1F2937),
+                    color: isSelected ? colors.onPrimary : colors.onSurface,
                     fontSize: 14.5,
                     fontWeight: FontWeight.w800,
                   ),
@@ -129,6 +130,8 @@ class _OrderTypeButton extends StatelessWidget {
                 _OrderOptionIcon(
                   optionValue: option.value,
                   isSelected: isSelected,
+                  selectedColor: colors.onPrimary,
+                  unselectedColor: colors.onSurface,
                 ),
               ],
             ),
@@ -143,22 +146,30 @@ class _OrderOptionIcon extends StatelessWidget {
   const _OrderOptionIcon({
     required this.optionValue,
     required this.isSelected,
+    required this.selectedColor,
+    required this.unselectedColor,
   });
 
   final String optionValue;
   final bool isSelected;
+  final Color selectedColor;
+  final Color unselectedColor;
 
   @override
   Widget build(BuildContext context) {
     if (optionValue == 'delivery') {
-      return const _DeliveryScooterBadge();
+      return Icon(
+        Icons.delivery_dining,
+        size: 24,
+        color: isSelected ? selectedColor : unselectedColor,
+      );
     }
 
     if (optionValue == 'takeaway') {
       return Icon(
         Icons.storefront_outlined,
         size: 21,
-        color: isSelected ? Colors.white : const Color(0xFF1F2937),
+        color: isSelected ? selectedColor : unselectedColor,
       );
     }
 
@@ -166,46 +177,14 @@ class _OrderOptionIcon extends StatelessWidget {
       return Icon(
         Icons.restaurant_outlined,
         size: 20,
-        color: isSelected ? Colors.white : const Color(0xFF1F2937),
+        color: isSelected ? selectedColor : unselectedColor,
       );
     }
 
     return Icon(
       Icons.shopping_bag_outlined,
       size: 20,
-      color: isSelected ? Colors.white : const Color(0xFF1F2937),
-    );
-  }
-}
-
-/// Delivery scooter icon styled to match the teal & red scooter from the design.
-class _DeliveryScooterBadge extends StatelessWidget {
-  const _DeliveryScooterBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: Stack(
-        alignment: Alignment.center,
-        children: const [
-          Icon(
-            Icons.delivery_dining,
-            size: 24,
-            color: Color(0xFF00C4D6),
-          ),
-          Positioned(
-            top: 1,
-            right: 4,
-            child: Icon(
-              Icons.circle,
-              size: 5.5,
-              color: Color(0xFFEF4444),
-            ),
-          ),
-        ],
-      ),
+      color: isSelected ? selectedColor : unselectedColor,
     );
   }
 }

@@ -21,6 +21,7 @@ class HomeSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final hint = l10n.searchFoodHint;
 
@@ -28,7 +29,7 @@ class HomeSearchBar extends StatelessWidget {
       button: readOnly,
       label: hint,
       child: Material(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           onTap: onTap ?? () => context.go(AppRoutes.menu),
@@ -39,7 +40,7 @@ class HomeSearchBar extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: const Color(0xFFE5E7EB),
+                color: colors.outlineVariant,
                 width: 1.2,
               ),
               boxShadow: const [
@@ -59,7 +60,7 @@ class HomeSearchBar extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.start,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFF9CA3AF),
+                      color: colors.onSurfaceVariant,
                       fontSize: 14.5,
                       fontWeight: FontWeight.w600,
                     ),
@@ -79,4 +80,3 @@ class HomeSearchBar extends StatelessWidget {
     );
   }
 }
-

@@ -17,6 +17,7 @@ class HomeDeliveryLocationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final brandColor = context.appColors.brandGreen;
 
@@ -28,7 +29,7 @@ class HomeDeliveryLocationBar extends StatelessWidget {
       button: true,
       label: '${l10n.deliverTo} $locationText',
       child: Material(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap ?? () {},
@@ -39,7 +40,7 @@ class HomeDeliveryLocationBar extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: const Color(0xFFE5E7EB),
+                color: colors.outlineVariant,
                 width: 1.2,
               ),
               boxShadow: const [
@@ -69,7 +70,7 @@ class HomeDeliveryLocationBar extends StatelessWidget {
                               TextSpan(
                                 text: '${l10n.deliverTo} ',
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: const Color(0xFF6B7280),
+                                  color: colors.onSurfaceVariant,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -88,7 +89,7 @@ class HomeDeliveryLocationBar extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const _CustomLocationPin(),
+                      _CustomLocationPin(color: colors.primary),
                     ],
                   ),
                 ),
@@ -102,7 +103,9 @@ class HomeDeliveryLocationBar extends StatelessWidget {
 }
 
 class _CustomLocationPin extends StatelessWidget {
-  const _CustomLocationPin();
+  const _CustomLocationPin({required this.color});
+
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -113,17 +116,17 @@ class _CustomLocationPin extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.location_on,
             size: 26,
-            color: Colors.black87,
+            color: color.withValues(alpha: 0.28),
           ),
-          const Positioned(
+          Positioned(
             top: 2,
             child: Icon(
               Icons.location_on,
               size: 22,
-              color: Color(0xFFDC2626),
+              color: color,
             ),
           ),
           Positioned(
@@ -131,8 +134,8 @@ class _CustomLocationPin extends StatelessWidget {
             child: Container(
               width: 5,
               height: 5,
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onPrimary,
                 shape: BoxShape.circle,
               ),
             ),
