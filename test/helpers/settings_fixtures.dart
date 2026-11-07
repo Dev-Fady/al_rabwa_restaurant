@@ -77,8 +77,8 @@ Map<String, dynamic> settingsPayload({String name = 'مطعم الربوة'}) {
         'delivery_fee': 0,
         'delivery_zones': [],
       },
-      'reservations': {'enabled': false},
-      'online_payment': {'enabled': false, 'gateway': null},
+      'reservations': <String, dynamic>{'enabled': false},
+      'online_payment': <String, dynamic>{'enabled': false, 'gateway': null},
       'contact': {
         'phone': null,
         'whatsapp': null,

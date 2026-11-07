@@ -87,6 +87,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get availableLabel => 'متاح';
 
   @override
+  String get workingHoursLabel => 'ساعات العمل';
+
+  @override
+  String get locationRequiredLabel => 'تحديد الموقع';
+
+  @override
+  String get requiredLabel => 'مطلوب';
+
+  @override
   String get onlinePaymentLabel => 'الدفع الإلكتروني';
 
   @override
@@ -115,4 +124,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pageNotFound => 'الصفحة غير موجودة';
+
+  @override
+  String get deliverTo => 'التوصيل إلى';
+
+  @override
+  String get selectLocation => 'حدّد موقعك';
+
+  @override
+  String get searchFoodHint => 'ماذا تشتهي اليوم؟';
+
+  @override
+  String get arabic => 'عربي';
+
+  @override
+  String get english => 'EN';
 }

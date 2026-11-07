@@ -38,5 +38,10 @@
   "locationLabel": "الموقع",
   "sectionComingSoon": "قريباً",
   "loginTitle": "تسجيل الدخول",
-  "pageNotFound": "الصفحة غير موجودة"
+  "pageNotFound": "الصفحة غير موجودة",
+  "deliverTo": "التوصيل إلى",
+  "selectLocation": "حدّد موقعك",
+  "searchFoodHint": "ماذا تشتهي اليوم؟",
+  "arabic": "عربي",
+  "english": "EN"
 }

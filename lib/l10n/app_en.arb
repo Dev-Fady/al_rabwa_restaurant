@@ -38,5 +38,10 @@
   "locationLabel": "Location",
   "sectionComingSoon": "Coming soon",
   "loginTitle": "Sign in",
-  "pageNotFound": "Page not found"
+  "pageNotFound": "Page not found",
+  "deliverTo": "Deliver to",
+  "selectLocation": "Select your location",
+  "searchFoodHint": "What are you craving today?",
+  "arabic": "عربي",
+  "english": "EN"
 }

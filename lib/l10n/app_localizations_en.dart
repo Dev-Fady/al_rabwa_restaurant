@@ -87,6 +87,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get availableLabel => 'Available';
 
   @override
+  String get workingHoursLabel => 'Working hours';
+
+  @override
+  String get locationRequiredLabel => 'Location';
+
+  @override
+  String get requiredLabel => 'Required';
+
+  @override
   String get onlinePaymentLabel => 'Online payment';
 
   @override
@@ -115,4 +124,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pageNotFound => 'Page not found';
+
+  @override
+  String get deliverTo => 'Deliver to';
+
+  @override
+  String get selectLocation => 'Select your location';
+
+  @override
+  String get searchFoodHint => 'What are you craving today?';
+
+  @override
+  String get arabic => 'عربي';
+
+  @override
+  String get english => 'EN';
 }

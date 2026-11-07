@@ -251,6 +251,24 @@ abstract class AppLocalizations {
   /// **'Available'**
   String get availableLabel;
 
+  /// No description provided for @workingHoursLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Working hours'**
+  String get workingHoursLabel;
+
+  /// No description provided for @locationRequiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationRequiredLabel;
+
+  /// No description provided for @requiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredLabel;
+
   /// No description provided for @onlinePaymentLabel.
   ///
   /// In en, this message translates to:
@@ -310,6 +328,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page not found'**
   String get pageNotFound;
+
+  /// No description provided for @deliverTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver to'**
+  String get deliverTo;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your location'**
+  String get selectLocation;
+
+  /// No description provided for @searchFoodHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you craving today?'**
+  String get searchFoodHint;
+
+  /// No description provided for @arabic.
+  ///
+  /// In en, this message translates to:
+  /// **'عربي'**
+  String get arabic;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'EN'**
+  String get english;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
