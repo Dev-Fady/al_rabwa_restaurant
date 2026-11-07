@@ -3,6 +3,7 @@ import 'package:al_rabwa_restaurant/core/routes/app_router.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_state.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
@@ -34,6 +35,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<StoreConfigCubit>(
           create: (context) => getIt<StoreConfigCubit>(),
         ),
+        BlocProvider<HomeCategoriesCubit>(
+          create: (context) => getIt<HomeCategoriesCubit>(),
+        ),
       ],
       child: BlocListener<SettingsCubit, SettingsState>(
         listenWhen: (previous, current) =>
@@ -41,9 +45,9 @@ class MyApp extends StatelessWidget {
         listener: (context, state) {
           // The backend localizes names and menu content, so reload the
           // storefront configuration in the newly selected language.
-          context.read<StoreConfigCubit>().load(
-            lang: state.locale.languageCode,
-          );
+          final lang = state.locale.languageCode;
+          context.read<StoreConfigCubit>().load(lang: lang);
+          context.read<HomeCategoriesCubit>().load(lang: lang);
         },
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, settingsState) {

@@ -1,8 +1,11 @@
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
+import 'package:al_rabwa_restaurant/features/home/domain/entities/menu_category.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
+import 'package:al_rabwa_restaurant/features/home/domain/repositories/menu_categories_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:dartz/dartz.dart';
@@ -10,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/categories_fixtures.dart';
 import 'helpers/settings_fixtures.dart';
 
 class _FakeRepository implements SettingsRepository {
@@ -31,6 +35,15 @@ class _FakeRepository implements SettingsRepository {
   }
 }
 
+class _FakeCategoriesRepository implements MenuCategoriesRepository {
+  @override
+  Future<Either<Failure, List<MenuCategory>>> fetchCategories({
+    String lang = 'ar',
+  }) async {
+    return Right(sampleCategories());
+  }
+}
+
 Future<StoreConfigCubit> _pumpHome(
   WidgetTester tester, {
   required _FakeRepository repository,
@@ -42,6 +55,8 @@ Future<StoreConfigCubit> _pumpHome(
 
   final cubit = StoreConfigCubit(repository);
   addTearDown(cubit.close);
+  final categoriesCubit = HomeCategoriesCubit(_FakeCategoriesRepository());
+  addTearDown(categoriesCubit.close);
 
   await tester.pumpWidget(
     MaterialApp(
@@ -55,10 +70,20 @@ Future<StoreConfigCubit> _pumpHome(
         ).copyWith(textScaler: TextScaler.linear(textScale)),
         child: child!,
       ),
-      home: BlocProvider.value(value: cubit, child: const HomeScreen()),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: cubit),
+          BlocProvider.value(value: categoriesCubit),
+        ],
+        child: const HomeScreen(),
+      ),
     ),
   );
-  await tester.pumpAndSettle();
+  // The category marquee scrolls continuously, so wait a fixed number of
+  // frames instead of `pumpAndSettle`.
+  await tester.pump();
+  await tester.pump();
+  await tester.pump();
   return cubit;
 }
 
@@ -163,7 +188,9 @@ void main() {
     repository.error = null;
     repository.result = sampleSettingsWithoutImages();
     await tester.tap(find.text('إعادة المحاولة'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
 
     expect(find.text('مشاوي على الفحم'), findsOneWidget);
     expect(find.text('إعادة المحاولة'), findsNothing);
@@ -186,9 +213,23 @@ void main() {
       200,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
 
     expect(find.text('تصفح المنيو'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('renders the menu categories under the banner', (tester) async {
+    await _pumpHome(
+      tester,
+      repository: _FakeRepository(result: sampleSettingsWithoutImages()),
+    );
+
+    expect(find.text('اكتشف المنيو'), findsOneWidget);
+    expect(find.text('أطباق ساخنة'), findsOneWidget);
+    expect(find.text('عرض الكل'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

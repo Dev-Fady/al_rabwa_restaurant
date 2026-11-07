@@ -3,6 +3,7 @@ import 'package:al_rabwa_restaurant/core/widget/app_network_image.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_categories_section.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_delivery_location_bar.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_header.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_hero_banner.dart';
@@ -154,6 +155,13 @@ class _HomeContentState extends State<_HomeContent> {
                           ],
                         const SizedBox(height: 18),
                       ],
+
+                      // 6. Menu categories carousel
+                      const SizedBox(height: 24),
+                      HomeCategoriesSection(
+                        onViewAll: () => context.go(AppRoutes.menu),
+                        onCategoryTap: (_) => context.go(AppRoutes.menu),
+                      ),
                     ],
                   ),
                 ),

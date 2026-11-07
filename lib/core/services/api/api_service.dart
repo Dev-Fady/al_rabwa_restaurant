@@ -13,4 +13,10 @@ abstract class ApiService {
     @Query('lang') String? lang,
     @Header('x-locale') String? xLocale,
   });
+
+  @GET(ApiConstants.categories)
+  Future<HttpResponse<dynamic>> getCategories({
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
 }

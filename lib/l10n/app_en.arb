@@ -42,6 +42,10 @@
   "deliverTo": "Deliver to",
   "selectLocation": "Select your location",
   "searchFoodHint": "What are you craving today?",
+  "homeCategoriesTitle": "Discover the menu",
+  "homeCategoriesViewAll": "View all",
+  "homeCategoriesHint": "Swipe the categories or tap one to open it",
+  "homeCategoriesError": "Couldn't load the menu categories.",
   "arabic": "عربي",
   "english": "EN"
 }

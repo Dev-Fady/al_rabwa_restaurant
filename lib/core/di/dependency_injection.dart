@@ -2,10 +2,14 @@ import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_hive.dart';
 import 'package:al_rabwa_restaurant/core/services/api/api_service.dart';
 import 'package:al_rabwa_restaurant/core/services/api/dio_config.dart';
+import 'package:al_rabwa_restaurant/features/home/data/datasources/menu_categories_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_local_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_remote_data_source.dart';
+import 'package:al_rabwa_restaurant/features/home/data/repositories/menu_categories_repository_impl.dart';
 import 'package:al_rabwa_restaurant/features/home/data/repositories/settings_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/home/domain/repositories/menu_categories_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:dio/dio.dart';
@@ -61,5 +65,19 @@ Future<void> setupGetIt() async {
 
   getIt.registerFactory<StoreConfigCubit>(
     () => StoreConfigCubit(getIt<SettingsRepository>()),
+  );
+
+  getIt.registerLazySingleton<MenuCategoriesRemoteDataSource>(
+    () => MenuCategoriesRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<MenuCategoriesRepository>(
+    () => MenuCategoriesRepositoryImpl(
+      remoteDataSource: getIt<MenuCategoriesRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerFactory<HomeCategoriesCubit>(
+    () => HomeCategoriesCubit(getIt<MenuCategoriesRepository>()),
   );
 }

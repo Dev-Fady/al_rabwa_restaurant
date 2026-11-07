@@ -42,6 +42,10 @@
   "deliverTo": "التوصيل إلى",
   "selectLocation": "حدّد موقعك",
   "searchFoodHint": "ماذا تشتهي اليوم؟",
+  "homeCategoriesTitle": "اكتشف المنيو",
+  "homeCategoriesViewAll": "عرض الكل",
+  "homeCategoriesHint": "اسحب الأقسام يمينًا ويسارًا أو اضغط على قسم لفتحه",
+  "homeCategoriesError": "تعذر تحميل أقسام المنيو.",
   "arabic": "عربي",
   "english": "EN"
 }
