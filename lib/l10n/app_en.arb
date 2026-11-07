@@ -1,3 +1,14 @@
 {
   "@@locale": "en",
+  "appTitle": "Al Rabwa Restaurant",
+  "navHome": "Home",
+  "navMenu": "Menu",
+  "navCart": "Cart",
+  "navOrders": "Orders",
+  "navStore": "Store",
+  "homeWelcomeTitle": "Welcome to Al Rabwa Restaurant",
+  "homeWelcomeSubtitle": "Pick your favorite dishes from the menu and enjoy a special dining experience.",
+  "sectionComingSoon": "Coming soon",
+  "loginTitle": "Sign in",
+  "pageNotFound": "Page not found"
 }

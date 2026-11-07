@@ -1,76 +1,109 @@
-import 'package:al_rabwa_restaurant/core/constants/app_keys.dart';
-import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
-import 'package:flutter/material.dart' hide Slider;
-// import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:al_rabwa_restaurant/core/layout/main_shell.dart';
+import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
+import 'package:al_rabwa_restaurant/features/shell/presentation/screens/section_placeholder_screen.dart';
+import 'package:al_rabwa_restaurant/features/splash/presentation/screens/splash_screen.dart';
+import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'app_routes.dart';
 
 class AppRouter {
+  AppRouter._();
+
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>();
 
-  static bool get _isLoggedIn {
-    try {
-      return CacheHelper.sharedPreferences.getBool(AppKeys.isLogin) ?? false;
-    } catch (_) {
-      // SharedPreferences not ready (e.g. widget tests): treat as logged out.
-      return false;
-    }
-  }
-
-  static bool get _isGuest {
-    try {
-      return CacheHelper.sharedPreferences.getBool(AppKeys.isGuest) ?? false;
-    } catch (_) {
-      return false;
-    }
-  }
-
-
-
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    // Cold start always lands on the splash; once its entrance animation
-    // finishes, the splash sends the user to home or login.
+    // Cold start always lands on the splash; the splash then opens home.
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: true,
-    // redirect: (context, state) {
-    //   final authenticated = _isLoggedIn || _isGuest;
-    //   final location = state.matchedLocation;
-    //   const authLocations = {
-    //     AppRoutes.login,
-    //     AppRoutes.signup,
-    //     AppRoutes.verifyOtp,
-    //     AppRoutes.forgotPassword,
-    //     AppRoutes.resetPassword,
-    //   };
-    //   // Let the splash play; it navigates to its destination when done.
-    //   if (location == AppRoutes.splash) return null;
-    //   if (!authenticated && !authLocations.contains(location)) {
-    //     return AppRoutes.login;
-    //   }
-    //   if (authenticated && location == AppRoutes.login) {
-    //     return AppRoutes.home;
-    //   }
-    //   return null;
-    // },
     routes: [
       GoRoute(
         path: AppRoutes.splash,
-        builder: (context, state) {
-        
-        },
+        builder: (context, state) => const SplashScreen(),
       ),
-    
-  ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text(
-          'الصفحة غير موجودة\n${state.uri.toString()}',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 18),
+      GoRoute(
+        path: AppRoutes.login,
+        builder: (context, state) => SectionPlaceholderScreen(
+          title: AppLocalizations.of(context)!.loginTitle,
+          icon: Icons.login,
         ),
       ),
-    ),
+      // Branch order MUST match `shellDestinations` and `AppBottomNavBar`.
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            MainShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.home,
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.menu,
+                builder: (context, state) => SectionPlaceholderScreen(
+                  title: AppLocalizations.of(context)!.navMenu,
+                  icon: Icons.restaurant_outlined,
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.cart,
+                builder: (context, state) => SectionPlaceholderScreen(
+                  title: AppLocalizations.of(context)!.navCart,
+                  icon: Icons.shopping_bag_outlined,
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.orders,
+                builder: (context, state) => SectionPlaceholderScreen(
+                  title: AppLocalizations.of(context)!.navOrders,
+                  icon: Icons.receipt_long_outlined,
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.store,
+                builder: (context, state) => SectionPlaceholderScreen(
+                  title: AppLocalizations.of(context)!.navStore,
+                  icon: Icons.storefront_outlined,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+    errorBuilder: (context, state) {
+      final l10n = AppLocalizations.of(context)!;
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              '${l10n.pageNotFound}\n${state.uri}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+        ),
+      );
+    },
   );
 }

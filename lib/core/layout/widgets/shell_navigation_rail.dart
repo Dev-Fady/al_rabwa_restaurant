@@ -1,7 +1,7 @@
+import 'package:al_rabwa_restaurant/core/layout/shell_destination.dart';
+import 'package:al_rabwa_restaurant/core/widget/app_bottom_nav_bar.dart';
+import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:wady_elmalekat/core/widget/app_bottom_nav_bar.dart';
-import 'package:wady_elmalekat/features/shell/presentation/models/shell_destination.dart';
-import 'package:wady_elmalekat/l10n/app_localizations.dart';
 
 /// Side navigation rail for laptop/desktop shells.
 ///
@@ -9,7 +9,7 @@ import 'package:wady_elmalekat/l10n/app_localizations.dart';
 /// and icons — only the presentation differs.
 ///
 /// Order MUST match the router branches and the bottom bar tabs:
-/// 0 cart, 1 categories, 2 home, 3 favorites, 4 account.
+/// 0 home, 1 menu, 2 cart, 3 orders, 4 store.
 class ShellNavigationRail extends StatelessWidget {
   const ShellNavigationRail({
     super.key,
@@ -27,40 +27,35 @@ class ShellNavigationRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final destinations = shellDestinations(AppLocalizations.of(context)!);
+    final scheme = Theme.of(context).colorScheme;
     return NavigationRail(
       extended: extended,
       minWidth: 76,
       minExtendedWidth: 220,
-      backgroundColor: AppBottomNavBar.backgroundColor,
+      backgroundColor: scheme.surface,
       selectedIndex: currentIndex,
       onDestinationSelected: onDestinationSelected,
       useIndicator: true,
-      indicatorColor: AppBottomNavBar.activeColor.withValues(alpha: 0.12),
-      selectedIconTheme: const IconThemeData(
-        color: AppBottomNavBar.activeColor,
-      ),
-      unselectedIconTheme: const IconThemeData(
-        color: AppBottomNavBar.inactiveColor,
-      ),
-      selectedLabelTextStyle: const TextStyle(
-        color: AppBottomNavBar.activeColor,
+      indicatorColor: scheme.primaryContainer,
+      selectedIconTheme: IconThemeData(color: scheme.primary),
+      unselectedIconTheme: IconThemeData(color: scheme.onSurfaceVariant),
+      selectedLabelTextStyle: TextStyle(
+        color: scheme.primary,
         fontWeight: FontWeight.w600,
         fontSize: 13,
       ),
-      unselectedLabelTextStyle: const TextStyle(
-        color: AppBottomNavBar.inactiveColor,
+      unselectedLabelTextStyle: TextStyle(
+        color: scheme.onSurfaceVariant,
         fontSize: 13,
       ),
       labelType: extended ? null : NavigationRailLabelType.all,
-      destinations: List.generate(destinations.length, (index) {
-        final selected = currentIndex == index;
-        final destination = destinations[index];
-        return NavigationRailDestination(
-          icon: Icon(selected ? destination.activeIcon : destination.icon),
-          selectedIcon: Icon(destination.activeIcon),
-          label: Text(destination.label, softWrap: false),
-        );
-      }),
+      destinations: [
+        for (final destination in destinations)
+          NavigationRailDestination(
+            icon: Icon(destination.icon),
+            label: Text(destination.label, softWrap: false),
+          ),
+      ],
     );
   }
 }

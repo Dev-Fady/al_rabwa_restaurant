@@ -11,7 +11,9 @@ class ApiErrorModel {
       code: json['code'] ?? json['status_code'] ?? json['statusCode'],
       message: json['message'],
       error: json['error'],
-      errors: json['errors'] is Map ? Map<String, dynamic>.from(json['errors']) : null,
+      errors: json['errors'] is Map
+          ? Map<String, dynamic>.from(json['errors'])
+          : null,
     );
   }
 

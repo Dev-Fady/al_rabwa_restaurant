@@ -1,11 +1,7 @@
-
+import 'package:al_rabwa_restaurant/core/layout/widgets/shell_navigation_rail.dart';
+import 'package:al_rabwa_restaurant/core/widget/app_bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:wady_elmalekat/core/layout/widgets/shell_navigation_rail.dart';
-import 'package:wady_elmalekat/core/widget/app_bottom_nav_bar.dart';
-import 'package:wady_elmalekat/features/cart/presentation/cubit/cart_cubit.dart';
-import 'package:wady_elmalekat/features/cart/presentation/cubit/cart_state.dart';
 
 class MainShell extends StatelessWidget {
   const MainShell({super.key, required this.navigationShell});
@@ -51,18 +47,14 @@ class _PhoneShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       body: navigationShell,
-      // Live cart badge (`GET /api/cart` through the shell-level cubit).
-      bottomNavigationBar: BlocSelector<CartCubit, CartState, int>(
-        selector: (state) => state.badgeCount,
-        builder: (context, cartBadgeCount) => AppBottomNavBar(
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) => navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          ),
-          cartBadgeCount: cartBadgeCount,
+      // The cart badge is wired here once the cart feature exposes its
+      // badge count; the bar itself already supports it.
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: navigationShell.currentIndex,
+        onTap: (index) => navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
         ),
       ),
     );
@@ -94,10 +86,10 @@ class _WideShell extends StatelessWidget {
               onDestinationSelected: onDestinationSelected,
               extended: extended,
             ),
-            const VerticalDivider(
+            VerticalDivider(
               width: 1,
               thickness: 1,
-              color: AppBottomNavBar.borderColor,
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
             Expanded(child: navigationShell),
           ],

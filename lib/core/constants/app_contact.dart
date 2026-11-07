@@ -1,2 +1,1 @@
-abstract final class AppContact {
-}
+abstract final class AppContact {}

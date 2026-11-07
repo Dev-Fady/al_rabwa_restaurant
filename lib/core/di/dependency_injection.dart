@@ -1,14 +1,18 @@
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
 import 'package:al_rabwa_restaurant/core/services/api/api_service.dart';
 import 'package:al_rabwa_restaurant/core/services/api/dio_config.dart';
+import 'package:al_rabwa_restaurant/features/presentation/cubit/settings_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 
-
 final getIt = GetIt.instance;
 
 Future<void> setupGetIt() async {
+  // Register the settings cubit first so the app can still build if storage
+  // initialization below fails.
+  getIt.registerFactory<SettingsCubit>(() => SettingsCubit());
+
   final cacheHelper = CacheHelper();
   await cacheHelper.init();
   getIt.registerSingleton<CacheHelper>(cacheHelper);
@@ -26,6 +30,4 @@ Future<void> setupGetIt() async {
   );
 
   getIt.registerLazySingleton<ApiService>(() => ApiService(getIt<Dio>()));
-
- 
 }

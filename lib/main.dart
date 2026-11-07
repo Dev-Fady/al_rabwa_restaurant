@@ -8,7 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await setupGetIt();
+  } catch (error) {
+    // Startup must still render the UI (e.g. storage unavailable in tests).
+    debugPrint('setupGetIt failed (non-fatal): $error');
+  }
   runApp(const MyApp());
 }
 
@@ -27,7 +34,8 @@ class MyApp extends StatelessWidget {
           builder: (context, state) {
             final bool isDark = state.darkModeEnabled;
             return MaterialApp.router(
-              title: 'wady_elmalekat',
+              onGenerateTitle: (context) =>
+                  AppLocalizations.of(context)!.appTitle,
               debugShowCheckedModeBanner: false,
               locale: state.locale,
               theme: AppTheme.light(),

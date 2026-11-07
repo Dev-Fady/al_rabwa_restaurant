@@ -1,5 +1,6 @@
 import 'package:al_rabwa_restaurant/core/error/api_error_model.dart';
 import 'package:dio/dio.dart';
+
 class ApiErrorHandler {
   static String handle(dynamic error) {
     if (error is DioException) {

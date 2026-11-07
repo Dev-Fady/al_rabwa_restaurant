@@ -1,4 +1,14 @@
 {
   "@@locale": "ar",
- 
+  "appTitle": "مطعم الربوة",
+  "navHome": "الرئيسية",
+  "navMenu": "المنيو",
+  "navCart": "السلة",
+  "navOrders": "طلباتي",
+  "navStore": "المتجر",
+  "homeWelcomeTitle": "أهلاً بك في مطعم الربوة",
+  "homeWelcomeSubtitle": "اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.",
+  "sectionComingSoon": "قريباً",
+  "loginTitle": "تسجيل الدخول",
+  "pageNotFound": "الصفحة غير موجودة"
 }

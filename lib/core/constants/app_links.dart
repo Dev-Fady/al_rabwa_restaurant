@@ -10,8 +10,7 @@ abstract final class AppLinks {
   static const String privacyPolicy = '';
 
   /// Arabic version of [privacyPolicy] (the page switches language via `lang`).
-  static const String privacyPolicyArabic =
-      '';
+  static const String privacyPolicyArabic = '';
 
   /// Returns the policy in the given app language.
   static String privacyPolicyFor(String languageCode) =>

@@ -1,5 +1,6 @@
 import 'package:al_rabwa_restaurant/core/error/api_error_handler.dart';
 import 'package:dio/dio.dart';
+
 abstract class Failure {
   final String message;
 

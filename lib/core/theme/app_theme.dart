@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
+import 'package:al_rabwa_restaurant/core/theme/store_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -6,15 +7,24 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData light() {
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.light.brandGreen,
+          brightness: Brightness.light,
+          surface: AppColors.light.surface,
+        ).copyWith(
+          primary: AppColors.light.brandGreen,
+          onPrimary: Colors.white,
+          primaryContainer: const Color(0xFFEDF6DA),
+          onPrimaryContainer: AppColors.light.brandGreen,
+          outlineVariant: const Color(0xFFECEBE3),
+        );
+
     final base = ThemeData(
       brightness: Brightness.light,
       useMaterial3: true,
       scaffoldBackgroundColor: AppColors.light.background,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.light.brandPink,
-        brightness: Brightness.light,
-        surface: AppColors.light.surface,
-      ),
+      colorScheme: scheme,
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.light.background,
         foregroundColor: AppColors.light.textPrimary,
@@ -26,11 +36,6 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        // backgroundColor: NavigationColors.light.barBackground,
-        // selectedItemColor: NavigationColors.light.itemActive,
-        // unselectedItemColor: NavigationColors.light.itemInactive,
-      ),
       extensions: const [AppColors.light, StoreColors.light],
     );
     return base.copyWith(
@@ -40,15 +45,24 @@ class AppTheme {
   }
 
   static ThemeData dark() {
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.dark.brandGreen,
+          brightness: Brightness.dark,
+          surface: AppColors.dark.surface,
+        ).copyWith(
+          primary: AppColors.dark.brandGreen,
+          onPrimary: const Color(0xFF0F1410),
+          primaryContainer: const Color(0xFF26331F),
+          onPrimaryContainer: AppColors.dark.brandGreen,
+          outlineVariant: const Color(0xFF2C352C),
+        );
+
     final base = ThemeData(
       brightness: Brightness.dark,
       useMaterial3: true,
       scaffoldBackgroundColor: AppColors.dark.background,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.dark.brandPink,
-        brightness: Brightness.dark,
-        surface: AppColors.dark.surface,
-      ),
+      colorScheme: scheme,
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.dark.background,
         foregroundColor: AppColors.dark.textPrimary,
@@ -59,11 +73,6 @@ class AppTheme {
         color: AppColors.dark.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        // backgroundColor: NavigationColors.dark.barBackground,
-        // selectedItemColor: NavigationColors.dark.itemActive,
-        // unselectedItemColor: NavigationColors.dark.itemInactive,
       ),
       extensions: const [AppColors.dark, StoreColors.dark],
     );
