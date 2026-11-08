@@ -1,7 +1,7 @@
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
 import 'package:al_rabwa_restaurant/core/theme/store_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   AppTheme._();
@@ -125,15 +125,21 @@ class AppTheme {
       ),
       extensions: const [AppColors.dark, StoreColors.dark],
     );
-    return base.copyWith(
-      textTheme: GoogleFonts.cairoTextTheme(base.textTheme),
-      primaryTextTheme: GoogleFonts.cairoTextTheme(base.primaryTextTheme),
-    );
+    // return base.copyWith(
+    //   textTheme: GoogleFonts.cairoTextTheme(base.textTheme),
+    //   primaryTextTheme: GoogleFonts.cairoTextTheme(base.primaryTextTheme),
+    // );
+    return base;
   }
 
   static TextStyle _titleStyle(Color color, String? fontFamily) {
-    return GoogleFonts.getFont(
-      _resolveFontFamily(fontFamily),
+    // return GoogleFonts.getFont(
+    //   _resolveFontFamily(fontFamily),
+    //   fontSize: 20,
+    //   fontWeight: FontWeight.w700,
+    //   color: color,
+    // );
+    return TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.w700,
       color: color,
@@ -143,13 +149,15 @@ class AppTheme {
   /// Google Fonts only contains a subset of families. Unknown values fall back
   /// to Cairo, the restaurant default.
   static TextTheme _textTheme(TextTheme base, String? fontFamily) {
-    return GoogleFonts.getTextTheme(_resolveFontFamily(fontFamily), base);
+    // return GoogleFonts.getTextTheme(_resolveFontFamily(fontFamily), base);
+    return base;
   }
 
-  static String _resolveFontFamily(String? fontFamily) {
-    final name = fontFamily?.trim() ?? '';
-    return GoogleFonts.asMap().containsKey(name) ? name : 'Cairo';
-  }
+  // static String _resolveFontFamily(String? fontFamily) {
+  //   final name = fontFamily?.trim() ?? '';
+  //   // return GoogleFonts.asMap().containsKey(name) ? name : 'Cairo';
+  //   return name.isNotEmpty ? name : 'Cairo';
+  // }
 
   /// `#RGB`, `#RRGGBB` and `#AARRGGBB` (with or without `#`).
   static Color _hexOr(String? value, Color fallback) {

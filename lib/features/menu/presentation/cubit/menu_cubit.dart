@@ -1,6 +1,7 @@
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/menu_category.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/menu_categories_repository.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_category_items.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/repositories/menu_items_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,6 +20,7 @@ class MenuCubit extends Cubit<MenuState> {
 
   final MenuCategoriesRepository _categoriesRepository;
   final MenuItemsRepository _itemsRepository;
+  final Map<String, MenuCategoryItems> _categoryItemsCache = {};
 
   /// Loads the menu the first time the tab is opened.
   Future<void> loadIfNeeded() async {
@@ -29,6 +31,10 @@ class MenuCubit extends Cubit<MenuState> {
   Future<void> load({String? lang, bool refresh = false}) async {
     final targetLang = lang ?? state.lang;
     if (state.isLoadingCategories && !refresh) return;
+
+    if (refresh || targetLang != state.lang) {
+      _categoryItemsCache.clear();
+    }
 
     emit(
       state.copyWith(
@@ -60,20 +66,24 @@ class MenuCubit extends Cubit<MenuState> {
           if (isClosed) return;
 
           final selected = _resolveSelection(categories);
+          final selectedId = selected?.id;
+          final cacheKey = selectedId != null ? '${targetLang}_$selectedId' : null;
+          final cached = cacheKey != null ? _categoryItemsCache[cacheKey] : null;
+
           emit(
             MenuState(
               categoriesStatus: MenuStatus.success,
-              itemsStatus: selected?.id == null
+              itemsStatus: selected?.id == null || cached != null
                   ? MenuStatus.success
                   : MenuStatus.loading,
               categories: List.unmodifiable(categories),
-              selectedCategory: selected,
+              selectedCategory: cached?.category ?? selected,
+              items: cached != null ? List.unmodifiable(cached.items) : const [],
               lang: targetLang,
             ),
           );
 
-          final selectedId = selected?.id;
-          if (selectedId != null) {
+          if (selectedId != null && cached == null) {
             await _loadItems(selectedId, lang: targetLang);
           }
         },
@@ -143,6 +153,20 @@ class MenuCubit extends Cubit<MenuState> {
     final categoryId = category.id;
     if (categoryId == null || categoryId == state.selectedCategory?.id) return;
 
+    final cacheKey = '${state.lang}_$categoryId';
+    final cached = _categoryItemsCache[cacheKey];
+    if (cached != null) {
+      emit(
+        state.copyWith(
+          selectedCategory: cached.category ?? category,
+          itemsStatus: MenuStatus.success,
+          items: List.unmodifiable(cached.items),
+          clearError: true,
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         selectedCategory: category,
@@ -205,14 +229,17 @@ class MenuCubit extends Cubit<MenuState> {
             errorMessage: failure.message,
           ),
         ),
-        (payload) => emit(
-          state.copyWith(
-            itemsStatus: MenuStatus.success,
-            items: List.unmodifiable(payload.items),
-            selectedCategory: payload.category ?? state.selectedCategory,
-            clearError: true,
-          ),
-        ),
+        (payload) {
+          _categoryItemsCache['${lang}_$categoryId'] = payload;
+          emit(
+            state.copyWith(
+              itemsStatus: MenuStatus.success,
+              items: List.unmodifiable(payload.items),
+              selectedCategory: payload.category ?? state.selectedCategory,
+              clearError: true,
+            ),
+          );
+        },
       );
     } on Failure catch (failure) {
       if (isClosed) return;

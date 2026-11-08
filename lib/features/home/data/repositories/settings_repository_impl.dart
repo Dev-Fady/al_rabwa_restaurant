@@ -42,6 +42,10 @@ class SettingsRepositoryImpl implements SettingsRepository {
     }
   }
 
+  RestaurantSettings? getCachedSettings({String lang = 'ar'}) {
+    return _readFromCache(lang);
+  }
+
   Either<Failure, RestaurantSettings> _readCacheOr(
     Failure failure,
     String lang,

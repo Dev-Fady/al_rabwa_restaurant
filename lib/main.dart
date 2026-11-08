@@ -15,6 +15,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Optimize Flutter's in-memory image cache to avoid evicting images
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 256 * 1024 * 1024; // 256 MB
+  PaintingBinding.instance.imageCache.maximumSize = 2000;
   try {
     await setupGetIt();
   } catch (error) {
