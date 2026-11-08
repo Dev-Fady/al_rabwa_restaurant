@@ -115,6 +115,97 @@ Future<StoreConfigCubit> _pumpHome(
   return cubit;
 }
 
+typedef _HomeRouterHarness = ({
+  MenuCubit menuCubit,
+  _FakeMenuItemsRepository itemsRepository,
+  GoRouter router,
+});
+
+/// Pumps the home page inside a small router with stubbed menu routes so
+/// navigation started from the home content can be asserted.
+Future<_HomeRouterHarness> _pumpHomeWithRouter(
+  WidgetTester tester, {
+  required RestaurantSettings settings,
+}) async {
+  await tester.binding.setSurfaceSize(const Size(390, 844));
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+
+  final storeCubit = StoreConfigCubit(_FakeRepository(result: settings));
+  addTearDown(storeCubit.close);
+  final categoriesCubit = HomeCategoriesCubit(_FakeCategoriesRepository());
+  addTearDown(categoriesCubit.close);
+  final itemsRepository = _FakeMenuItemsRepository();
+  final menuCubit = MenuCubit(_FakeCategoriesRepository(), itemsRepository);
+  addTearDown(menuCubit.close);
+
+  final router = GoRouter(
+    initialLocation: AppRoutes.home,
+    routes: [
+      GoRoute(
+        path: AppRoutes.home,
+        builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.menu,
+        builder: (context, state) => const Scaffold(body: Text('menu-screen')),
+      ),
+      GoRoute(
+        path: '/menu/item/:itemId',
+        builder: (context, state) =>
+            Scaffold(body: Text('item-${state.pathParameters['itemId']}')),
+      ),
+    ],
+  );
+  addTearDown(router.dispose);
+
+  await tester.pumpWidget(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: storeCubit),
+        BlocProvider.value(value: categoriesCubit),
+        BlocProvider.value(value: menuCubit),
+      ],
+      child: MaterialApp.router(
+        routerConfig: router,
+        locale: const Locale('ar'),
+        theme: AppTheme.light(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    ),
+  );
+  await tester.pump();
+  await tester.pump();
+  await tester.pump();
+
+  return (
+    menuCubit: menuCubit,
+    itemsRepository: itemsRepository,
+    router: router,
+  );
+}
+
+/// Settings with a single banner that links to [linkType]'s target.
+RestaurantSettings _settingsWithBanner({
+  required String linkType,
+  int? categoryId,
+  int? itemId,
+}) {
+  final base = sampleSettingsWithoutImages();
+  return base.copyWith(
+    home: base.home.copyWith(
+      banners: [
+        base.home.banners.first.copyWith(
+          linkType: linkType,
+          categoryId: categoryId,
+          itemId: itemId,
+          buttonText: 'جرّبه الآن',
+        ),
+      ],
+    ),
+  );
+}
+
 void main() {
   testWidgets('renders the restaurant content from the settings payload', (
     tester,
@@ -374,62 +465,49 @@ void main() {
   testWidgets('opens the menu on the section tapped in the carousel', (
     tester,
   ) async {
-    await tester.binding.setSurfaceSize(const Size(390, 844));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-
-    final storeCubit = StoreConfigCubit(
-      _FakeRepository(result: sampleSettingsWithoutImages()),
+    final harness = await _pumpHomeWithRouter(
+      tester,
+      settings: sampleSettingsWithoutImages(),
     );
-    addTearDown(storeCubit.close);
-    final categoriesCubit = HomeCategoriesCubit(_FakeCategoriesRepository());
-    addTearDown(categoriesCubit.close);
-    final itemsRepository = _FakeMenuItemsRepository();
-    final menuCubit = MenuCubit(_FakeCategoriesRepository(), itemsRepository);
-    addTearDown(menuCubit.close);
-
-    final router = GoRouter(
-      initialLocation: AppRoutes.home,
-      routes: [
-        GoRoute(
-          path: AppRoutes.home,
-          builder: (context, state) => const HomeScreen(),
-        ),
-        GoRoute(
-          path: AppRoutes.menu,
-          builder: (context, state) =>
-              const Scaffold(body: Text('menu-screen')),
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
-
-    await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: storeCubit),
-          BlocProvider.value(value: categoriesCubit),
-          BlocProvider.value(value: menuCubit),
-        ],
-        child: MaterialApp.router(
-          routerConfig: router,
-          locale: const Locale('ar'),
-          theme: AppTheme.light(),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      ),
-    );
-    await tester.pump();
-    await tester.pump();
-    await tester.pump();
 
     await tester.tap(find.text('مشاوي علي الفحم'));
     await tester.pump();
     await tester.pump();
 
     expect(find.text('menu-screen'), findsOneWidget);
-    expect(menuCubit.state.selectedCategory?.id, 11);
-    expect(itemsRepository.lastCategoryId, 11);
+    expect(harness.menuCubit.state.selectedCategory?.id, 11);
+    expect(harness.itemsRepository.lastCategoryId, 11);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('opens the banner section from its button', (tester) async {
+    final harness = await _pumpHomeWithRouter(
+      tester,
+      settings: _settingsWithBanner(linkType: 'category', categoryId: 13),
+    );
+
+    await tester.tap(find.text('جرّبه الآن'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('menu-screen'), findsOneWidget);
+    expect(harness.menuCubit.state.selectedCategory?.id, 13);
+    expect(harness.itemsRepository.lastCategoryId, 13);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('opens the banner dish from its button', (tester) async {
+    final harness = await _pumpHomeWithRouter(
+      tester,
+      settings: _settingsWithBanner(linkType: 'item', itemId: 36),
+    );
+
+    await tester.tap(find.text('جرّبه الآن'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('item-36'), findsOneWidget);
+    expect(harness.router.state.uri.path, AppRoutes.menuItemPath(36));
     expect(tester.takeException(), isNull);
   });
 }

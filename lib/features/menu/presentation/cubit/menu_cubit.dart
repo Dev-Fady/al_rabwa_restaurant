@@ -114,6 +114,31 @@ class MenuCubit extends Cubit<MenuState> {
     await selectCategory(category);
   }
 
+  /// Opens a section by id, for entry points that only carry a `category_id`
+  /// (home banners) instead of the whole category.
+  Future<void> openCategoryById(int categoryId) async {
+    final loaded = _categoryWithId(categoryId);
+    if (loaded != null) {
+      await openCategory(loaded);
+      return;
+    }
+
+    if (!state.hasLoaded) {
+      // The real category replaces this stub as soon as the list arrives, so
+      // the first request is already the one whose dishes are wanted.
+      emit(
+        state.copyWith(
+          selectedCategory: MenuCategory(id: categoryId, name: ''),
+        ),
+      );
+      await load();
+      if (isClosed) return;
+    }
+
+    final category = _categoryWithId(categoryId);
+    if (category != null) await selectCategory(category);
+  }
+
   Future<void> selectCategory(MenuCategory category) async {
     final categoryId = category.id;
     if (categoryId == null || categoryId == state.selectedCategory?.id) return;
@@ -144,6 +169,13 @@ class MenuCubit extends Cubit<MenuState> {
   }
 
   Future<void> refresh() => load(refresh: true);
+
+  MenuCategory? _categoryWithId(int categoryId) {
+    for (final category in state.categories) {
+      if (category.id == categoryId) return category;
+    }
+    return null;
+  }
 
   MenuCategory? _resolveSelection(List<MenuCategory> categories) {
     final selectedId = state.selectedCategory?.id;

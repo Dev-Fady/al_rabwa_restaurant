@@ -189,6 +189,8 @@ class _HomeBackgroundImage extends StatelessWidget {
   }
 }
 
+/// Follows a banner's `link_type`: its section, its dish, an external link, or
+/// the menu when the banner carries no target.
 void _openBanner(BuildContext context, HomeBanner banner) {
   if (banner.opensExternalUrl) {
     final uri = Uri.tryParse(banner.url.trim());
@@ -197,6 +199,21 @@ void _openBanner(BuildContext context, HomeBanner banner) {
       return;
     }
   }
+
+  final categoryId = banner.categoryId;
+  if (banner.linkType == 'category' && categoryId != null) {
+    final menuCubit = context.read<MenuCubit>();
+    context.go(AppRoutes.menu);
+    menuCubit.openCategoryById(categoryId);
+    return;
+  }
+
+  final itemId = banner.itemId;
+  if (banner.linkType == 'item' && itemId != null) {
+    context.go(AppRoutes.menuItemPath(itemId));
+    return;
+  }
+
   context.go(AppRoutes.menu);
 }
 

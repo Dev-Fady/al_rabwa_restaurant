@@ -50,12 +50,14 @@ class _FakeCategoriesRepository implements MenuCategoriesRepository {
 
 class _FakeItemsRepository implements MenuItemsRepository {
   int? lastCategoryId;
+  int calls = 0;
 
   @override
   Future<Either<Failure, MenuCategoryItems>> fetchItems({
     required int categoryId,
     String lang = 'ar',
   }) async {
+    calls++;
     lastCategoryId = categoryId;
     return const Right(MenuCategoryItems(items: []));
   }
@@ -133,6 +135,53 @@ void main() {
       expect(categoriesRepository.calls, 1);
       expect(cubit.state.selectedCategory?.id, 13);
       expect(itemsRepository.lastCategoryId, 13);
+      await cubit.close();
+    });
+
+    test('opens a section by id once the menu is loaded', () async {
+      final categoriesRepository = _FakeCategoriesRepository(
+        result: sampleCategories(),
+      );
+      final itemsRepository = _FakeItemsRepository();
+      final cubit = MenuCubit(categoriesRepository, itemsRepository);
+      await cubit.loadIfNeeded();
+
+      await cubit.openCategoryById(13);
+
+      expect(cubit.state.selectedCategory?.id, 13);
+      expect(itemsRepository.lastCategoryId, 13);
+      expect(categoriesRepository.calls, 1);
+      await cubit.close();
+    });
+
+    test('loads the requested section first when nothing is loaded', () async {
+      final categoriesRepository = _FakeCategoriesRepository(
+        result: sampleCategories(),
+      );
+      final itemsRepository = _FakeItemsRepository();
+      final cubit = MenuCubit(categoriesRepository, itemsRepository);
+
+      await cubit.openCategoryById(13);
+
+      expect(cubit.state.categories.length, sampleCategories().length);
+      expect(cubit.state.selectedCategory?.id, 13);
+      expect(cubit.state.selectedCategory?.name, sampleCategories()[2].name);
+      // Only the requested section's dishes were fetched.
+      expect(itemsRepository.calls, 1);
+      expect(itemsRepository.lastCategoryId, 13);
+      await cubit.close();
+    });
+
+    test('ignores an unknown section id', () async {
+      final categoriesRepository = _FakeCategoriesRepository(
+        result: sampleCategories(),
+      );
+      final cubit = MenuCubit(categoriesRepository, _FakeItemsRepository());
+      await cubit.loadIfNeeded();
+
+      await cubit.openCategoryById(999);
+
+      expect(cubit.state.selectedCategory?.id, 11);
       await cubit.close();
     });
   });
