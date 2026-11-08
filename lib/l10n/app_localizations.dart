@@ -386,6 +386,42 @@ abstract class AppLocalizations {
   /// **'Menu'**
   String get menuTitle;
 
+  /// No description provided for @menuCategoriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu sections'**
+  String get menuCategoriesTitle;
+
+  /// No description provided for @menuCategoriesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what you crave'**
+  String get menuCategoriesSubtitle;
+
+  /// No description provided for @menuCategoriesBackHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get menuCategoriesBackHome;
+
+  /// No description provided for @menuCategoriesHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All flavors in one place'**
+  String get menuCategoriesHeroTitle;
+
+  /// No description provided for @menuCategoriesHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse the {restaurant} menu ({count})'**
+  String menuCategoriesHeroSubtitle(String restaurant, int count);
+
+  /// No description provided for @menuCategoriesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No sections to show yet.'**
+  String get menuCategoriesEmpty;
+
   /// No description provided for @menuSearchHint.
   ///
   /// In en, this message translates to:

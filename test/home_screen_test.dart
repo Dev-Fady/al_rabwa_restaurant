@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
+import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/menu_category.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
@@ -7,11 +8,17 @@ import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_r
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_category_items.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item_details.dart';
+import 'package:al_rabwa_restaurant/features/menu/domain/repositories/menu_items_repository.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_cubit.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'helpers/categories_fixtures.dart';
 import 'helpers/settings_fixtures.dart';
@@ -41,6 +48,27 @@ class _FakeCategoriesRepository implements MenuCategoriesRepository {
     String lang = 'ar',
   }) async {
     return Right(sampleCategories());
+  }
+}
+
+class _FakeMenuItemsRepository implements MenuItemsRepository {
+  int? lastCategoryId;
+
+  @override
+  Future<Either<Failure, MenuCategoryItems>> fetchItems({
+    required int categoryId,
+    String lang = 'ar',
+  }) async {
+    lastCategoryId = categoryId;
+    return const Right(MenuCategoryItems(items: []));
+  }
+
+  @override
+  Future<Either<Failure, MenuItemDetails>> fetchItemDetails({
+    required int itemId,
+    String lang = 'ar',
+  }) async {
+    return Right(MenuItemDetails(item: MenuItem(id: itemId)));
   }
 }
 
@@ -340,6 +368,68 @@ void main() {
         .getSize(find.bySemanticsLabel('مشاوي على الفحم'))
         .width;
     expect(bannerWidth, lessThanOrEqualTo(760));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('opens the menu on the section tapped in the carousel', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final storeCubit = StoreConfigCubit(
+      _FakeRepository(result: sampleSettingsWithoutImages()),
+    );
+    addTearDown(storeCubit.close);
+    final categoriesCubit = HomeCategoriesCubit(_FakeCategoriesRepository());
+    addTearDown(categoriesCubit.close);
+    final itemsRepository = _FakeMenuItemsRepository();
+    final menuCubit = MenuCubit(_FakeCategoriesRepository(), itemsRepository);
+    addTearDown(menuCubit.close);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.home,
+      routes: [
+        GoRoute(
+          path: AppRoutes.home,
+          builder: (context, state) => const HomeScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.menu,
+          builder: (context, state) =>
+              const Scaffold(body: Text('menu-screen')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: storeCubit),
+          BlocProvider.value(value: categoriesCubit),
+          BlocProvider.value(value: menuCubit),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          locale: const Locale('ar'),
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+
+    await tester.tap(find.text('مشاوي علي الفحم'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('menu-screen'), findsOneWidget);
+    expect(menuCubit.state.selectedCategory?.id, 11);
+    expect(itemsRepository.lastCategoryId, 11);
     expect(tester.takeException(), isNull);
   });
 }

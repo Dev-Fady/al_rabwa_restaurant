@@ -155,6 +155,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menuTitle => 'Menu';
 
   @override
+  String get menuCategoriesTitle => 'Menu sections';
+
+  @override
+  String get menuCategoriesSubtitle => 'Choose what you crave';
+
+  @override
+  String get menuCategoriesBackHome => 'Back to home';
+
+  @override
+  String get menuCategoriesHeroTitle => 'All flavors in one place';
+
+  @override
+  String menuCategoriesHeroSubtitle(String restaurant, int count) {
+    return 'Browse the $restaurant menu ($count)';
+  }
+
+  @override
+  String get menuCategoriesEmpty => 'No sections to show yet.';
+
+  @override
   String get menuSearchHint => 'Search for your favorite dish';
 
   @override

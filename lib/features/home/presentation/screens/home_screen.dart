@@ -10,6 +10,7 @@ import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_head
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_order_type_selector.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_search_bar.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_status_body.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -149,8 +150,12 @@ class _HomeContentState extends State<_HomeContent> {
                       // 6. Menu categories carousel
                       const SizedBox(height: 24),
                       HomeCategoriesSection(
-                        onViewAll: () => context.go(AppRoutes.menu),
-                        onCategoryTap: (_) => context.go(AppRoutes.menu),
+                        onViewAll: () => context.go(AppRoutes.menuCategories),
+                        onCategoryTap: (category) {
+                          final menuCubit = context.read<MenuCubit>();
+                          context.go(AppRoutes.menu);
+                          menuCubit.openCategory(category);
+                        },
                       ),
                     ],
                   ),

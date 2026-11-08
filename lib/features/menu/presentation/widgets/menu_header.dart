@@ -6,17 +6,27 @@ import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Menu page header: title + restaurant name on the start side, language
+/// Menu page header: title + subtitle on the start side, language
 /// switcher and logo on the end side.
 class MenuHeader extends StatelessWidget {
   const MenuHeader({
     super.key,
     required this.restaurant,
     required this.restaurantName,
+    this.title,
+    this.subtitle,
   });
 
   final RestaurantBrand restaurant;
+
+  /// Defaults to the restaurant name shown under the menu title.
   final String restaurantName;
+
+  /// Page title, e.g. "المنيو" or "أقسام المنيو".
+  final String? title;
+
+  /// Line under the title; defaults to [restaurantName].
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -34,17 +44,17 @@ class MenuHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              l10n.menuTitle,
-              style: theme.textTheme.headlineMedium?.copyWith(
+              title ?? l10n.menuTitle,
+              style: theme.textTheme.headlineSmall?.copyWith(
                 color: context.appColors.brandGreen,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -0.6,
+                fontWeight: FontWeight.w700,
+                // letterSpacing: -0.6,
                 height: 1.1,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              restaurantName,
+              subtitle ?? restaurantName,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,

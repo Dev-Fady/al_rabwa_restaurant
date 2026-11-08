@@ -15,6 +15,10 @@ class AppRoutes {
   /// Nested go_router paths must stay relative to the parent route.
   static const String menuItemSegment = 'item/:itemId';
 
+  /// Every menu section as a card grid, also inside the menu branch.
+  static const String menuCategoriesSegment = 'categories';
+  static const String menuCategories = '/menu/categories';
+
   static String menuItemPath(int itemId) => '/menu/item/$itemId';
   static const String cart = '/cart';
   static const String orders = '/orders';

@@ -99,6 +99,21 @@ class MenuCubit extends Cubit<MenuState> {
     }
   }
 
+  /// Opens [category] when it is tapped outside the menu tab (home carousel or
+  /// the "all sections" page).
+  Future<void> openCategory(MenuCategory category) async {
+    if (!state.hasLoaded) {
+      // Preselect so the very first load goes straight to the tapped section
+      // instead of fetching the dishes of the default one.
+      if (category.id != null) {
+        emit(state.copyWith(selectedCategory: category));
+      }
+      await load();
+    }
+    if (isClosed) return;
+    await selectCategory(category);
+  }
+
   Future<void> selectCategory(MenuCategory category) async {
     final categoryId = category.id;
     if (categoryId == null || categoryId == state.selectedCategory?.id) return;

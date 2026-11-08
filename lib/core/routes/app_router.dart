@@ -4,6 +4,7 @@ import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/item_details_screen.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_categories_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_screen.dart';
 import 'package:al_rabwa_restaurant/features/shell/presentation/screens/section_placeholder_screen.dart';
 import 'package:al_rabwa_restaurant/features/splash/presentation/screens/splash_screen.dart';
@@ -54,6 +55,10 @@ class AppRouter {
                 path: AppRoutes.menu,
                 builder: (context, state) => const MenuScreen(),
                 routes: [
+                  GoRoute(
+                    path: AppRoutes.menuCategoriesSegment,
+                    builder: (context, state) => const MenuCategoriesScreen(),
+                  ),
                   GoRoute(
                     path: AppRoutes.menuItemSegment,
                     builder: (context, state) {

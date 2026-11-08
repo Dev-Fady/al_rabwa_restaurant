@@ -48,6 +48,18 @@
   "homeCategoriesHint": "Swipe the categories or tap one to open it",
   "homeCategoriesError": "Couldn't load the menu categories.",
   "menuTitle": "Menu",
+  "menuCategoriesTitle": "Menu sections",
+  "menuCategoriesSubtitle": "Choose what you crave",
+  "menuCategoriesBackHome": "Back to home",
+  "menuCategoriesHeroTitle": "All flavors in one place",
+  "menuCategoriesHeroSubtitle": "Browse the {restaurant} menu ({count})",
+  "@menuCategoriesHeroSubtitle": {
+    "placeholders": {
+      "restaurant": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "menuCategoriesEmpty": "No sections to show yet.",
   "menuSearchHint": "Search for your favorite dish",
   "clearSearch": "Clear search",
   "menuItemsCount": "{count, plural, =0{No items} one{1 item} other{{count} items}}",

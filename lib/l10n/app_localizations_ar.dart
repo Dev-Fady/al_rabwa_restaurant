@@ -156,6 +156,26 @@ class AppLocalizationsAr extends AppLocalizations {
   String get menuTitle => 'المنيو';
 
   @override
+  String get menuCategoriesTitle => 'أقسام المنيو';
+
+  @override
+  String get menuCategoriesSubtitle => 'اختر ما تشتهيه';
+
+  @override
+  String get menuCategoriesBackHome => 'العودة إلى الرئيسية';
+
+  @override
+  String get menuCategoriesHeroTitle => 'جميع النكهات في مكان واحد';
+
+  @override
+  String menuCategoriesHeroSubtitle(String restaurant, int count) {
+    return 'تصفّح قائمة مطعم $restaurant ($count)';
+  }
+
+  @override
+  String get menuCategoriesEmpty => 'لا توجد أقسام لعرضها حالياً.';
+
+  @override
   String get menuSearchHint => 'ابحث عن طبقك المفضل';
 
   @override
