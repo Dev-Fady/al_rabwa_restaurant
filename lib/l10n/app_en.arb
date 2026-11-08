@@ -12,6 +12,7 @@
   "storeOpenShort": "Open",
   "storeClosed": "Currently closed",
   "orderStatus": "Order status",
+  "storeInfoTitle": "Restaurant info",
   "orderOptionsTitle": "Order options",
   "browseMenu": "Browse the menu",
   "orderNow": "Order now",

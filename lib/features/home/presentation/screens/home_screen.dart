@@ -5,8 +5,8 @@ import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_confi
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_categories_section.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_delivery_location_bar.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_banner_carousel.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_header.dart';
-import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_hero_banner.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_order_type_selector.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_search_bar.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_status_body.dart';
@@ -136,23 +136,13 @@ class _HomeContentState extends State<_HomeContent> {
                       HomeSearchBar(onTap: () => context.go(AppRoutes.menu)),
                       const SizedBox(height: 18),
 
-                      // 5. Promotional Hero Banners
+                      // 5. Promotional hero banners (swipeable, with dots).
                       if (settings.home.showBanner) ...[
-                        if (banners.isEmpty)
-                          HomeHeroBanner(
-                            banner: null,
-                            restaurant: settings.restaurant,
-                            onTap: () => context.go(AppRoutes.menu),
-                          )
-                        else
-                          for (var i = 0; i < banners.length; i++) ...[
-                            if (i > 0) const SizedBox(height: 12),
-                            HomeHeroBanner(
-                              banner: banners[i],
-                              restaurant: settings.restaurant,
-                              onTap: () => _openBanner(context, banners[i]),
-                            ),
-                          ],
+                        HomeBannerCarousel(
+                          banners: banners,
+                          restaurant: settings.restaurant,
+                          onBannerTap: (banner) => _openBanner(context, banner),
+                        ),
                         const SizedBox(height: 18),
                       ],
 

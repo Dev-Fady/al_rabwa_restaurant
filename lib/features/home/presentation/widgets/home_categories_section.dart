@@ -88,7 +88,7 @@ class _CategoriesHeader extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.start,
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: theme.textTheme.titleMedium?.copyWith(
             color: context.appColors.titleColor,
             fontWeight: FontWeight.w900,
             letterSpacing: -0.4,
@@ -109,8 +109,8 @@ class _CategoriesHeader extends StatelessWidget {
                 AppLocalizations.of(context)!.homeCategoriesViewAll,
                 style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.w600,
+                  // decoration: TextDecoration.underline,
                   decorationThickness: 1.4,
                 ),
               ),

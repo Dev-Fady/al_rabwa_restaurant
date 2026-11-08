@@ -1,7 +1,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'https://al-rabwah.smartmenues.com/api/';
+  static const String baseUrl = 'https://sync2027.smartmenues.com/api/';
 
   static const String user = 'user';
   static const String deleteAccount = 'user/delete';

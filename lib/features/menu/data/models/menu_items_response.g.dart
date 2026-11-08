@@ -65,7 +65,7 @@ MenuItemModel _$MenuItemModelFromJson(Map<String, dynamic> json) =>
       video: json['video'] as String?,
       hasLargePhoto: json['has_large_photo'] as bool?,
       soldByWeight: json['sold_by_weight'] as bool?,
-      weight: json['weight'] as num?,
+      weight: _weightFromJson(json['weight']),
       options: json['options'] as List<dynamic>?,
       addons: json['addons'] as List<dynamic>?,
     );

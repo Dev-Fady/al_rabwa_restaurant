@@ -188,6 +188,42 @@ void main() {
       expect(payload.items, isEmpty);
     });
 
+    test('parses dishes sold by weight that expose a range', () {
+      final payload = MenuItemsResponse.fromJson(
+        menuItemsPayloadWithWeightRange(),
+      ).toEntity();
+
+      expect(payload.items, hasLength(2));
+
+      final mixedGrill = payload.items.first;
+      expect(mixedGrill.name, 'مشاوي مشكلة');
+      expect(mixedGrill.price, 39);
+      expect(mixedGrill.soldByWeight, isTrue);
+      expect(mixedGrill.weight, 0.25);
+      expect(mixedGrill.hasOptions, isTrue);
+      expect(mixedGrill.hasAddons, isTrue);
+
+      final chicken = payload.items.last;
+      expect(chicken.soldByWeight, isFalse);
+      expect(chicken.weight, isNull);
+      expect(chicken.hasOptions, isFalse);
+      expect(chicken.hasAddons, isTrue);
+
+      expect(payload.category?.displayStyle, CategoryDisplayStyle.grid);
+    });
+
+    test('keeps a numeric weight payload working', () {
+      final item = MenuItemModel.fromJson({
+        'id': 1,
+        'price': 10,
+        'sold_by_weight': true,
+        'weight': 2.5,
+      }).toEntity();
+
+      expect(item.soldByWeight, isTrue);
+      expect(item.weight, 2.5);
+    });
+
     test('keeps safe defaults for missing item fields', () {
       final item = const MenuItemModel(name: '  ').toEntity();
 

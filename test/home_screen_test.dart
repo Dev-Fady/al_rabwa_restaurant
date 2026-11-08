@@ -221,6 +221,102 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('swipes between promo banners and updates the dots', (
+    tester,
+  ) async {
+    final base = sampleSettingsWithoutImages();
+    final first = base.home.banners.first;
+    final settings = base.copyWith(
+      home: base.home.copyWith(
+        banners: [
+          first,
+          first.copyWith(
+            id: 4,
+            title: 'طازج من البحر',
+            subtitle: 'روبيان مشوي بالليمون والثوم',
+          ),
+        ],
+      ),
+    );
+
+    await _pumpHome(tester, repository: _FakeRepository(result: settings));
+
+    expect(find.text('مشاوي على الفحم'), findsOneWidget);
+    expect(find.byKey(const ValueKey('home-banner-dot-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey('home-banner-dot-1')), findsOneWidget);
+    // The active dot is the wider lime pill.
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-dot-0'))).width,
+      18,
+    );
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-dot-1'))).width,
+      6,
+    );
+
+    // In RTL the next page sits to the left, so swipe towards the start.
+    await tester.drag(find.byType(PageView), const Offset(350, 0));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('طازج من البحر'), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-dot-0'))).width,
+      6,
+    );
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-dot-1'))).width,
+      18,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('advances the promo banner automatically', (tester) async {
+    final base = sampleSettingsWithoutImages();
+    final first = base.home.banners.first;
+    final settings = base.copyWith(
+      home: base.home.copyWith(
+        banners: [
+          first,
+          first.copyWith(
+            id: 4,
+            title: 'طازج من البحر',
+            subtitle: 'روبيان مشوي بالليمون والثوم',
+          ),
+        ],
+      ),
+    );
+
+    await _pumpHome(tester, repository: _FakeRepository(result: settings));
+
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-dot-0'))).width,
+      18,
+    );
+
+    // 4s on screen + the slide animation.
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(find.text('طازج من البحر'), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-dot-1'))).width,
+      18,
+    );
+
+    // Wraps back to the first banner.
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-dot-0'))).width,
+      18,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('renders the menu categories under the banner', (tester) async {
     await _pumpHome(
       tester,

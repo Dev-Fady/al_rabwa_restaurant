@@ -105,7 +105,12 @@ class MenuItemModel {
   @JsonKey(name: 'sold_by_weight')
   final bool? soldByWeight;
 
-  final num? weight;
+  /// The live API sends either a plain number or, for dishes sold by weight,
+  /// a selectable range such as `{"min": 0.25, "max": 10, "step": 0.25}`.
+  /// The entity keeps the starting weight, so the range's `min` is used.
+  @JsonKey(name: 'weight', fromJson: _weightFromJson)
+  final double? weight;
+
   final List<dynamic>? options;
   final List<dynamic>? addons;
 
@@ -142,8 +147,20 @@ class MenuItemModel {
     video: video ?? '',
     hasLargePhoto: hasLargePhoto ?? false,
     soldByWeight: soldByWeight ?? false,
-    weight: weight?.toDouble(),
+    weight: weight,
     hasOptions: (options ?? const []).isNotEmpty,
     hasAddons: (addons ?? const []).isNotEmpty,
   );
+}
+
+/// Accepts both shapes the API uses for `weight`: a plain number or the
+/// `{min, max, step}` range of dishes sold by weight.
+double? _weightFromJson(Object? value) {
+  if (value is num) return value.toDouble();
+  if (value is Map) {
+    final min = value['min'];
+    if (min is num) return min.toDouble();
+  }
+  if (value is String) return double.tryParse(value.trim());
+  return null;
 }

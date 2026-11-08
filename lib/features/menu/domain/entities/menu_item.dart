@@ -34,6 +34,8 @@ class MenuItem {
   final String video;
   final bool hasLargePhoto;
   final bool soldByWeight;
+
+  /// Starting weight for dishes sold by weight; `null` otherwise.
   final double? weight;
   final bool hasOptions;
   final bool hasAddons;

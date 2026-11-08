@@ -83,6 +83,64 @@ Map<String, dynamic> itemDetailsPayload({
   };
 }
 
+/// Payload reported for `GET /api/categories/6/items?lang=ar`, where the
+/// dishes are sold by weight and expose a selectable range instead of `null`.
+Map<String, dynamic> menuItemsPayloadWithWeightRange() {
+  return {
+    'data': [
+      {
+        'id': 31,
+        'category_id': 6,
+        'name': 'مشاوي مشكلة',
+        'description': 'تشكيلة من الكباب والشيش طاووق والكفتة على الفحم.',
+        'price': 39,
+        'compare_at_price': null,
+        'image':
+            'https://sync2027.smartmenues.com/storage/restaurants/1/demo/mixed.jpg',
+        'video':
+            'restaurants/1/items/HnmuL469gtXTNthitYxLyKKatsOr9ZVaBqmpxuHC.mp4',
+        'has_large_photo': false,
+        'sold_by_weight': true,
+        'weight': {'min': 0.25, 'max': 10, 'step': 0.25},
+        'options': [
+          {'id': 7, 'name': 'نفر واحد', 'price': 0},
+          {'id': 8, 'name': 'نفرين', 'price': 30},
+        ],
+        'addons': [
+          {'id': 34, 'name': 'إضافة أرز', 'price': 5, 'image': null},
+          {'id': 35, 'name': 'إضافة صوص', 'price': 3, 'image': null},
+          {'id': 36, 'name': 'إضافة خبز', 'price': 2, 'image': null},
+        ],
+      },
+      {
+        'id': 32,
+        'category_id': 6,
+        'name': 'دجاج مسحب',
+        'description': 'دجاج متبّل ومشوي على الفحم، يقدم مع الثومية.',
+        'price': 35,
+        'compare_at_price': null,
+        'image':
+            'https://sync2027.smartmenues.com/storage/restaurants/1/demo/chicken.jpg',
+        'video': null,
+        'has_large_photo': false,
+        'sold_by_weight': false,
+        'weight': null,
+        'options': <dynamic>[],
+        'addons': [
+          {'id': 4, 'name': 'إضافة أرز', 'price': 5, 'image': null},
+        ],
+      },
+    ],
+    'category': {
+      'id': 6,
+      'name': 'مشاوي',
+      'image':
+          'https://sync2027.smartmenues.com/storage/restaurants/1/demo/kebab.jpg',
+      'display_style': 'grid',
+    },
+  };
+}
+
 /// Payload copied from `GET /api/categories/11/items?lang=ar` (one item).
 Map<String, dynamic> menuItemsPayloadWithImages() {
   return {
