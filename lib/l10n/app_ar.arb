@@ -91,6 +91,25 @@
       "price": {"type": "String"}
     }
   },
+  "itemDetailsChooseOne": "اختر واحدًا",
+  "itemDetailsAddons": "إضافات اختيارية",
+  "itemDetailsWeight": "الوزن",
+  "itemDetailsWeightHint": "من {min} إلى {max} كجم",
+  "@itemDetailsWeightHint": {
+    "placeholders": {
+      "min": {"type": "String"},
+      "max": {"type": "String"}
+    }
+  },
+  "itemDetailsWeightValue": "{value} كجم",
+  "@itemDetailsWeightValue": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "itemDetailsPerKg": "/كجم",
+  "itemDetailsVideo": "فيديو",
+  "itemDetailsPhoto": "صورة",
   "arabic": "عربي",
   "english": "EN"
 }

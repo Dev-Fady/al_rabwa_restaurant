@@ -142,6 +142,19 @@ Map<String, dynamic> menuItemsPayloadWithWeightRange() {
 }
 
 /// Payload copied from `GET /api/categories/11/items?lang=ar` (one item).
+/// The weight-range dish of [menuItemsPayloadWithWeightRange], wrapped in the
+/// single-dish envelope used by `GET /api/items/{id}`.
+Map<String, dynamic> weightedItemDetailsPayload({String? image = ''}) {
+  final dish = Map<String, dynamic>.from(
+    (menuItemsPayloadWithWeightRange()['data'] as List).first
+        as Map<String, dynamic>,
+  );
+  dish['image'] = image;
+  dish['category'] = {'id': 6, 'name': 'مشاوي'};
+
+  return {'success': true, 'data': dish};
+}
+
 Map<String, dynamic> menuItemsPayloadWithImages() {
   return {
     'data': [

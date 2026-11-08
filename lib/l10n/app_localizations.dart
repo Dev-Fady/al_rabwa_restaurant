@@ -548,6 +548,54 @@ abstract class AppLocalizations {
   /// **'Add to cart - {price}'**
   String itemDetailsAddToCartPrice(String price);
 
+  /// No description provided for @itemDetailsChooseOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one'**
+  String get itemDetailsChooseOne;
+
+  /// No description provided for @itemDetailsAddons.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional add-ons'**
+  String get itemDetailsAddons;
+
+  /// No description provided for @itemDetailsWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get itemDetailsWeight;
+
+  /// No description provided for @itemDetailsWeightHint.
+  ///
+  /// In en, this message translates to:
+  /// **'From {min} to {max} kg'**
+  String itemDetailsWeightHint(String min, String max);
+
+  /// No description provided for @itemDetailsWeightValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kg'**
+  String itemDetailsWeightValue(String value);
+
+  /// No description provided for @itemDetailsPerKg.
+  ///
+  /// In en, this message translates to:
+  /// **'/kg'**
+  String get itemDetailsPerKg;
+
+  /// No description provided for @itemDetailsVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get itemDetailsVideo;
+
+  /// No description provided for @itemDetailsPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get itemDetailsPhoto;
+
   /// No description provided for @arabic.
   ///
   /// In en, this message translates to:

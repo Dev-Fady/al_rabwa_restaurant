@@ -107,12 +107,11 @@ class MenuItemModel {
 
   /// The live API sends either a plain number or, for dishes sold by weight,
   /// a selectable range such as `{"min": 0.25, "max": 10, "step": 0.25}`.
-  /// The entity keeps the starting weight, so the range's `min` is used.
   @JsonKey(name: 'weight', fromJson: _weightFromJson)
-  final double? weight;
+  final MenuItemWeightModel? weight;
 
-  final List<dynamic>? options;
-  final List<dynamic>? addons;
+  final List<MenuItemOptionModel>? options;
+  final List<MenuItemAddonModel>? addons;
 
   const MenuItemModel({
     this.id,
@@ -147,20 +146,108 @@ class MenuItemModel {
     video: video ?? '',
     hasLargePhoto: hasLargePhoto ?? false,
     soldByWeight: soldByWeight ?? false,
-    weight: weight,
-    hasOptions: (options ?? const []).isNotEmpty,
-    hasAddons: (addons ?? const []).isNotEmpty,
+    weightRange: weight?.toEntity(),
+    options: [
+      for (final option in options ?? const <MenuItemOptionModel>[])
+        option.toEntity(),
+    ],
+    addons: [
+      for (final addon in addons ?? const <MenuItemAddonModel>[])
+        addon.toEntity(),
+    ],
   );
+}
+
+/// One portion choice of a dish, e.g. `{"id": 8, "name": "نفرين", "price": 30}`.
+@JsonSerializable()
+class MenuItemOptionModel {
+  final int? id;
+  final String? name;
+  final num? price;
+
+  const MenuItemOptionModel({this.id, this.name, this.price});
+
+  factory MenuItemOptionModel.fromJson(Map<String, dynamic> json) =>
+      _$MenuItemOptionModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MenuItemOptionModelToJson(this);
+
+  MenuItemOption toEntity() => MenuItemOption(
+    id: id,
+    name: name?.trim() ?? '',
+    price: (price ?? 0).toDouble(),
+  );
+}
+
+/// An extra added to a dish, e.g. `{"id": 34, "name": "إضافة أرز", "price": 5}`.
+@JsonSerializable()
+class MenuItemAddonModel {
+  final int? id;
+  final String? name;
+  final num? price;
+  final String? image;
+
+  const MenuItemAddonModel({this.id, this.name, this.price, this.image});
+
+  factory MenuItemAddonModel.fromJson(Map<String, dynamic> json) =>
+      _$MenuItemAddonModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MenuItemAddonModelToJson(this);
+
+  MenuItemAddon toEntity() => MenuItemAddon(
+    id: id,
+    name: name?.trim() ?? '',
+    price: (price ?? 0).toDouble(),
+    image: image?.trim() ?? '',
+  );
+}
+
+/// The `{min, max, step}` range of dishes sold by weight.
+@JsonSerializable()
+class MenuItemWeightModel {
+  final num? min;
+  final num? max;
+  final num? step;
+
+  const MenuItemWeightModel({this.min, this.max, this.step});
+
+  factory MenuItemWeightModel.fromJson(Map<String, dynamic> json) =>
+      _$MenuItemWeightModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MenuItemWeightModelToJson(this);
+
+  MenuItemWeight? toEntity() {
+    final minValue = min?.toDouble();
+    if (minValue == null || minValue <= 0) return null;
+    final maxValue = max?.toDouble() ?? minValue;
+    final stepValue = step?.toDouble() ?? minValue;
+
+    return MenuItemWeight(
+      min: minValue,
+      max: maxValue < minValue ? minValue : maxValue,
+      step: stepValue <= 0 ? minValue : stepValue,
+    );
+  }
 }
 
 /// Accepts both shapes the API uses for `weight`: a plain number or the
 /// `{min, max, step}` range of dishes sold by weight.
-double? _weightFromJson(Object? value) {
-  if (value is num) return value.toDouble();
-  if (value is Map) {
-    final min = value['min'];
-    if (min is num) return min.toDouble();
+MenuItemWeightModel? _weightFromJson(Object? value) {
+  if (value is num) {
+    return MenuItemWeightModel(min: value, max: value, step: value);
   }
-  if (value is String) return double.tryParse(value.trim());
+  if (value is Map) {
+    return MenuItemWeightModel(
+      min: value['min'] is num ? value['min'] as num : null,
+      max: value['max'] is num ? value['max'] as num : null,
+      step: value['step'] is num ? value['step'] as num : null,
+    );
+  }
+  if (value is String) {
+    final parsed = double.tryParse(value.trim());
+    return parsed == null
+        ? null
+        : MenuItemWeightModel(min: parsed, max: parsed, step: parsed);
+  }
   return null;
 }

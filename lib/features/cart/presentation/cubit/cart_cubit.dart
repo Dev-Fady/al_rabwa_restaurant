@@ -6,8 +6,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CartCubit extends Cubit<Cart> {
   CartCubit() : super(const Cart());
 
-  void add(MenuItem item, {int quantity = 1, String notes = ''}) {
-    emit(state.add(item, quantity: quantity, notes: notes));
+  void add(
+    MenuItem item, {
+    int quantity = 1,
+    String notes = '',
+    MenuItemOption? option,
+    List<MenuItemAddon> addons = const [],
+    double weight = 1,
+  }) {
+    emit(
+      state.add(
+        item,
+        quantity: quantity,
+        notes: notes,
+        option: option,
+        addons: addons,
+        weight: weight,
+      ),
+    );
   }
 
   void increment(MenuItem item) => emit(state.increment(item));

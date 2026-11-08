@@ -200,14 +200,33 @@ void main() {
       expect(mixedGrill.price, 39);
       expect(mixedGrill.soldByWeight, isTrue);
       expect(mixedGrill.weight, 0.25);
+      expect(mixedGrill.weightRange?.min, 0.25);
+      expect(mixedGrill.weightRange?.max, 10);
+      expect(mixedGrill.weightRange?.step, 0.25);
+      expect(mixedGrill.weightRange?.choices.first, 0.25);
+      expect(mixedGrill.weightRange?.choices, hasLength(40));
       expect(mixedGrill.hasOptions, isTrue);
+      expect(mixedGrill.options.map((option) => option.name), [
+        'نفر واحد',
+        'نفرين',
+      ]);
+      expect(mixedGrill.options.last.price, 30);
       expect(mixedGrill.hasAddons, isTrue);
+      expect(mixedGrill.addons.map((addon) => addon.name), [
+        'إضافة أرز',
+        'إضافة صوص',
+        'إضافة خبز',
+      ]);
+      expect(mixedGrill.addons.first.price, 5);
+      expect(mixedGrill.hasVideo, isTrue);
 
       final chicken = payload.items.last;
       expect(chicken.soldByWeight, isFalse);
       expect(chicken.weight, isNull);
+      expect(chicken.hasWeightRange, isFalse);
       expect(chicken.hasOptions, isFalse);
       expect(chicken.hasAddons, isTrue);
+      expect(chicken.addons.single.name, 'إضافة أرز');
 
       expect(payload.category?.displayStyle, CategoryDisplayStyle.grid);
     });

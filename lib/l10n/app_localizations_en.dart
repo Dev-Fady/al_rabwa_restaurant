@@ -250,6 +250,34 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get itemDetailsChooseOne => 'Choose one';
+
+  @override
+  String get itemDetailsAddons => 'Optional add-ons';
+
+  @override
+  String get itemDetailsWeight => 'Weight';
+
+  @override
+  String itemDetailsWeightHint(String min, String max) {
+    return 'From $min to $max kg';
+  }
+
+  @override
+  String itemDetailsWeightValue(String value) {
+    return '$value kg';
+  }
+
+  @override
+  String get itemDetailsPerKg => '/kg';
+
+  @override
+  String get itemDetailsVideo => 'Video';
+
+  @override
+  String get itemDetailsPhoto => 'Photo';
+
+  @override
   String get arabic => 'عربي';
 
   @override

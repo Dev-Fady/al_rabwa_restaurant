@@ -254,6 +254,34 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get itemDetailsChooseOne => 'اختر واحدًا';
+
+  @override
+  String get itemDetailsAddons => 'إضافات اختيارية';
+
+  @override
+  String get itemDetailsWeight => 'الوزن';
+
+  @override
+  String itemDetailsWeightHint(String min, String max) {
+    return 'من $min إلى $max كجم';
+  }
+
+  @override
+  String itemDetailsWeightValue(String value) {
+    return '$value كجم';
+  }
+
+  @override
+  String get itemDetailsPerKg => '/كجم';
+
+  @override
+  String get itemDetailsVideo => 'فيديو';
+
+  @override
+  String get itemDetailsPhoto => 'صورة';
+
+  @override
   String get arabic => 'عربي';
 
   @override

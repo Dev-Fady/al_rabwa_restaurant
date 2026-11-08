@@ -66,8 +66,12 @@ MenuItemModel _$MenuItemModelFromJson(Map<String, dynamic> json) =>
       hasLargePhoto: json['has_large_photo'] as bool?,
       soldByWeight: json['sold_by_weight'] as bool?,
       weight: _weightFromJson(json['weight']),
-      options: json['options'] as List<dynamic>?,
-      addons: json['addons'] as List<dynamic>?,
+      options: (json['options'] as List<dynamic>?)
+          ?.map((e) => MenuItemOptionModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      addons: (json['addons'] as List<dynamic>?)
+          ?.map((e) => MenuItemAddonModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$MenuItemModelToJson(MenuItemModel instance) =>
@@ -87,3 +91,49 @@ Map<String, dynamic> _$MenuItemModelToJson(MenuItemModel instance) =>
       'options': instance.options,
       'addons': instance.addons,
     };
+
+MenuItemOptionModel _$MenuItemOptionModelFromJson(Map<String, dynamic> json) =>
+    MenuItemOptionModel(
+      id: (json['id'] as num?)?.toInt(),
+      name: json['name'] as String?,
+      price: json['price'] as num?,
+    );
+
+Map<String, dynamic> _$MenuItemOptionModelToJson(
+  MenuItemOptionModel instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'price': instance.price,
+};
+
+MenuItemAddonModel _$MenuItemAddonModelFromJson(Map<String, dynamic> json) =>
+    MenuItemAddonModel(
+      id: (json['id'] as num?)?.toInt(),
+      name: json['name'] as String?,
+      price: json['price'] as num?,
+      image: json['image'] as String?,
+    );
+
+Map<String, dynamic> _$MenuItemAddonModelToJson(MenuItemAddonModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'price': instance.price,
+      'image': instance.image,
+    };
+
+MenuItemWeightModel _$MenuItemWeightModelFromJson(Map<String, dynamic> json) =>
+    MenuItemWeightModel(
+      min: json['min'] as num?,
+      max: json['max'] as num?,
+      step: json['step'] as num?,
+    );
+
+Map<String, dynamic> _$MenuItemWeightModelToJson(
+  MenuItemWeightModel instance,
+) => <String, dynamic>{
+  'min': instance.min,
+  'max': instance.max,
+  'step': instance.step,
+};

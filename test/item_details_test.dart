@@ -76,9 +76,24 @@ MenuItemDetails _sampleDetails({String image = ''}) {
   ).toEntity()!;
 }
 
+Future<void> _tapVisible(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
+/// The dish sold by weight, with two options, three add-ons and a video.
+MenuItemDetails _weightedDetails() {
+  return MenuItemDetailsResponse.fromJson(
+    weightedItemDetailsPayload(),
+  ).toEntity()!;
+}
+
 Future<ItemDetailsCubit> _pumpDetails(
   WidgetTester tester, {
   _FakeItemsRepository? repository,
+  MenuItemDetails? details,
   CartCubit? cartCubit,
   Size size = const Size(390, 844),
   double textScale = 1,
@@ -91,7 +106,7 @@ Future<ItemDetailsCubit> _pumpDetails(
   );
   addTearDown(storeCubit.close);
   final cubit = ItemDetailsCubit(
-    repository ?? _FakeItemsRepository(details: _sampleDetails()),
+    repository ?? _FakeItemsRepository(details: details ?? _sampleDetails()),
     40,
   );
   addTearDown(cubit.close);
@@ -266,6 +281,54 @@ void main() {
 
       expect(find.text('دجاج مسحب (700 غ)'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('renders options, add-ons, weight and the video switcher', (
+      tester,
+    ) async {
+      await _pumpDetails(tester, details: _weightedDetails());
+
+      expect(find.text('اختر واحدًا'), findsOneWidget);
+      expect(find.text('نفر واحد'), findsOneWidget);
+      expect(find.text('نفرين'), findsOneWidget);
+      expect(find.text('إضافات اختيارية'), findsOneWidget);
+      expect(find.text('إضافة أرز'), findsOneWidget);
+      expect(find.text('الوزن'), findsOneWidget);
+      expect(find.text('من 0.25 إلى 10 كجم'), findsOneWidget);
+      expect(find.text('0.5'), findsOneWidget);
+      expect(find.byTooltip('صورة'), findsOneWidget);
+      expect(find.byTooltip('فيديو'), findsOneWidget);
+      expect(find.textContaining('/كجم'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('prices the chosen option, add-ons and weight', (tester) async {
+      await _pumpDetails(tester, details: _weightedDetails());
+
+      await _tapVisible(tester, find.text('نفرين'));
+      await _tapVisible(tester, find.text('إضافة أرز'));
+      await _tapVisible(tester, find.text('0.5'));
+
+      // 39 * 0.5 kg + 30 (نفرين) + 5 (إضافة أرز) = 54.5
+      expect(find.text('أضف إلى السلة - 54.500 ر.ق'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('adds the chosen selections to the cart', (tester) async {
+      final cart = CartCubit();
+      await _pumpDetails(tester, details: _weightedDetails(), cartCubit: cart);
+
+      await _tapVisible(tester, find.text('نفرين'));
+      await _tapVisible(tester, find.text('إضافة أرز'));
+      await _tapVisible(tester, find.text('0.5'));
+      await _tapVisible(tester, find.text('أضف إلى السلة - 54.500 ر.ق'));
+
+      final line = cart.state.lines.single;
+      expect(line.option?.name, 'نفرين');
+      expect(line.addons.map((addon) => addon.name), ['إضافة أرز']);
+      expect(line.weight, 0.5);
+      expect(line.lineTotal, 54.5);
+      expect(cart.state.subtotal, 54.5);
     });
   });
 }

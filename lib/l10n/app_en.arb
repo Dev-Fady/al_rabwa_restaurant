@@ -91,6 +91,25 @@
       "price": {"type": "String"}
     }
   },
+  "itemDetailsChooseOne": "Choose one",
+  "itemDetailsAddons": "Optional add-ons",
+  "itemDetailsWeight": "Weight",
+  "itemDetailsWeightHint": "From {min} to {max} kg",
+  "@itemDetailsWeightHint": {
+    "placeholders": {
+      "min": {"type": "String"},
+      "max": {"type": "String"}
+    }
+  },
+  "itemDetailsWeightValue": "{value} kg",
+  "@itemDetailsWeightValue": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "itemDetailsPerKg": "/kg",
+  "itemDetailsVideo": "Video",
+  "itemDetailsPhoto": "Photo",
   "arabic": "عربي",
   "english": "EN"
 }

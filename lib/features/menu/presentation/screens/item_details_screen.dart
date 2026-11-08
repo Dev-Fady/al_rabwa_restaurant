@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
+import 'package:al_rabwa_restaurant/core/utils/media_url.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
@@ -9,6 +10,8 @@ import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_detail
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_state.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_state.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/item_details_widgets.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/item_option_widgets.dart';
+import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/item_video_player.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/menu_item_cards.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +27,11 @@ class ItemDetailsScreen extends StatefulWidget {
 
 class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   final TextEditingController _notesController = TextEditingController();
+  final Set<int> _selectedAddonIds = {};
   int _quantity = 1;
+  int? _selectedOptionId;
+  double? _selectedWeight;
+  bool _showVideo = false;
 
   @override
   void didChangeDependencies() {
@@ -46,6 +53,36 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     setState(() => _quantity = value);
   }
 
+  /// The first option is the default so a portion is always chosen.
+  MenuItemOption? _optionFor(MenuItem item) {
+    if (item.options.isEmpty) return null;
+
+    for (final option in item.options) {
+      if (option.id == _selectedOptionId) return option;
+    }
+    return item.options.first;
+  }
+
+  List<MenuItemAddon> _addonsFor(MenuItem item) => [
+    for (final addon in item.addons)
+      if (_selectedAddonIds.contains(addon.id)) addon,
+  ];
+
+  double _weightFor(MenuItem item) {
+    if (!item.soldByWeight) return 1;
+    return _selectedWeight ?? item.weightRange?.min ?? item.weight ?? 1;
+  }
+
+  /// Price of one unit with the chosen extras and weight applied.
+  double _unitPriceFor(MenuItem item) {
+    final option = _optionFor(item);
+    final addonsTotal = _addonsFor(
+      item,
+    ).fold<double>(0, (total, addon) => total + addon.price);
+
+    return item.price * _weightFor(item) + (option?.price ?? 0) + addonsTotal;
+  }
+
   void _addToCart(BuildContext context, MenuItemDetails details) {
     if (details.item.id == null) return;
 
@@ -53,6 +90,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
       details.item,
       quantity: _quantity,
       notes: _notesController.text,
+      option: _optionFor(details.item),
+      addons: _addonsFor(details.item),
+      weight: _weightFor(details.item),
     );
 
     final l10n = AppLocalizations.of(context)!;
@@ -94,7 +134,22 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               currency: currency,
               quantity: _quantity,
               notesController: _notesController,
+              selectedOptionId: _optionFor(details.item)?.id,
+              selectedAddonIds: _selectedAddonIds,
+              weight: _weightFor(details.item),
+              total: _unitPriceFor(details.item) * _quantity,
+              showVideo: _showVideo,
+              onShowVideoChanged: (value) => setState(() => _showVideo = value),
               onQuantityChanged: _changeQuantity,
+              onOptionChanged: (option) =>
+                  setState(() => _selectedOptionId = option.id),
+              onAddonToggled: (addon) => setState(() {
+                final id = addon.id;
+                if (id == null) return;
+                if (!_selectedAddonIds.remove(id)) _selectedAddonIds.add(id);
+              }),
+              onWeightChanged: (value) =>
+                  setState(() => _selectedWeight = value),
               onAddToCart: () => _addToCart(context, details),
             );
           },
@@ -110,7 +165,16 @@ class _DetailsScaffold extends StatelessWidget {
     required this.currency,
     required this.quantity,
     required this.notesController,
+    required this.selectedOptionId,
+    required this.selectedAddonIds,
+    required this.weight,
+    required this.total,
+    required this.showVideo,
+    required this.onShowVideoChanged,
     required this.onQuantityChanged,
+    required this.onOptionChanged,
+    required this.onAddonToggled,
+    required this.onWeightChanged,
     required this.onAddToCart,
   });
 
@@ -118,7 +182,16 @@ class _DetailsScaffold extends StatelessWidget {
   final StoreCurrency currency;
   final int quantity;
   final TextEditingController notesController;
+  final int? selectedOptionId;
+  final Set<int> selectedAddonIds;
+  final double weight;
+  final double total;
+  final bool showVideo;
+  final ValueChanged<bool> onShowVideoChanged;
   final ValueChanged<int> onQuantityChanged;
+  final ValueChanged<MenuItemOption> onOptionChanged;
+  final ValueChanged<MenuItemAddon> onAddonToggled;
+  final ValueChanged<double> onWeightChanged;
   final VoidCallback onAddToCart;
 
   @override
@@ -129,7 +202,7 @@ class _DetailsScaffold extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     final imageHeight = (size.width * 0.62).clamp(220.0, 380.0);
     final horizontalPadding = size.width >= 600 ? 32.0 : 20.0;
-    final total = item.price * quantity;
+    final image = ItemHeroImage(url: item.image);
 
     return Scaffold(
       backgroundColor: context.appColors.background,
@@ -151,7 +224,13 @@ class _DetailsScaffold extends StatelessWidget {
                 borderRadius: const BorderRadiusDirectional.vertical(
                   bottom: Radius.circular(24),
                 ),
-                child: ItemHeroImage(url: item.image),
+                child: showVideo && item.hasVideo
+                    ? ItemVideoPlayer(
+                        key: const ValueKey('item-video'),
+                        url: resolveMediaUrl(item.video),
+                        fallback: image,
+                      )
+                    : image,
               ),
             ),
           ),
@@ -169,6 +248,17 @@ class _DetailsScaffold extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (item.hasVideo) ...[
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: _MediaSwitcher(
+                            image: image,
+                            showVideo: showVideo,
+                            onChanged: onShowVideoChanged,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                      ],
                       if (category != null && category.name.trim().isNotEmpty)
                         Align(
                           alignment: AlignmentDirectional.centerStart,
@@ -201,6 +291,32 @@ class _DetailsScaffold extends StatelessWidget {
                         alignment: AlignmentDirectional.centerEnd,
                         child: _PriceLabel(currency: currency, item: item),
                       ),
+                      if (item.hasOptions) ...[
+                        const SizedBox(height: 20),
+                        ItemOptionsSection(
+                          options: item.options,
+                          currency: currency,
+                          selectedId: selectedOptionId,
+                          onChanged: onOptionChanged,
+                        ),
+                      ],
+                      if (item.hasAddons) ...[
+                        const SizedBox(height: 20),
+                        ItemAddonsSection(
+                          addons: item.addons,
+                          currency: currency,
+                          selectedIds: selectedAddonIds,
+                          onToggle: onAddonToggled,
+                        ),
+                      ],
+                      if (item.hasWeightRange) ...[
+                        const SizedBox(height: 20),
+                        ItemWeightSection(
+                          range: item.weightRange!,
+                          selected: weight,
+                          onChanged: onWeightChanged,
+                        ),
+                      ],
                       const SizedBox(height: 20),
                       Text(
                         l10n.itemDetailsQuantity,
@@ -318,13 +434,29 @@ class _PriceLabel extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
       children: [
-        Text(
-          currency.format(item.price),
-          style: TextStyle(
-            color: context.appColors.brandGreen,
-            fontSize: 17,
-            fontWeight: FontWeight.w900,
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: currency.format(item.price),
+                style: TextStyle(
+                  color: context.appColors.brandGreen,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              if (item.soldByWeight)
+                TextSpan(
+                  text: AppLocalizations.of(context)!.itemDetailsPerKg,
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+            ],
           ),
+          textAlign: TextAlign.end,
         ),
         if (item.hasDiscount)
           Text(
@@ -422,6 +554,102 @@ class _StatusScaffold extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// Small photo/video picker shown under the hero when the dish has a video.
+class _MediaSwitcher extends StatelessWidget {
+  const _MediaSwitcher({
+    required this.image,
+    required this.showVideo,
+    required this.onChanged,
+  });
+
+  final Widget image;
+  final bool showVideo;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _MediaThumb(
+          label: l10n.itemDetailsPhoto,
+          selected: !showVideo,
+          onTap: () => onChanged(false),
+          child: image,
+        ),
+        const SizedBox(width: 10),
+        _MediaThumb(
+          label: l10n.itemDetailsVideo,
+          selected: showVideo,
+          onTap: () => onChanged(true),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              image,
+              ColoredBox(color: Colors.black.withValues(alpha: 0.32)),
+              const Center(
+                child: Icon(
+                  Icons.play_circle_outline_rounded,
+                  color: Colors.white,
+                  size: 26,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MediaThumb extends StatelessWidget {
+  const _MediaThumb({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    required this.child,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Tooltip(
+      message: label,
+      child: Material(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: 58,
+            height: 58,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: selected
+                    ? context.appColors.brandGreen
+                    : colors.outlineVariant.withValues(alpha: 0.9),
+                width: selected ? 2 : 1,
+              ),
+            ),
+            child: child,
+          ),
         ),
       ),
     );

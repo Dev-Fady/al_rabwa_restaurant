@@ -28,18 +28,42 @@ class Cart {
     return null;
   }
 
-  int quantityOf(int? itemId) => lineFor(itemId)?.quantity ?? 0;
+  /// Total quantity of a dish across all of its selections.
+  int quantityOf(int? itemId) {
+    if (itemId == null) return 0;
+    return lines.fold(
+      0,
+      (total, line) => line.item.id == itemId ? total + line.quantity : total,
+    );
+  }
 
-  Cart add(MenuItem item, {int quantity = 1, String notes = ''}) {
+  Cart add(
+    MenuItem item, {
+    int quantity = 1,
+    String notes = '',
+    MenuItemOption? option,
+    List<MenuItemAddon> addons = const [],
+    double weight = 1,
+  }) {
     final id = item.id;
     if (id == null || quantity <= 0) return this;
 
-    final index = lines.indexWhere((line) => line.item.id == id);
+    final index = lines.indexWhere(
+      (line) =>
+          line.matches(item, option: option, addons: addons, weight: weight),
+    );
     if (index == -1) {
       return Cart(
         lines: [
           ...lines,
-          CartLine(item: item, quantity: quantity, notes: notes.trim()),
+          CartLine(
+            item: item,
+            quantity: quantity,
+            notes: notes.trim(),
+            option: option,
+            addons: addons,
+            weight: weight,
+          ),
         ],
       );
     }
@@ -54,17 +78,37 @@ class Cart {
     return _replaceAt(index, updated);
   }
 
-  Cart increment(MenuItem item) => add(item);
+  /// Adds one more of a dish, reusing its latest line whatever its selections.
+  Cart increment(MenuItem item) {
+    final id = item.id;
+    if (id == null) return this;
+
+    final index = lines.lastIndexWhere((line) => line.item.id == id);
+    if (index == -1) return add(item);
+
+    final existing = lines[index];
+    return _replaceAt(
+      index,
+      existing.copyWith(quantity: existing.quantity + 1),
+    );
+  }
 
   Cart decrement(MenuItem item) {
     final id = item.id;
     if (id == null) return this;
 
-    final index = lines.indexWhere((line) => line.item.id == id);
+    final index = lines.lastIndexWhere((line) => line.item.id == id);
     if (index == -1) return this;
 
     final existing = lines[index];
-    if (existing.quantity <= 1) return remove(item);
+    if (existing.quantity <= 1) {
+      return Cart(
+        lines: [
+          for (var i = 0; i < lines.length; i++)
+            if (i != index) lines[i],
+        ],
+      );
+    }
 
     return _replaceAt(
       index,

@@ -19,9 +19,9 @@ class MenuItem {
     this.video = '',
     this.hasLargePhoto = false,
     this.soldByWeight = false,
-    this.weight,
-    this.hasOptions = false,
-    this.hasAddons = false,
+    this.weightRange,
+    this.options = const [],
+    this.addons = const [],
   });
 
   final int? id;
@@ -35,14 +35,81 @@ class MenuItem {
   final bool hasLargePhoto;
   final bool soldByWeight;
 
-  /// Starting weight for dishes sold by weight; `null` otherwise.
-  final double? weight;
-  final bool hasOptions;
-  final bool hasAddons;
+  /// Selectable weight for dishes sold by weight; `null` otherwise.
+  final MenuItemWeight? weightRange;
+
+  /// Portion choices, e.g. "نفر واحد" / "نفرين"; one may be selected.
+  final List<MenuItemOption> options;
+
+  /// Extras the customer can add to the dish; any number may be selected.
+  final List<MenuItemAddon> addons;
 
   bool get hasImage => image.trim().isNotEmpty;
 
+  bool get hasVideo => video.trim().isNotEmpty;
+
   bool get hasDescription => description.trim().isNotEmpty;
 
+  bool get hasOptions => options.isNotEmpty;
+
+  bool get hasAddons => addons.isNotEmpty;
+
+  bool get hasWeightRange => soldByWeight && (weightRange?.hasRange ?? false);
+
   bool get hasDiscount => compareAtPrice != null && compareAtPrice! > price;
+
+  /// Starting weight, kept for callers that only need one value.
+  double? get weight => weightRange?.min;
+}
+
+/// One portion choice of a dish, e.g. `{"id": 8, "name": "نفرين", "price": 30}`.
+class MenuItemOption {
+  const MenuItemOption({this.id, this.name = '', this.price = 0});
+
+  final int? id;
+  final String name;
+  final double price;
+
+  bool get hasPrice => price != 0;
+}
+
+/// An extra added to a dish, e.g. `{"id": 34, "name": "إضافة أرز", "price": 5}`.
+class MenuItemAddon {
+  const MenuItemAddon({
+    this.id,
+    this.name = '',
+    this.price = 0,
+    this.image = '',
+  });
+
+  final int? id;
+  final String name;
+  final double price;
+  final String image;
+
+  bool get hasPrice => price != 0;
+}
+
+/// Range the customer picks the dish's weight from, e.g.
+/// `{"min": 0.25, "max": 10, "step": 0.25}` for meat sold by the kilo.
+class MenuItemWeight {
+  const MenuItemWeight({
+    required this.min,
+    required this.max,
+    required this.step,
+  });
+
+  final double min;
+  final double max;
+  final double step;
+
+  /// A single selectable value is not a range.
+  bool get hasRange => max > min && step > 0;
+
+  /// Every weight the customer can choose, starting at [min].
+  List<double> get choices {
+    if (!hasRange) return [min];
+    final count = ((max - min) / step).floor() + 1;
+    return [for (var index = 0; index < count; index++) min + step * index];
+  }
 }

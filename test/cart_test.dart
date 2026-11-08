@@ -45,6 +45,38 @@ void main() {
 
       expect(cart.isEmpty, isTrue);
     });
+
+    test('prices the chosen weight, option and extras', () {
+      const grill = MenuItem(
+        id: 31,
+        name: 'مشاوي مشكلة',
+        price: 39,
+        soldByWeight: true,
+      );
+      final cart = const Cart().add(
+        grill,
+        weight: 0.5,
+        option: const MenuItemOption(id: 8, name: 'نفرين', price: 30),
+        addons: [const MenuItemAddon(id: 34, name: 'إضافة أرز', price: 5)],
+      );
+
+      expect(cart.lines.single.unitPrice, 54.5);
+      expect(cart.subtotal, 54.5);
+    });
+
+    test('keeps different selections of a dish as separate lines', () {
+      const grill = MenuItem(id: 31, name: 'مشاوي مشكلة', price: 39);
+      final cart = const Cart()
+          .add(grill, option: const MenuItemOption(id: 7, name: 'نفر واحد'))
+          .add(
+            grill,
+            option: const MenuItemOption(id: 8, name: 'نفرين', price: 30),
+          );
+
+      expect(cart.itemsCount, 2);
+      expect(cart.quantityOf(31), 2);
+      expect(cart.subtotal, 108);
+    });
   });
 
   group('CartCubit', () {
