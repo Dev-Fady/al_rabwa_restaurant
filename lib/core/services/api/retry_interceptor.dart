@@ -11,6 +11,13 @@ import 'package:dio/dio.dart';
 ///
 /// Only `GET`/`HEAD` are retried (plus gateway timeouts): replaying a write
 /// could duplicate a side effect such as a second cart line or order.
+///
+/// The one exception is `connectionTimeout`: the TCP/TLS connection was never
+/// established, so the server cannot have received the request and replaying a
+/// write cannot duplicate anything. The host's edge drops a large share of new
+/// handshakes (measured ~50% from this network while established connections
+/// stay fast), and without this exception every `POST` — login, cart, order —
+/// failed on the first dropped handshake.
 class RetryInterceptor extends Interceptor {
   RetryInterceptor({
     required this.dio,
@@ -68,15 +75,20 @@ class RetryInterceptor extends Interceptor {
   bool _isRetryable(DioException err) {
     final method = err.requestOptions.method.toUpperCase();
     final isIdempotent = method == 'GET' || method == 'HEAD';
-    if (!isIdempotent) return false;
 
     switch (err.type) {
-      case DioExceptionType.connectionError:
       case DioExceptionType.connectionTimeout:
+        // No connection, therefore no request reached the server: safe for
+        // every method, including writes.
+        return true;
+      case DioExceptionType.connectionError:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return true;
+        // The connection was (or may have been) established and the request
+        // may already have been processed, so only replay reads.
+        return isIdempotent;
       case DioExceptionType.badResponse:
+        if (!isIdempotent) return false;
         final statusCode = err.response?.statusCode ?? 0;
         return statusCode == 502 || statusCode == 503 || statusCode == 504;
       case DioExceptionType.badCertificate:
