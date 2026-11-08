@@ -64,7 +64,9 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   void _startAutoPlay() {
     _autoPlayTimer?.cancel();
     _autoPlayTimer = null;
-    if (widget.banners.length < 2) return;
+    if (widget.banners.length < 2) {
+      return;
+    }
     _autoPlayTimer = Timer.periodic(_autoPlayInterval, (_) => _showNext());
   }
 
@@ -74,8 +76,9 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   }
 
   void _showNext() {
-    if (!mounted || widget.banners.length < 2 || !_controller.hasClients)
+    if (!mounted || widget.banners.length < 2 || !_controller.hasClients) {
       return;
+    }
 
     final next = (_page + 1) % widget.banners.length;
     _controller.animateToPage(
