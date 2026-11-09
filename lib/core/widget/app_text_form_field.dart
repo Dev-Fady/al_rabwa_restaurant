@@ -17,6 +17,8 @@ class AppTextFormField extends StatelessWidget {
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final TextInputType? keyboardType;
+  final int? maxLines;
+  final int? minLines;
   final TextCapitalization textCapitalization;
   final List<String>? autofillHints;
   final List<TextInputFormatter>? inputFormatters;
@@ -44,6 +46,8 @@ class AppTextFormField extends StatelessWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.keyboardType,
+    this.maxLines,
+    this.minLines,
     this.textCapitalization = TextCapitalization.none,
     this.autofillHints,
     this.inputFormatters,
@@ -70,6 +74,8 @@ class AppTextFormField extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       keyboardType: keyboardType,
+      maxLines: maxLines,
+      minLines: minLines,
       textInputAction: textInputAction,
       textCapitalization: textCapitalization,
       autofillHints: autofillHints,

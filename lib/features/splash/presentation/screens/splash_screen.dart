@@ -354,7 +354,7 @@ class _SplashLoader extends StatelessWidget {
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.66),
+                color: Colors.white.withValues(alpha: 0.72),
                 fontSize: 12.5,
                 height: 1.4,
                 fontWeight: FontWeight.w600,

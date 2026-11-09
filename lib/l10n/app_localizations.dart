@@ -724,6 +724,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Secure & private'**
   String get registerFeatureSecure;
+
+  /// No description provided for @addressAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a new address'**
+  String get addressAddTitle;
+
+  /// No description provided for @addressUseCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my current location'**
+  String get addressUseCurrentLocation;
+
+  /// No description provided for @addressMapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the map to confirm your exact spot'**
+  String get addressMapHint;
+
+  /// No description provided for @addressKindHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get addressKindHome;
+
+  /// No description provided for @addressKindWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get addressKindWork;
+
+  /// No description provided for @addressKindOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get addressKindOther;
+
+  /// No description provided for @addressLabelField.
+  ///
+  /// In en, this message translates to:
+  /// **'Address name (optional)'**
+  String get addressLabelField;
+
+  /// No description provided for @addressLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Family home'**
+  String get addressLabelHint;
+
+  /// No description provided for @addressAreaField.
+  ///
+  /// In en, this message translates to:
+  /// **'Area / district'**
+  String get addressAreaField;
+
+  /// No description provided for @addressAreaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Al Sadd, Doha'**
+  String get addressAreaHint;
+
+  /// No description provided for @addressStreetField.
+  ///
+  /// In en, this message translates to:
+  /// **'Street'**
+  String get addressStreetField;
+
+  /// No description provided for @addressStreetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Street 901'**
+  String get addressStreetHint;
+
+  /// No description provided for @addressBuildingField.
+  ///
+  /// In en, this message translates to:
+  /// **'Building / floor / flat'**
+  String get addressBuildingField;
+
+  /// No description provided for @addressBuildingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Building 35, floor 2'**
+  String get addressBuildingHint;
+
+  /// No description provided for @addressNotesField.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver instructions'**
+  String get addressNotesField;
+
+  /// No description provided for @addressNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. The green door'**
+  String get addressNotesHint;
+
+  /// No description provided for @addressSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save address'**
+  String get addressSave;
+
+  /// No description provided for @addressAreaRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the area or district.'**
+  String get addressAreaRequired;
+
+  /// No description provided for @addressStreetRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the street.'**
+  String get addressStreetRequired;
+
+  /// No description provided for @addressBuildingRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the building number.'**
+  String get addressBuildingRequired;
+
+  /// No description provided for @addressOutsideQatar.
+  ///
+  /// In en, this message translates to:
+  /// **'That spot is outside Qatar. Move the map to pick a location inside the country.'**
+  String get addressOutsideQatar;
+
+  /// No description provided for @addressSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the address. Please try again.'**
+  String get addressSaveError;
+
+  /// No description provided for @addressNotDeliverable.
+  ///
+  /// In en, this message translates to:
+  /// **'Address saved, but it is outside the current delivery area.'**
+  String get addressNotDeliverable;
+
+  /// No description provided for @addressLocationServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are off. Turn them on in your device settings and try again.'**
+  String get addressLocationServiceDisabled;
+
+  /// No description provided for @addressLocationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location access to use your current location.'**
+  String get addressLocationPermissionDenied;
+
+  /// No description provided for @addressLocationPermissionDeniedForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is blocked. You can enable it in the app settings.'**
+  String get addressLocationPermissionDeniedForever;
+
+  /// No description provided for @addressLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t get your current location. Move the map manually.'**
+  String get addressLocationUnavailable;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

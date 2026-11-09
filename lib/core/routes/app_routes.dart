@@ -23,6 +23,10 @@ class AppRoutes {
   static const String menuCategories = '/menu/categories';
 
   static String menuItemPath(int itemId) => '/menu/item/$itemId';
+
+  /// Add-address form; pushed above the shell and returns the saved address.
+  static const String addAddress = '/addresses/add';
+
   static const String cart = '/cart';
   static const String orders = '/orders';
   static const String store = '/store';

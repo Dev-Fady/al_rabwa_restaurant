@@ -1,5 +1,6 @@
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/widget/app_network_image.dart';
+import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
@@ -53,6 +54,9 @@ class _HomeContent extends StatefulWidget {
 class _HomeContentState extends State<_HomeContent> {
   late String _selectedOrderType;
 
+  /// Last address saved from the add-address screen in this session.
+  Address? _deliveryAddress;
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +74,13 @@ class _HomeContentState extends State<_HomeContent> {
         !orderTypes.any((t) => t.value == _selectedOrderType)) {
       _selectedOrderType = orderTypes.first.value;
     }
+  }
+
+  /// Opens the add-address form and shows the saved address in the bar.
+  Future<void> _openAddAddress(BuildContext context) async {
+    final address = await context.push<Address>(AppRoutes.addAddress);
+    if (!mounted || address == null) return;
+    setState(() => _deliveryAddress = address);
   }
 
   @override
@@ -113,9 +124,8 @@ class _HomeContentState extends State<_HomeContent> {
 
                       // 2. Delivery location selection bar
                       HomeDeliveryLocationBar(
-                        onTap: () {
-                          // Handled by location picker feature
-                        },
+                        selectedAddress: _deliveryAddress?.displayName,
+                        onTap: () => _openAddAddress(context),
                       ),
                       const SizedBox(height: 12),
 

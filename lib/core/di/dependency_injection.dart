@@ -3,6 +3,12 @@ import 'package:al_rabwa_restaurant/core/helper_functions/cache_hive.dart';
 import 'package:al_rabwa_restaurant/core/services/api/api_service.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/core/services/api/dio_config.dart';
+import 'package:al_rabwa_restaurant/features/addresses/data/datasources/addresses_remote_data_source.dart';
+import 'package:al_rabwa_restaurant/features/addresses/data/repositories/addresses_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/addresses/data/repositories/device_location_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/addresses/domain/repositories/addresses_repository.dart';
+import 'package:al_rabwa_restaurant/features/addresses/domain/repositories/device_location_repository.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/add_address_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/menu_categories_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_local_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_remote_data_source.dart';
@@ -130,5 +136,27 @@ Future<void> setupGetIt() async {
   getIt.registerFactoryParam<ItemDetailsCubit, int, String>(
     (itemId, lang) =>
         ItemDetailsCubit(getIt<MenuItemsRepository>(), itemId, lang: lang),
+  );
+
+  getIt.registerLazySingleton<AddressesRemoteDataSource>(
+    () => AddressesRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<AddressesRepository>(
+    () => AddressesRepositoryImpl(
+      remoteDataSource: getIt<AddressesRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<DeviceLocationRepository>(
+    () => const DeviceLocationRepositoryImpl(),
+  );
+
+  getIt.registerFactoryParam<AddAddressCubit, String, void>(
+    (lang, _) => AddAddressCubit(
+      getIt<AddressesRepository>(),
+      getIt<DeviceLocationRepository>(),
+      lang: lang,
+    ),
   );
 }

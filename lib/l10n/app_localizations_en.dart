@@ -339,4 +339,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registerFeatureSecure => 'Secure & private';
+
+  @override
+  String get addressAddTitle => 'Add a new address';
+
+  @override
+  String get addressUseCurrentLocation => 'Use my current location';
+
+  @override
+  String get addressMapHint => 'Move the map to confirm your exact spot';
+
+  @override
+  String get addressKindHome => 'Home';
+
+  @override
+  String get addressKindWork => 'Work';
+
+  @override
+  String get addressKindOther => 'Other';
+
+  @override
+  String get addressLabelField => 'Address name (optional)';
+
+  @override
+  String get addressLabelHint => 'e.g. Family home';
+
+  @override
+  String get addressAreaField => 'Area / district';
+
+  @override
+  String get addressAreaHint => 'Al Sadd, Doha';
+
+  @override
+  String get addressStreetField => 'Street';
+
+  @override
+  String get addressStreetHint => 'Street 901';
+
+  @override
+  String get addressBuildingField => 'Building / floor / flat';
+
+  @override
+  String get addressBuildingHint => 'Building 35, floor 2';
+
+  @override
+  String get addressNotesField => 'Driver instructions';
+
+  @override
+  String get addressNotesHint => 'e.g. The green door';
+
+  @override
+  String get addressSave => 'Save address';
+
+  @override
+  String get addressAreaRequired => 'Please enter the area or district.';
+
+  @override
+  String get addressStreetRequired => 'Please enter the street.';
+
+  @override
+  String get addressBuildingRequired => 'Please enter the building number.';
+
+  @override
+  String get addressOutsideQatar => 'That spot is outside Qatar. Move the map to pick a location inside the country.';
+
+  @override
+  String get addressSaveError => 'Couldn\'t save the address. Please try again.';
+
+  @override
+  String get addressNotDeliverable => 'Address saved, but it is outside the current delivery area.';
+
+  @override
+  String get addressLocationServiceDisabled => 'Location services are off. Turn them on in your device settings and try again.';
+
+  @override
+  String get addressLocationPermissionDenied => 'Allow location access to use your current location.';
+
+  @override
+  String get addressLocationPermissionDeniedForever => 'Location permission is blocked. You can enable it in the app settings.';
+
+  @override
+  String get addressLocationUnavailable => 'Couldn\'t get your current location. Move the map manually.';
 }

@@ -1,6 +1,8 @@
 import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/layout/main_shell.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/add_address_cubit.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/add_address_screen.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/item_details_screen.dart';
@@ -53,6 +55,19 @@ class AppRouter {
           title: AppLocalizations.of(context)!.loginTitle,
           icon: Icons.login,
         ),
+      ),
+      GoRoute(
+        path: AppRoutes.addAddress,
+        builder: (context, state) {
+          // Read the locale here: the provider's `create` runs during mount
+          // and must not subscribe to inherited widgets.
+          final lang = Localizations.localeOf(context).languageCode;
+
+          return BlocProvider<AddAddressCubit>(
+            create: (_) => getIt<AddAddressCubit>(param1: lang),
+            child: const AddAddressScreen(),
+          );
+        },
       ),
       // Branch order MUST match `shellDestinations` and `AppBottomNavBar`.
       StatefulShellRoute.indexedStack(

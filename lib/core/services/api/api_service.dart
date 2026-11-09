@@ -39,4 +39,11 @@ abstract class ApiService {
     @Query('lang') String? lang,
     @Header('x-locale') String? xLocale,
   });
+
+  @POST(ApiConstants.addresses)
+  Future<HttpResponse<dynamic>> createAddress({
+    @Body() required Map<String, dynamic> body,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
 }

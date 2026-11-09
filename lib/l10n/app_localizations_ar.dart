@@ -342,4 +342,85 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get registerFeatureSecure => 'آمن وخاص';
+
+  @override
+  String get addressAddTitle => 'أضف عنوانًا جديدًا';
+
+  @override
+  String get addressUseCurrentLocation => 'استخدام موقعي الحالي';
+
+  @override
+  String get addressMapHint => 'حرّك الخريطة لتأكيد موقعك';
+
+  @override
+  String get addressKindHome => 'المنزل';
+
+  @override
+  String get addressKindWork => 'العمل';
+
+  @override
+  String get addressKindOther => 'آخر';
+
+  @override
+  String get addressLabelField => 'اسم العنوان (اختياري)';
+
+  @override
+  String get addressLabelHint => 'مثال: بيت العائلة';
+
+  @override
+  String get addressAreaField => 'المنطقة / الحي';
+
+  @override
+  String get addressAreaHint => 'السد، الريان';
+
+  @override
+  String get addressStreetField => 'الشارع';
+
+  @override
+  String get addressStreetHint => 'شارع 901';
+
+  @override
+  String get addressBuildingField => 'المبنى / الطابق / الشقة';
+
+  @override
+  String get addressBuildingHint => 'مبنى 35، الطابق 2';
+
+  @override
+  String get addressNotesField => 'إرشادات للسائق';
+
+  @override
+  String get addressNotesHint => 'مثال: الباب الأخضر';
+
+  @override
+  String get addressSave => 'حفظ العنوان';
+
+  @override
+  String get addressAreaRequired => 'يرجى إدخال المنطقة أو الحي.';
+
+  @override
+  String get addressStreetRequired => 'يرجى إدخال الشارع.';
+
+  @override
+  String get addressBuildingRequired => 'يرجى إدخال رقم المبنى.';
+
+  @override
+  String get addressOutsideQatar => 'الموقع المحدد خارج قطر. حرّك الخريطة لاختيار موقع داخل الدولة.';
+
+  @override
+  String get addressSaveError => 'تعذّر حفظ العنوان، يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get addressNotDeliverable => 'تم حفظ العنوان، لكنه خارج نطاق التوصيل الحالي.';
+
+  @override
+  String get addressLocationServiceDisabled => 'خدمة الموقع غير مفعّلة. فعّلها من إعدادات الجهاز ثم حاول مجددًا.';
+
+  @override
+  String get addressLocationPermissionDenied => 'يجب السماح بالوصول إلى الموقع لاستخدام موقعك الحالي.';
+
+  @override
+  String get addressLocationPermissionDeniedForever => 'إذن الموقع مرفوض. يمكنك تفعيله من إعدادات التطبيق.';
+
+  @override
+  String get addressLocationUnavailable => 'تعذّر تحديد موقعك الحالي. حرّك الخريطة يدويًا.';
 }
