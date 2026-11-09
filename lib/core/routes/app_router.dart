@@ -6,6 +6,9 @@ import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_detail
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/item_details_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_categories_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_screen.dart';
+import 'package:al_rabwa_restaurant/features/registration/presentation/cubit/device_registration_cubit.dart';
+import 'package:al_rabwa_restaurant/features/registration/presentation/screens/device_registration_screen.dart';
+import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:al_rabwa_restaurant/features/shell/presentation/screens/section_placeholder_screen.dart';
 import 'package:al_rabwa_restaurant/features/splash/presentation/screens/splash_screen.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
@@ -28,6 +31,21 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.splash,
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.registration,
+        builder: (context, state) => BlocProvider<DeviceRegistrationCubit>(
+          create: (_) => getIt<DeviceRegistrationCubit>(),
+          child: DeviceRegistrationScreen(
+            onLocaleChanged: (code) {
+              try {
+                context.read<SettingsCubit>().changeLanguage(code);
+              } catch (_) {
+                // Isolated tests may not provide the app-level settings cubit.
+              }
+            },
+          ),
+        ),
       ),
       GoRoute(
         path: AppRoutes.login,

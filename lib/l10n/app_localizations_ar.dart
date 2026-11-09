@@ -286,4 +286,58 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get english => 'EN';
+
+  @override
+  String get registerWelcomeTitle => 'أهلاً بك في مطعم الربوة';
+
+  @override
+  String get registerWelcomeSubtitle => 'أخبرنا قليلاً عنك وابدأ الطلب في ثوانٍ.';
+
+  @override
+  String get registerHeroBadge => 'مطعم الربوة';
+
+  @override
+  String get registerFormTitle => 'أنشئ ملفك الشخصي';
+
+  @override
+  String get registerFormSubtitle => 'سنستخدم بياناتك لتخصيص طلباتك.';
+
+  @override
+  String get registerNameHint => 'مثال: أحمد محمد';
+
+  @override
+  String get registerPhoneHint => '+974 555 1234';
+
+  @override
+  String get registerLanguageLabel => 'اللغة المفضلة';
+
+  @override
+  String get registerSubmit => 'ابدأ الطلب';
+
+  @override
+  String get registerError => 'حدث خطأ ما، يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get registerNameRequired => 'يرجى إدخال اسمك.';
+
+  @override
+  String get registerNameTooShort => 'الاسم قصير جداً.';
+
+  @override
+  String get registerPhoneRequired => 'يرجى إدخال رقم هاتفك.';
+
+  @override
+  String get registerPhoneInvalid => 'يرجى إدخال رقم هاتف صالح.';
+
+  @override
+  String get registerPrivacyNote => 'يتم حفظ جلستك بأمان على هذا الجهاز. بالمتابعة، أنت توافق على الشروط وسياسة الخصوصية.';
+
+  @override
+  String get registerFeatureFresh => 'يُحضّر طازجاً';
+
+  @override
+  String get registerFeatureFast => 'توصيل سريع';
+
+  @override
+  String get registerFeatureSecure => 'آمن وخاص';
 }

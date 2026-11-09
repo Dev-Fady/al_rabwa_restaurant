@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppTextFormField extends StatelessWidget {
@@ -10,11 +11,20 @@ class AppTextFormField extends StatelessWidget {
   final String hintText;
   final bool? isObscureText;
   final bool readOnly;
+  final bool enabled;
+  final bool filled;
+  final Color? fillColor;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
+  final List<String>? autofillHints;
+  final List<TextInputFormatter>? inputFormatters;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onFieldSubmitted;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final TextInputAction? textInputAction;
   final EdgeInsets scrollPadding;
 
@@ -28,11 +38,20 @@ class AppTextFormField extends StatelessWidget {
     required this.hintText,
     this.isObscureText,
     this.readOnly = false,
+    this.enabled = true,
+    this.filled = false,
+    this.fillColor,
     this.suffixIcon,
     this.prefixIcon,
     this.keyboardType,
+    this.textCapitalization = TextCapitalization.none,
+    this.autofillHints,
+    this.inputFormatters,
+    this.onChanged,
+    this.onFieldSubmitted,
     this.validator,
     this.controller,
+    this.focusNode,
     this.textInputAction,
     // Extra room below the field when it is scrolled into view so the
     // focused input settles fully above the software keyboard instead of
@@ -49,10 +68,17 @@ class AppTextFormField extends StatelessWidget {
 
     return TextFormField(
       controller: controller,
+      focusNode: focusNode,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
+      textCapitalization: textCapitalization,
+      autofillHints: autofillHints,
+      inputFormatters: inputFormatters,
+      onChanged: onChanged,
+      onFieldSubmitted: onFieldSubmitted,
       obscureText: isObscureText ?? false,
       readOnly: readOnly,
+      enabled: enabled,
       validator: validator,
       scrollPadding: scrollPadding,
       style:
@@ -62,6 +88,8 @@ class AppTextFormField extends StatelessWidget {
               : const TextStyle(fontSize: 14, color: Colors.black)),
       decoration: InputDecoration(
         isDense: true,
+        filled: filled,
+        fillColor: fillColor,
         contentPadding:
             contentPadding ??
             (compact

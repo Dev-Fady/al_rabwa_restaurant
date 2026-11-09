@@ -30,6 +30,37 @@ class AuthHelper {
     }
   }
 
+  /// Whether a non-empty access token is stored on this device.
+  ///
+  /// Never throws: without storage (early startup, widget tests, web private
+  /// mode) the device simply counts as not registered yet.
+  static Future<bool> hasSavedToken(FlutterSecureStorage storage) async {
+    try {
+      final token = await storage.read(key: AppKeys.accessToken);
+      return token != null && token.trim().isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Persists a freshly issued device token and marks the session as signed in.
+  ///
+  /// The token write is allowed to throw so the caller can report that the
+  /// session could not be stored. The flags are best-effort and never block a
+  /// successful registration.
+  static Future<void> saveSession(
+    FlutterSecureStorage storage, {
+    required String token,
+  }) async {
+    await storage.write(key: AppKeys.accessToken, value: token);
+    try {
+      await CacheHelper.sharedPreferences.setBool(AppKeys.isLogin, true);
+      await CacheHelper.sharedPreferences.remove(AppKeys.isGuest);
+    } catch (_) {
+      // Storage failure must not invalidate the token that was just saved.
+    }
+  }
+
   /// Drops `is_login` when its bearer token is missing, empty or unreadable,
   /// so the router sends the user to the login screen instead of Home.
   ///

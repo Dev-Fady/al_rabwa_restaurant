@@ -1,12 +1,15 @@
 import 'dart:async';
 
+import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:al_rabwa_restaurant/core/utils/auth_helper.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
-/// First screen shown on a cold start. Sends the user to the shell once the
-/// short entrance delay is over.
+/// First screen shown on a cold start. Opens the device registration flow on
+/// a fresh install and the storefront once a token has been saved.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -22,9 +25,25 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer(_displayDuration, () {
-      if (mounted) context.go(AppRoutes.home);
-    });
+    _timer = Timer(_displayDuration, _openNextScreen);
+  }
+
+  Future<void> _openNextScreen() async {
+    final hasToken = await _hasSavedToken();
+    if (!mounted) return;
+
+    context.go(hasToken ? AppRoutes.home : AppRoutes.registration);
+  }
+
+  Future<bool> _hasSavedToken() async {
+    try {
+      if (!getIt.isRegistered<FlutterSecureStorage>()) return false;
+      return await AuthHelper.hasSavedToken(getIt<FlutterSecureStorage>());
+    } catch (_) {
+      // Storage is unavailable (tests, web private mode): treat the device as
+      // new and let the registration screen handle the session.
+      return false;
+    }
   }
 
   @override

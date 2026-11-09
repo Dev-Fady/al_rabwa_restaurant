@@ -282,4 +282,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'EN';
+
+  @override
+  String get registerWelcomeTitle => 'Welcome to Al Rabwa';
+
+  @override
+  String get registerWelcomeSubtitle =>
+      'Tell us a little about you and start ordering in seconds.';
+
+  @override
+  String get registerHeroBadge => 'Al Rabwa Restaurant';
+
+  @override
+  String get registerFormTitle => 'Create your profile';
+
+  @override
+  String get registerFormSubtitle =>
+      'We\'ll use your details to personalize your orders.';
+
+  @override
+  String get registerNameHint => 'e.g. Ahmed Mohamed';
+
+  @override
+  String get registerPhoneHint => '+974 555 1234';
+
+  @override
+  String get registerLanguageLabel => 'Preferred language';
+
+  @override
+  String get registerSubmit => 'Start ordering';
+
+  @override
+  String get registerError => 'Something went wrong. Please try again.';
+
+  @override
+  String get registerNameRequired => 'Please enter your name.';
+
+  @override
+  String get registerNameTooShort => 'Your name is too short.';
+
+  @override
+  String get registerPhoneRequired => 'Please enter your phone number.';
+
+  @override
+  String get registerPhoneInvalid => 'Please enter a valid phone number.';
+
+  @override
+  String get registerPrivacyNote =>
+      'Your session is stored securely on this device. By continuing, you agree to our terms and privacy policy.';
+
+  @override
+  String get registerFeatureFresh => 'Freshly prepared';
+
+  @override
+  String get registerFeatureFast => 'Fast delivery';
+
+  @override
+  String get registerFeatureSecure => 'Secure & private';
 }

@@ -95,7 +95,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
-    Locale('en'),
+    Locale('en')
   ];
 
   /// No description provided for @appTitle.
@@ -607,6 +607,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'EN'**
   String get english;
+
+  /// No description provided for @registerWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Al Rabwa'**
+  String get registerWelcomeTitle;
+
+  /// No description provided for @registerWelcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us a little about you and start ordering in seconds.'**
+  String get registerWelcomeSubtitle;
+
+  /// No description provided for @registerHeroBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Al Rabwa Restaurant'**
+  String get registerHeroBadge;
+
+  /// No description provided for @registerFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your profile'**
+  String get registerFormTitle;
+
+  /// No description provided for @registerFormSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll use your details to personalize your orders.'**
+  String get registerFormSubtitle;
+
+  /// No description provided for @registerNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Ahmed Mohamed'**
+  String get registerNameHint;
+
+  /// No description provided for @registerPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'+974 555 1234'**
+  String get registerPhoneHint;
+
+  /// No description provided for @registerLanguageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred language'**
+  String get registerLanguageLabel;
+
+  /// No description provided for @registerSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Start ordering'**
+  String get registerSubmit;
+
+  /// No description provided for @registerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get registerError;
+
+  /// No description provided for @registerNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name.'**
+  String get registerNameRequired;
+
+  /// No description provided for @registerNameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name is too short.'**
+  String get registerNameTooShort;
+
+  /// No description provided for @registerPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your phone number.'**
+  String get registerPhoneRequired;
+
+  /// No description provided for @registerPhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid phone number.'**
+  String get registerPhoneInvalid;
+
+  /// No description provided for @registerPrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session is stored securely on this device. By continuing, you agree to our terms and privacy policy.'**
+  String get registerPrivacyNote;
+
+  /// No description provided for @registerFeatureFresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Freshly prepared'**
+  String get registerFeatureFresh;
+
+  /// No description provided for @registerFeatureFast.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast delivery'**
+  String get registerFeatureFast;
+
+  /// No description provided for @registerFeatureSecure.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure & private'**
+  String get registerFeatureSecure;
 }
 
 class _AppLocalizationsDelegate
@@ -627,6 +735,8 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'ar':
@@ -639,6 +749,6 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

@@ -4,6 +4,9 @@ class AppRoutes {
   static const String splash = '/';
   static const String initial = splash;
 
+  /// First-run device registration (name + phone) that stores the token.
+  static const String registration = '/register';
+
   /// Auth entry point used when the API invalidates the session.
   static const String login = '/login';
 

@@ -17,6 +17,10 @@ import 'package:al_rabwa_restaurant/features/menu/data/repositories/menu_items_r
 import 'package:al_rabwa_restaurant/features/menu/domain/repositories/menu_items_repository.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_cubit.dart';
+import 'package:al_rabwa_restaurant/features/registration/data/datasources/device_registration_remote_data_source.dart';
+import 'package:al_rabwa_restaurant/features/registration/data/repositories/device_registration_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/registration/domain/repositories/device_registration_repository.dart';
+import 'package:al_rabwa_restaurant/features/registration/presentation/cubit/device_registration_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -56,6 +60,22 @@ Future<void> setupGetIt() async {
   );
 
   getIt.registerLazySingleton<ApiService>(() => ApiService(getIt<Dio>()));
+
+  getIt.registerLazySingleton<DeviceRegistrationRemoteDataSource>(
+    () =>
+        DeviceRegistrationRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<DeviceRegistrationRepository>(
+    () => DeviceRegistrationRepositoryImpl(
+      remoteDataSource: getIt<DeviceRegistrationRemoteDataSource>(),
+      secureStorage: getIt<FlutterSecureStorage>(),
+    ),
+  );
+
+  getIt.registerFactory<DeviceRegistrationCubit>(
+    () => DeviceRegistrationCubit(getIt<DeviceRegistrationRepository>()),
+  );
 
   getIt.registerLazySingleton<SettingsRemoteDataSource>(
     () => SettingsRemoteDataSourceImpl(apiService: getIt<ApiService>()),
