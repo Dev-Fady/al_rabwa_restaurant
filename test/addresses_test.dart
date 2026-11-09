@@ -11,7 +11,14 @@ import 'package:al_rabwa_restaurant/features/addresses/domain/repositories/addre
 import 'package:al_rabwa_restaurant/features/addresses/domain/repositories/device_location_repository.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/add_address_cubit.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/add_address_state.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_details_cubit.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_details_state.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_list_cubit.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_list_state.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/add_address_screen.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/address_details_screen.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/address_selection_screen.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/widgets/address_card.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/widgets/address_form_fields.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/widgets/address_kind_selector.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
@@ -46,6 +53,19 @@ Map<String, dynamic> _addressPayload({bool deliverable = true}) => {
   },
 };
 
+Map<String, dynamic> _addressListPayload() {
+  final first = Map<String, dynamic>.from(_addressPayload()['data'] as Map);
+  final second = Map<String, dynamic>.from(first)
+    ..['id'] = 3
+    ..['label'] = 'الشركة'
+    ..['title'] = 'الشركة'
+    ..['building'] = 'مبنى 40، شقة 5';
+
+  return {
+    'data': [second, first],
+  };
+}
+
 class _FakeApiService implements ApiService {
   _FakeApiService({required this.payload});
 
@@ -54,6 +74,56 @@ class _FakeApiService implements ApiService {
   Map<String, dynamic>? lastBody;
   String? lastLang;
   String? lastLocale;
+  int getAddressesCalls = 0;
+  int getAddressCalls = 0;
+  int updateAddressCalls = 0;
+  int? lastAddressId;
+
+  @override
+  Future<HttpResponse<dynamic>> getAddresses({
+    String? lang,
+    String? xLocale,
+  }) async {
+    getAddressesCalls++;
+    lastLang = lang;
+    lastLocale = xLocale;
+
+    final failure = error;
+    if (failure != null) throw failure;
+
+    return HttpResponse<dynamic>(
+      payload,
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: 'addresses'),
+        data: payload,
+        statusCode: 200,
+      ),
+    );
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> getAddress({
+    required int id,
+    String? lang,
+    String? xLocale,
+  }) async {
+    getAddressCalls++;
+    lastAddressId = id;
+    lastLang = lang;
+    lastLocale = xLocale;
+
+    final failure = error;
+    if (failure != null) throw failure;
+
+    return HttpResponse<dynamic>(
+      payload,
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: 'addresses/$id'),
+        data: payload,
+        statusCode: 200,
+      ),
+    );
+  }
 
   @override
   Future<HttpResponse<dynamic>> createAddress({
@@ -79,16 +149,70 @@ class _FakeApiService implements ApiService {
   }
 
   @override
+  Future<HttpResponse<dynamic>> updateAddress({
+    required int id,
+    required Map<String, dynamic> body,
+    String? lang,
+    String? xLocale,
+  }) async {
+    updateAddressCalls++;
+    lastAddressId = id;
+    lastBody = body;
+    lastLang = lang;
+    lastLocale = xLocale;
+
+    final failure = error;
+    if (failure != null) throw failure;
+
+    return HttpResponse<dynamic>(
+      payload,
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: 'addresses/$id'),
+        data: payload,
+        statusCode: 200,
+      ),
+    );
+  }
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _FakeAddressesRepository implements AddressesRepository {
   Either<Failure, Address>? result;
+  Either<Failure, List<Address>>? fetchResult;
+  Either<Failure, Address>? detailsResult;
+  Either<Failure, Address>? updateResult;
   int calls = 0;
+  int fetchCalls = 0;
+  int fetchAddressCalls = 0;
+  int updateCalls = 0;
+  int? lastAddressId;
+  int? lastUpdateId;
   AddressKind? lastKind;
   GeoPoint? lastPoint;
   String? lastLang;
   String? lastArea;
+
+  @override
+  Future<Either<Failure, List<Address>>> fetchAddresses({
+    String lang = 'ar',
+  }) async {
+    fetchCalls++;
+    lastLang = lang;
+    return fetchResult ?? Right([_address()]);
+  }
+
+  @override
+  Future<Either<Failure, Address>> fetchAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    fetchAddressCalls++;
+    lastAddressId = id;
+    lastLang = lang;
+    return detailsResult ?? result ?? Right(_address());
+  }
 
   @override
   Future<Either<Failure, Address>> createAddress({
@@ -107,6 +231,27 @@ class _FakeAddressesRepository implements AddressesRepository {
     lastLang = lang;
     lastArea = area;
     return result!;
+  }
+
+  @override
+  Future<Either<Failure, Address>> updateAddress({
+    required int id,
+    required AddressKind kind,
+    required String label,
+    required String area,
+    required String street,
+    required String building,
+    required String notes,
+    required GeoPoint point,
+    String lang = 'ar',
+  }) async {
+    updateCalls++;
+    lastUpdateId = id;
+    lastKind = kind;
+    lastPoint = point;
+    lastLang = lang;
+    lastArea = area;
+    return updateResult ?? result ?? Right(_address());
   }
 }
 
@@ -247,6 +392,118 @@ void main() {
         ),
       );
     });
+
+    test('maps the saved address list and sends the language', () async {
+      api.payload = _addressListPayload();
+
+      final addresses = await dataSource.fetchAddresses(lang: 'en');
+
+      expect(addresses, hasLength(2));
+      expect(addresses.map((address) => address.id), [3, 1]);
+      expect(addresses.first.displayName, 'الشركة');
+      expect(addresses.last.displayName, 'البيت');
+      expect(api.getAddressesCalls, 1);
+      expect(api.lastLang, 'en');
+      expect(api.lastLocale, 'en');
+    });
+
+    test('returns an empty list when no address is saved', () async {
+      api.payload = {'data': <dynamic>[]};
+
+      final addresses = await dataSource.fetchAddresses();
+
+      expect(addresses, isEmpty);
+    });
+
+    test('throws a server failure when the list response fails', () async {
+      api.payload = {'success': false, 'message': 'Unauthorized'};
+
+      expect(
+        () => dataSource.fetchAddresses(),
+        throwsA(
+          isA<ServerFailure>().having(
+            (failure) => failure.message,
+            'message',
+            'Unauthorized',
+          ),
+        ),
+      );
+    });
+
+    test('loads one address by id and sends the language', () async {
+      final payload = _addressPayload();
+      payload['data']['id'] = 3;
+
+      api.payload = payload;
+
+      final address = await dataSource.fetchAddress(id: 3, lang: 'en');
+
+      expect(address.data?.id, 3);
+      expect(address.toEntity()?.displayName, 'البيت');
+      expect(api.getAddressCalls, 1);
+      expect(api.lastAddressId, 3);
+      expect(api.lastLang, 'en');
+      expect(api.lastLocale, 'en');
+    });
+
+    test('patches the address with the same payload shape', () async {
+      final payload = _addressPayload();
+      payload['data']['building'] = 'مبنى 40، شقة 5';
+
+      api.payload = payload;
+
+      final response = await dataSource.updateAddress(
+        id: 3,
+        kind: AddressKind.work,
+        label: 'الشركة',
+        area: ' السد ',
+        street: 'شارع 901',
+        building: 'مبنى 40، شقة 5',
+        notes: 'الباب الأخضر',
+        point: const GeoPoint(latitude: 25.28539999999, longitude: 51.531),
+        lang: 'en',
+      );
+
+      expect(api.updateAddressCalls, 1);
+      expect(api.lastAddressId, 3);
+      expect(api.lastBody, {
+        'kind': 'work',
+        'label': 'الشركة',
+        'area': 'السد',
+        'street': 'شارع 901',
+        'building': 'مبنى 40، شقة 5',
+        'notes': 'الباب الأخضر',
+        'latitude': 25.2854,
+        'longitude': 51.531,
+      });
+      expect(api.lastLang, 'en');
+      expect(api.lastLocale, 'en');
+      expect(response.data?.building, 'مبنى 40، شقة 5');
+    });
+
+    test('throws the API message when updating fails', () async {
+      api.payload = {'success': false, 'message': 'العنوان غير موجود'};
+
+      expect(
+        () => dataSource.updateAddress(
+          id: 99,
+          kind: AddressKind.home,
+          label: '',
+          area: 'السد',
+          street: 'شارع 901',
+          building: 'مبنى 35',
+          notes: '',
+          point: _qatarPoint,
+        ),
+        throwsA(
+          isA<ServerFailure>().having(
+            (failure) => failure.message,
+            'message',
+            'العنوان غير موجود',
+          ),
+        ),
+      );
+    });
   });
 
   group('AddressesRepositoryImpl', () {
@@ -261,6 +518,72 @@ void main() {
       );
 
       final result = await repository.createAddress(
+        kind: AddressKind.home,
+        label: '',
+        area: 'السد',
+        street: 'شارع 901',
+        building: 'مبنى 35',
+        notes: '',
+        point: _qatarPoint,
+      );
+
+      expect(result.isLeft(), isTrue);
+      result.fold(
+        (failure) => expect(failure, isA<ServerFailure>()),
+        (_) => fail('expected a failure'),
+      );
+    });
+
+    test('wraps a transport error when loading addresses', () async {
+      final repository = AddressesRepositoryImpl(
+        remoteDataSource: _RemoteDataSourceThrows(
+          DioException(
+            requestOptions: RequestOptions(path: 'addresses'),
+            type: DioExceptionType.connectionTimeout,
+          ),
+        ),
+      );
+
+      final result = await repository.fetchAddresses(lang: 'en');
+
+      expect(result.isLeft(), isTrue);
+      result.fold(
+        (failure) => expect(failure, isA<ServerFailure>()),
+        (_) => fail('expected a failure'),
+      );
+    });
+
+    test('wraps a transport error when loading one address', () async {
+      final repository = AddressesRepositoryImpl(
+        remoteDataSource: _RemoteDataSourceThrows(
+          DioException(
+            requestOptions: RequestOptions(path: 'addresses/3'),
+            type: DioExceptionType.badResponse,
+          ),
+        ),
+      );
+
+      final result = await repository.fetchAddress(id: 3);
+
+      expect(result.isLeft(), isTrue);
+      result.fold(
+        (failure) => expect(failure, isA<ServerFailure>()),
+        (_) => fail('expected a failure'),
+      );
+    });
+
+    test('wraps a transport error when updating an address', () async {
+      final repository = AddressesRepositoryImpl(
+        remoteDataSource: _RemoteDataSourceThrows(
+          DioException(
+            requestOptions: RequestOptions(path: 'addresses/3'),
+            type: DioExceptionType.connectionError,
+          ),
+        ),
+      );
+
+      final result = await repository.updateAddress(
+        id: 3,
         kind: AddressKind.home,
         label: '',
         area: 'السد',
@@ -319,6 +642,37 @@ void main() {
       expect(repository.lastPoint, _qatarPoint);
     });
 
+    test('updates the existing address in edit mode', () async {
+      final updated = AddressResponse.fromJson({
+        'data': {
+          ...(_addressPayload()['data'] as Map<String, dynamic>),
+          'kind': 'work',
+          'building': 'مبنى 40، شقة 5',
+        },
+      }).toEntity()!;
+      repository.updateResult = Right(updated);
+
+      cubit.startEditing(_address());
+      cubit.selectKind(AddressKind.work);
+
+      await cubit.save(
+        point: _qatarPoint,
+        label: 'الشركة',
+        area: 'السد',
+        street: 'شارع 901',
+        building: 'مبنى 40، شقة 5',
+        notes: '',
+      );
+
+      expect(cubit.state.isSuccess, isTrue);
+      expect(cubit.state.createdAddress?.building, 'مبنى 40، شقة 5');
+      expect(repository.updateCalls, 1);
+      expect(repository.calls, 0);
+      expect(repository.lastUpdateId, 1);
+      expect(repository.lastKind, AddressKind.work);
+      expect(repository.lastArea, 'السد');
+    });
+
     test('rejects points outside Qatar without calling the API', () async {
       await cubit.save(
         point: _dubaiPoint,
@@ -375,6 +729,107 @@ void main() {
         expect(cubit.state.focusPoint, isNull);
       },
     );
+  });
+
+  group('AddressListCubit', () {
+    late _FakeAddressesRepository repository;
+    late AddressListCubit cubit;
+
+    setUp(() {
+      repository = _FakeAddressesRepository()
+        ..fetchResult = Right([_address()]);
+      cubit = AddressListCubit(repository, lang: 'en');
+    });
+
+    tearDown(() => cubit.close());
+
+    test('emits loading then the saved addresses', () async {
+      final loading = cubit.load();
+      expect(cubit.state.isLoading, isTrue);
+
+      await loading;
+
+      expect(cubit.state.status, AddressListStatus.success);
+      expect(cubit.state.addresses, hasLength(1));
+      expect(cubit.state.addresses.single.id, 1);
+      expect(repository.fetchCalls, 1);
+      expect(repository.lastLang, 'en');
+    });
+
+    test('emits the API message when loading fails', () async {
+      repository.fetchResult = Left(ServerFailure('Unauthorized'));
+
+      await cubit.load();
+
+      expect(cubit.state.status, AddressListStatus.failure);
+      expect(cubit.state.errorMessage, 'Unauthorized');
+      expect(cubit.state.hasAddresses, isFalse);
+    });
+
+    test('keeps the loaded addresses when a later load fails', () async {
+      await cubit.load();
+      repository.fetchResult = Left(ServerFailure('offline'));
+
+      await cubit.load();
+
+      expect(cubit.state.status, AddressListStatus.failure);
+      expect(cubit.state.hasAddresses, isTrue);
+      expect(cubit.state.errorMessage, 'offline');
+    });
+  });
+
+  group('AddressDetailsCubit', () {
+    late _FakeAddressesRepository repository;
+    late AddressDetailsCubit cubit;
+
+    setUp(() {
+      repository = _FakeAddressesRepository()
+        ..detailsResult = Right(_address());
+      cubit = AddressDetailsCubit(repository, addressId: 3, lang: 'en');
+    });
+
+    tearDown(() => cubit.close());
+
+    test('emits loading then the address', () async {
+      final loading = cubit.load();
+
+      expect(cubit.state.isLoading, isTrue);
+
+      await loading;
+
+      expect(cubit.state.status, AddressDetailsStatus.success);
+      expect(cubit.state.address?.id, 1);
+      expect(cubit.state.hasError, isFalse);
+      expect(repository.fetchAddressCalls, 1);
+      expect(repository.lastAddressId, 3);
+      expect(repository.lastLang, 'en');
+    });
+
+    test('emits the API message when loading fails', () async {
+      repository.detailsResult = Left(ServerFailure('العنوان غير موجود'));
+
+      await cubit.load();
+
+      expect(cubit.state.status, AddressDetailsStatus.failure);
+      expect(cubit.state.hasError, isTrue);
+      expect(cubit.state.address, isNull);
+      expect(cubit.state.errorMessage, 'العنوان غير موجود');
+    });
+
+    test('applies an edited address without reloading', () async {
+      await cubit.load();
+      final edited = AddressResponse.fromJson({
+        'data': {
+          ...(_addressPayload()['data'] as Map<String, dynamic>),
+          'building': 'مبنى 40، شقة 5',
+        },
+      }).toEntity()!;
+
+      cubit.applyAddress(edited);
+
+      expect(cubit.state.address?.building, 'مبنى 40، شقة 5');
+      expect(repository.fetchAddressCalls, 1);
+    });
   });
 
   group('AddressKindSelector', () {
@@ -487,6 +942,345 @@ void main() {
       expect(find.text('حفظ العنوان'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('prefills the form when editing an address', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final repository = _FakeAddressesRepository();
+      final cubit = AddAddressCubit(
+        repository,
+        _FakeLocationRepository(),
+        lang: 'ar',
+      );
+      addTearDown(cubit.close);
+
+      await tester.pumpWidget(
+        _app(
+          BlocProvider<AddAddressCubit>.value(
+            value: cubit,
+            child: AddAddressScreen(existingAddress: _address()),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('تعديل العنوان'), findsOneWidget);
+      expect(find.text('حفظ التعديلات'), findsOneWidget);
+      expect(find.text('البيت'), findsOneWidget);
+      expect(find.text('السد'), findsOneWidget);
+      expect(find.text('شارع 901'), findsOneWidget);
+      expect(find.text('مبنى 35، الطابق 2'), findsOneWidget);
+      expect(find.text('الباب الأخضر'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('AddressDetailsScreen', () {
+    Widget buildDetails(
+      _FakeAddressesRepository repository, {
+      bool load = true,
+    }) {
+      final cubit = AddressDetailsCubit(repository, addressId: 3, lang: 'ar');
+      addTearDown(cubit.close);
+      if (load) cubit.load();
+
+      return _app(
+        BlocProvider<AddressDetailsCubit>.value(
+          value: cubit,
+          child: const AddressDetailsScreen(),
+        ),
+      );
+    }
+
+    testWidgets('shows the loaded address and the edit action', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final repository = _FakeAddressesRepository()
+        ..detailsResult = Right(_address());
+
+      await tester.pumpWidget(buildDetails(repository));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('تفاصيل العنوان'), findsOneWidget);
+      expect(find.text('بيانات العنوان'), findsOneWidget);
+      expect(find.text('البيت'), findsOneWidget);
+      expect(find.text('السد'), findsOneWidget);
+      expect(find.text('شارع 901'), findsOneWidget);
+      expect(find.text('مبنى 35، الطابق 2'), findsOneWidget);
+      expect(find.text('تعديل العنوان'), findsOneWidget);
+      expect(find.text('المنزل'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('shows the failure state and retries', (tester) async {
+      final repository = _FakeAddressesRepository()
+        ..detailsResult = Left(ServerFailure(''));
+
+      await tester.pumpWidget(buildDetails(repository));
+      await tester.pump();
+      await tester.pump();
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AddressDetailsScreen)),
+      )!;
+      expect(find.text(l10n.addressDetailsError), findsOneWidget);
+      expect(find.text(l10n.retry), findsOneWidget);
+
+      repository.detailsResult = Right(_address());
+      await tester.tap(find.text(l10n.retry));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('البيت'), findsOneWidget);
+      expect(find.text(l10n.addressDetailsError), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('keeps a wide layout free of overflow', (tester) async {
+      tester.view.physicalSize = const Size(1280, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final repository = _FakeAddressesRepository()
+        ..detailsResult = Right(_address());
+
+      await tester.pumpWidget(buildDetails(repository));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('البيت'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('AddressCard', () {
+    testWidgets('opens the details and edit actions from the menu', (
+      tester,
+    ) async {
+      var detailsTaps = 0;
+      var editTaps = 0;
+
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: AddressCard(
+              address: _address(),
+              selected: false,
+              onTap: () {},
+              onDetails: () => detailsTaps++,
+              onEdit: () => editTaps++,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.more_horiz_rounded));
+      await tester.pumpAndSettle();
+      expect(find.text('عرض التفاصيل'), findsOneWidget);
+      expect(find.text('تعديل العنوان'), findsOneWidget);
+
+      await tester.tap(find.text('عرض التفاصيل'));
+      await tester.pumpAndSettle();
+      expect(detailsTaps, 1);
+      expect(editTaps, 0);
+
+      await tester.tap(find.byIcon(Icons.more_horiz_rounded));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('تعديل العنوان'));
+      await tester.pumpAndSettle();
+      expect(detailsTaps, 1);
+      expect(editTaps, 1);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('hides the menu when no action is wired', (tester) async {
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: AddressCard(
+              address: _address(),
+              selected: false,
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.more_horiz_rounded), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('AddressSelectionScreen', () {
+    Widget buildSelection(
+      _FakeAddressesRepository repository, {
+      int? selectedAddressId,
+    }) {
+      final cubit = AddressListCubit(repository, lang: 'ar');
+      addTearDown(cubit.close);
+      cubit.load();
+
+      return _app(
+        BlocProvider<AddressListCubit>.value(
+          value: cubit,
+          child: AddressSelectionScreen(selectedAddressId: selectedAddressId),
+        ),
+      );
+    }
+
+    _FakeAddressesRepository repositoryWith(List<Address> addresses) {
+      return _FakeAddressesRepository()..fetchResult = Right(addresses);
+    }
+
+    testWidgets('lists the saved addresses and the add option', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final first = _address();
+      final second = AddressResponse.fromJson({
+        'data': {
+          ...(_addressPayload()['data'] as Map<String, dynamic>),
+          'id': 3,
+          'label': 'الشركة',
+          'title': 'الشركة',
+        },
+      }).toEntity()!;
+
+      await tester.pumpWidget(
+        buildSelection(repositoryWith([second, first]), selectedAddressId: 3),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('اختر عنوان التوصيل'), findsOneWidget);
+      expect(find.text('العناوين المحفوظة'), findsOneWidget);
+      expect(find.text('الشركة'), findsOneWidget);
+      expect(find.text('البيت'), findsOneWidget);
+      expect(find.text('أضف عنوانًا جديدًا'), findsOneWidget);
+      expect(find.byKey(const ValueKey('address-3')), findsOneWidget);
+      expect(find.byKey(const ValueKey('address-1')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('shows the empty state when nothing is saved', (tester) async {
+      await tester.pumpWidget(buildSelection(repositoryWith(const [])));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('لم تحفظ أي عنوان بعد.'), findsOneWidget);
+      expect(find.text('أضف عنوانًا جديدًا'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('shows the failure state and retries', (tester) async {
+      final repository = _FakeAddressesRepository()
+        ..fetchResult = Left(ServerFailure(''));
+
+      await tester.pumpWidget(buildSelection(repository));
+      await tester.pump();
+      await tester.pump();
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AddressSelectionScreen)),
+      )!;
+      expect(find.text(l10n.addressListError), findsOneWidget);
+      expect(find.text(l10n.retry), findsOneWidget);
+
+      repository.fetchResult = Right([_address()]);
+      await tester.tap(find.text(l10n.retry));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('البيت'), findsOneWidget);
+      expect(find.text(l10n.addressListError), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('keeps a wide layout free of overflow', (tester) async {
+      tester.view.physicalSize = const Size(1280, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(buildSelection(repositoryWith([_address()])));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('البيت'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('fits a small phone at 2x text scale without overflow', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(() {
+        tester.view.reset();
+        tester.platformDispatcher.clearTextScaleFactorTestValue();
+      });
+
+      await tester.pumpWidget(buildSelection(repositoryWith([_address()])));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('أضف عنوانًا جديدًا'), findsOneWidget);
+
+      await tester.scrollUntilVisible(
+        find.text('البيت'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pump();
+
+      expect(find.text('البيت'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('returns the tapped address to the caller', (tester) async {
+      final repository = repositoryWith([_address()]);
+      final cubit = AddressListCubit(repository, lang: 'ar')..load();
+      addTearDown(cubit.close);
+      Address? picked;
+
+      await tester.pumpWidget(
+        _app(
+          Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () async {
+                    picked = await Navigator.of(context).push<Address>(
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider<AddressListCubit>.value(
+                          value: cubit,
+                          child: const AddressSelectionScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('open'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('البيت'));
+      await tester.pumpAndSettle();
+
+      expect(picked?.id, 1);
+      expect(tester.takeException(), isNull);
+    });
   });
 }
 
@@ -496,7 +1290,35 @@ class _RemoteDataSourceThrows implements AddressesRemoteDataSource {
   final Object error;
 
   @override
+  Future<List<Address>> fetchAddresses({String lang = 'ar'}) async {
+    throw error;
+  }
+
+  @override
+  Future<AddressResponse> fetchAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    throw error;
+  }
+
+  @override
   Future<AddressResponse> createAddress({
+    required AddressKind kind,
+    required String label,
+    required String area,
+    required String street,
+    required String building,
+    required String notes,
+    required GeoPoint point,
+    String lang = 'ar',
+  }) async {
+    throw error;
+  }
+
+  @override
+  Future<AddressResponse> updateAddress({
+    required int id,
     required AddressKind kind,
     required String label,
     required String area,

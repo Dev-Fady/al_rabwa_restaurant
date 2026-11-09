@@ -62,7 +62,8 @@ import 'app_localizations_en.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,7 +71,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,17 +84,18 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
-    Locale('en')
+    Locale('en'),
   ];
 
   /// No description provided for @appTitle.
@@ -731,6 +734,90 @@ abstract class AppLocalizations {
   /// **'Add a new address'**
   String get addressAddTitle;
 
+  /// No description provided for @addressEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit address'**
+  String get addressEditTitle;
+
+  /// No description provided for @addressSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get addressSaveChanges;
+
+  /// No description provided for @addressDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Address details'**
+  String get addressDetailsTitle;
+
+  /// No description provided for @addressDetailsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Address information'**
+  String get addressDetailsInfo;
+
+  /// No description provided for @addressDetailsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the address details. Please try again.'**
+  String get addressDetailsError;
+
+  /// No description provided for @addressOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Address options'**
+  String get addressOptions;
+
+  /// No description provided for @addressViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get addressViewDetails;
+
+  /// No description provided for @addressCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinates'**
+  String get addressCoordinates;
+
+  /// No description provided for @addressSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select delivery address'**
+  String get addressSelectTitle;
+
+  /// No description provided for @addressSelectSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a saved address or add a new one.'**
+  String get addressSelectSubtitle;
+
+  /// No description provided for @addressSavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved addresses'**
+  String get addressSavedTitle;
+
+  /// No description provided for @addressListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t saved any addresses yet.'**
+  String get addressListEmpty;
+
+  /// No description provided for @addressListError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your saved addresses. Please try again.'**
+  String get addressListError;
+
+  /// No description provided for @addressOutsideArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Outside the delivery area'**
+  String get addressOutsideArea;
+
   /// No description provided for @addressUseCurrentLocation.
   ///
   /// In en, this message translates to:
@@ -888,7 +975,8 @@ abstract class AppLocalizations {
   String get addressLocationUnavailable;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -897,25 +985,26 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['ar', 'en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['ar', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'ar': return AppLocalizationsAr();
-    case 'en': return AppLocalizationsEn();
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'en':
+      return AppLocalizationsEn();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
+    'that was used.',
   );
 }

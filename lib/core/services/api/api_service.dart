@@ -40,9 +40,33 @@ abstract class ApiService {
     @Header('x-locale') String? xLocale,
   });
 
+  @GET(ApiConstants.addresses)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> getAddresses({
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
+
+  @GET(ApiConstants.addressDetails)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> getAddress({
+    @Path('id') required int id,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
+
   @POST(ApiConstants.addresses)
-  @Extra(const <String, Object>{'requiresToken': true})
+  @Extra(<String, Object>{'requiresToken': true})
   Future<HttpResponse<dynamic>> createAddress({
+    @Body() required Map<String, dynamic> body,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
+
+  @PATCH(ApiConstants.addressDetails)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> updateAddress({
+    @Path('id') required int id,
     @Body() required Map<String, dynamic> body,
     @Query('lang') String? lang,
     @Header('x-locale') String? xLocale,

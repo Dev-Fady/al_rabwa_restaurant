@@ -1,5 +1,6 @@
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
 import 'package:al_rabwa_restaurant/core/widget/app_text_button.dart';
+import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/entities/geo_point.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/errors/location_failure.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/add_address_cubit.dart';
@@ -18,7 +19,10 @@ import 'package:go_router/go_router.dart';
 /// Opens over the shell and returns the saved address to its caller so the
 /// delivery bar can show it immediately.
 class AddAddressScreen extends StatefulWidget {
-  const AddAddressScreen({super.key});
+  const AddAddressScreen({super.key, this.existingAddress});
+
+  /// When set, the form is prefilled and saving patches this address.
+  final Address? existingAddress;
 
   /// Below this width the map and the form stack vertically.
   static const double _wideBreakpoint = 900;
@@ -37,6 +41,24 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
   /// Live map centre; the picker writes it, [_submit] reads it.
   final ValueNotifier<GeoPoint> _point = ValueNotifier(GeoPoint.qatarCenter);
+
+  bool get _isEditing => widget.existingAddress != null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final existing = widget.existingAddress;
+    if (existing == null) return;
+
+    _labelController.text = existing.label;
+    _areaController.text = existing.area;
+    _streetController.text = existing.street;
+    _buildingController.text = existing.building;
+    _notesController.text = existing.notes;
+    _point.value = existing.point ?? _point.value;
+    context.read<AddAddressCubit>().startEditing(existing);
+  }
 
   @override
   void dispose() {
@@ -122,7 +144,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             child: Center(child: ItemBackButton()),
           ),
           title: Text(
-            l10n.addressAddTitle,
+            _isEditing ? l10n.addressEditTitle : l10n.addressAddTitle,
             style: theme.textTheme.titleLarge?.copyWith(
               color: context.appColors.brandGreen,
               fontWeight: FontWeight.w900,
@@ -241,7 +263,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           ),
           const SizedBox(height: 24),
           AppTextButton(
-            buttonText: l10n.addressSave,
+            buttonText: _isEditing ? l10n.addressSaveChanges : l10n.addressSave,
             isLoading: isSubmitting,
             onPressed: _submit,
             backgroundColor: context.appColors.brandGreen,

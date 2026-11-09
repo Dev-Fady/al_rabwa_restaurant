@@ -25,6 +25,16 @@ class AddAddressCubit extends Cubit<AddAddressState> {
   /// BCP-47 language sent to the API so `kind_label`/`title` match the UI.
   final String lang;
 
+  /// When set, [save] updates this address instead of creating a new one.
+  Address? _editingAddress;
+
+  /// Enters edit mode for an existing address; [save] then sends `PATCH`.
+  void startEditing(Address address) {
+    if (state.isSubmitting) return;
+    _editingAddress = address;
+    emit(AddAddressState(kind: address.kind));
+  }
+
   void selectKind(AddressKind kind) {
     if (kind == state.kind || state.isSubmitting) return;
     emit(state.copyWith(kind: kind));
@@ -91,16 +101,29 @@ class AddAddressCubit extends Cubit<AddAddressState> {
       ),
     );
 
-    final result = await _repository.createAddress(
-      kind: state.kind,
-      label: label,
-      area: area,
-      street: street,
-      building: building,
-      notes: notes,
-      point: point,
-      lang: lang,
-    );
+    final editingId = _editingAddress?.id;
+    final result = editingId != null
+        ? await _repository.updateAddress(
+            id: editingId,
+            kind: state.kind,
+            label: label,
+            area: area,
+            street: street,
+            building: building,
+            notes: notes,
+            point: point,
+            lang: lang,
+          )
+        : await _repository.createAddress(
+            kind: state.kind,
+            label: label,
+            area: area,
+            street: street,
+            building: building,
+            notes: notes,
+            point: point,
+            lang: lang,
+          );
     if (isClosed) return;
 
     result.fold(

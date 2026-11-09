@@ -1,8 +1,13 @@
 import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/layout/main_shell.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/add_address_cubit.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_details_cubit.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_list_cubit.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/add_address_screen.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/address_details_screen.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/address_selection_screen.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/item_details_screen.dart';
@@ -62,10 +67,46 @@ class AppRouter {
           // Read the locale here: the provider's `create` runs during mount
           // and must not subscribe to inherited widgets.
           final lang = Localizations.localeOf(context).languageCode;
+          final existing = state.extra is Address
+              ? state.extra as Address
+              : null;
 
           return BlocProvider<AddAddressCubit>(
             create: (_) => getIt<AddAddressCubit>(param1: lang),
-            child: const AddAddressScreen(),
+            child: AddAddressScreen(existingAddress: existing),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.selectAddress,
+        builder: (context, state) {
+          final lang = Localizations.localeOf(context).languageCode;
+          final selectedId = state.extra is int ? state.extra as int : null;
+
+          return BlocProvider<AddressListCubit>(
+            create: (_) => getIt<AddressListCubit>(param1: lang)..load(),
+            child: AddressSelectionScreen(selectedAddressId: selectedId),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.addressDetails,
+        builder: (context, state) {
+          final addressId = int.tryParse(state.pathParameters['id'] ?? '');
+          if (addressId == null) {
+            return SectionPlaceholderScreen(
+              title: AppLocalizations.of(context)!.pageNotFound,
+              icon: Icons.error_outline,
+            );
+          }
+
+          final lang = Localizations.localeOf(context).languageCode;
+
+          return BlocProvider<AddressDetailsCubit>(
+            create: (_) =>
+                getIt<AddressDetailsCubit>(param1: addressId, param2: lang)
+                  ..load(),
+            child: const AddressDetailsScreen(),
           );
         },
       ),

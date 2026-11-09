@@ -77,13 +77,16 @@ class _HomeContentState extends State<_HomeContent> {
     }
   }
 
-  /// Opens the add-address form and shows the saved address in the bar.
-  Future<void> _openAddAddress(BuildContext context) async {
+  /// Opens the saved-address picker and shows the chosen address in the bar.
+  Future<void> _selectDeliveryAddress(BuildContext context) async {
     final authed = await AuthHelper.ensureAuthenticated(context);
-    if (!authed || !mounted) return;
+    if (!authed || !context.mounted) return;
 
-    final address = await context.push<Address>(AppRoutes.addAddress);
-    if (!mounted || address == null) return;
+    final address = await context.push<Address>(
+      AppRoutes.selectAddress,
+      extra: _deliveryAddress?.id,
+    );
+    if (!context.mounted || address == null) return;
     setState(() => _deliveryAddress = address);
   }
 
@@ -129,7 +132,7 @@ class _HomeContentState extends State<_HomeContent> {
                       // 2. Delivery location selection bar
                       HomeDeliveryLocationBar(
                         selectedAddress: _deliveryAddress?.displayName,
-                        onTap: () => _openAddAddress(context),
+                        onTap: () => _selectDeliveryAddress(context),
                       ),
                       const SizedBox(height: 12),
 

@@ -7,9 +7,25 @@ import 'package:al_rabwa_restaurant/features/addresses/domain/entities/geo_point
 
 import '../models/address_response.dart';
 
-/// Creates a delivery address through `POST /api/addresses`.
+/// Reads and creates delivery addresses through `/api/addresses`.
 abstract class AddressesRemoteDataSource {
+  Future<List<Address>> fetchAddresses({String lang = 'ar'});
+
+  Future<AddressResponse> fetchAddress({required int id, String lang = 'ar'});
+
   Future<AddressResponse> createAddress({
+    required AddressKind kind,
+    required String label,
+    required String area,
+    required String street,
+    required String building,
+    required String notes,
+    required GeoPoint point,
+    String lang = 'ar',
+  });
+
+  Future<AddressResponse> updateAddress({
+    required int id,
     required AddressKind kind,
     required String label,
     required String area,
@@ -27,6 +43,47 @@ class AddressesRemoteDataSourceImpl implements AddressesRemoteDataSource {
   final ApiService apiService;
 
   @override
+  Future<List<Address>> fetchAddresses({String lang = 'ar'}) async {
+    final response = await apiService.getAddresses(lang: lang, xLocale: lang);
+
+    final raw = _decodeBody(response.data);
+    final parsed = AddressListResponse.fromJson(raw);
+
+    if (raw['success'] == false) {
+      throw ServerFailure(
+        parsed.message.isEmpty
+            ? 'Failed to load the saved addresses.'
+            : parsed.message,
+      );
+    }
+
+    if (parsed.data == null) {
+      throw ServerFailure(
+        parsed.message.isEmpty ? 'Empty response from server.' : parsed.message,
+      );
+    }
+
+    return parsed.toEntities();
+  }
+
+  @override
+  Future<AddressResponse> fetchAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    final response = await apiService.getAddress(
+      id: id,
+      lang: lang,
+      xLocale: lang,
+    );
+
+    return _parseResponse(
+      response.data,
+      failureMessage: 'Failed to load the address.',
+    );
+  }
+
+  @override
   Future<AddressResponse> createAddress({
     required AddressKind kind,
     required String label,
@@ -38,28 +95,91 @@ class AddressesRemoteDataSourceImpl implements AddressesRemoteDataSource {
     String lang = 'ar',
   }) async {
     final response = await apiService.createAddress(
-      body: {
-        'kind': kind.apiValue,
-        'label': _optional(label),
-        'area': area.trim(),
-        'street': street.trim(),
-        'building': _optional(building),
-        'notes': _optional(notes),
-        // The backend stores a double; six decimals is about 10 cm of
-        // precision, far beyond what the map picker can express.
-        'latitude': _round(point.latitude),
-        'longitude': _round(point.longitude),
-      },
+      body: _body(
+        kind: kind,
+        label: label,
+        area: area,
+        street: street,
+        building: building,
+        notes: notes,
+        point: point,
+      ),
       lang: lang,
       xLocale: lang,
     );
 
-    final raw = _decodeBody(response.data);
+    return _parseResponse(
+      response.data,
+      failureMessage: 'Failed to save the address.',
+    );
+  }
+
+  @override
+  Future<AddressResponse> updateAddress({
+    required int id,
+    required AddressKind kind,
+    required String label,
+    required String area,
+    required String street,
+    required String building,
+    required String notes,
+    required GeoPoint point,
+    String lang = 'ar',
+  }) async {
+    final response = await apiService.updateAddress(
+      id: id,
+      body: _body(
+        kind: kind,
+        label: label,
+        area: area,
+        street: street,
+        building: building,
+        notes: notes,
+        point: point,
+      ),
+      lang: lang,
+      xLocale: lang,
+    );
+
+    return _parseResponse(
+      response.data,
+      failureMessage: 'Failed to update the address.',
+    );
+  }
+
+  Map<String, dynamic> _body({
+    required AddressKind kind,
+    required String label,
+    required String area,
+    required String street,
+    required String building,
+    required String notes,
+    required GeoPoint point,
+  }) {
+    return {
+      'kind': kind.apiValue,
+      'label': _optional(label),
+      'area': area.trim(),
+      'street': street.trim(),
+      'building': _optional(building),
+      'notes': _optional(notes),
+      // The backend stores a double; six decimals is about 10 cm of
+      // precision, far beyond what the map picker can express.
+      'latitude': _round(point.latitude),
+      'longitude': _round(point.longitude),
+    };
+  }
+
+  AddressResponse _parseResponse(
+    dynamic body, {
+    required String failureMessage,
+  }) {
+    final raw = _decodeBody(body);
     final parsed = AddressResponse.fromJson(raw);
 
     if (raw['success'] == false) {
       throw ServerFailure(
-        parsed.message.isEmpty ? 'Failed to save the address.' : parsed.message,
+        parsed.message.isEmpty ? failureMessage : parsed.message,
       );
     }
 

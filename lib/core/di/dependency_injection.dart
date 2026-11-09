@@ -9,6 +9,8 @@ import 'package:al_rabwa_restaurant/features/addresses/data/repositories/device_
 import 'package:al_rabwa_restaurant/features/addresses/domain/repositories/addresses_repository.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/repositories/device_location_repository.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/add_address_cubit.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_details_cubit.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_list_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/menu_categories_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_local_data_source.dart';
 import 'package:al_rabwa_restaurant/features/home/data/datasources/settings_remote_data_source.dart';
@@ -156,6 +158,18 @@ Future<void> setupGetIt() async {
     (lang, _) => AddAddressCubit(
       getIt<AddressesRepository>(),
       getIt<DeviceLocationRepository>(),
+      lang: lang,
+    ),
+  );
+
+  getIt.registerFactoryParam<AddressListCubit, String, void>(
+    (lang, _) => AddressListCubit(getIt<AddressesRepository>(), lang: lang),
+  );
+
+  getIt.registerFactoryParam<AddressDetailsCubit, int, String>(
+    (id, lang) => AddressDetailsCubit(
+      getIt<AddressesRepository>(),
+      addressId: id,
       lang: lang,
     ),
   );

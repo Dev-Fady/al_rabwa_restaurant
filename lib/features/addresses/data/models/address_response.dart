@@ -38,6 +38,40 @@ class AddressResponse {
   Address? toEntity() => data?.toEntity();
 }
 
+/// Envelope of `GET /api/addresses`.
+///
+/// ```json
+/// {"data": [
+///   {"id": 3, "kind": "home", "kind_label": "المنزل",
+///    "label": "الشركة", "title": "الشركة",
+///    "summary": "السد، شارع 901، مبنى 35، الطابق 2",
+///    "delivery_zone": null, "is_deliverable": true, "area": "السد",
+///    "street": "شارع 901", "building": "مبنى 35، الطابق 2",
+///    "notes": "الباب الأخضر", "latitude": 25.2854, "longitude": 51.531,
+///    "last_used_at": "2026-11-09T15:47:24+00:00"}
+/// ]}
+/// ```
+@JsonSerializable()
+class AddressListResponse {
+  final bool? success;
+
+  @JsonKey(defaultValue: '')
+  final String message;
+
+  final List<AddressModel>? data;
+
+  const AddressListResponse({this.success, this.message = '', this.data});
+
+  factory AddressListResponse.fromJson(Map<String, dynamic> json) =>
+      _$AddressListResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AddressListResponseToJson(this);
+
+  List<Address> toEntities() =>
+      data?.map((address) => address.toEntity()).toList(growable: false) ??
+      const [];
+}
+
 @JsonSerializable()
 class AddressModel {
   final int? id;

@@ -22,6 +22,23 @@ Map<String, dynamic> _$AddressResponseToJson(AddressResponse instance) =>
       'data': instance.data,
     };
 
+AddressListResponse _$AddressListResponseFromJson(Map<String, dynamic> json) =>
+    AddressListResponse(
+      success: json['success'] as bool?,
+      message: json['message'] as String? ?? '',
+      data: (json['data'] as List<dynamic>?)
+          ?.map((e) => AddressModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$AddressListResponseToJson(
+  AddressListResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'message': instance.message,
+  'data': instance.data,
+};
+
 AddressModel _$AddressModelFromJson(Map<String, dynamic> json) => AddressModel(
   id: (json['id'] as num?)?.toInt(),
   kind: json['kind'] as String?,

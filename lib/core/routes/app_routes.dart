@@ -27,6 +27,14 @@ class AppRoutes {
   /// Add-address form; pushed above the shell and returns the saved address.
   static const String addAddress = '/addresses/add';
 
+  /// Saved-address picker; returns the selected address to the caller.
+  static const String selectAddress = '/addresses/select';
+
+  /// Read-only address details; `/addresses/detail/:id`.
+  static const String addressDetails = '/addresses/detail/:id';
+
+  static String addressDetailsPath(int id) => '/addresses/detail/$id';
+
   static const String cart = '/cart';
   static const String orders = '/orders';
   static const String store = '/store';
