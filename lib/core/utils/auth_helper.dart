@@ -1,6 +1,10 @@
 import 'package:al_rabwa_restaurant/core/constants/app_keys.dart';
+import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
+import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 
 /// Keeps the two halves of the local session consistent.
 ///
@@ -41,6 +45,22 @@ class AuthHelper {
     } catch (_) {
       return false;
     }
+  }
+
+  /// Ensures the user has a registered device session with an access token.
+  /// If no token is saved, opens the registration screen and waits for completion.
+  /// Returns `true` if a valid token is present after the flow.
+  static Future<bool> ensureAuthenticated(
+    BuildContext context, {
+    FlutterSecureStorage? storage,
+  }) async {
+    final secureStorage = storage ?? getIt<FlutterSecureStorage>();
+    final hasToken = await hasSavedToken(secureStorage);
+    if (hasToken) return true;
+
+    if (!context.mounted) return false;
+    final registered = await context.push<bool>(AppRoutes.registration);
+    return registered == true || await hasSavedToken(secureStorage);
   }
 
   /// Persists a freshly issued device token and marks the session as signed in.

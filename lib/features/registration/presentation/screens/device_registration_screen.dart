@@ -23,67 +23,93 @@ class DeviceRegistrationScreen extends StatelessWidget {
     return BlocListener<DeviceRegistrationCubit, DeviceRegistrationState>(
       listenWhen: (previous, current) =>
           previous.status != current.status && current.isSuccess,
-      listener: (context, state) => context.go(AppRoutes.home),
+      listener: (context, state) {
+        if (context.canPop()) {
+          context.pop(true);
+        } else {
+          context.go(AppRoutes.home);
+        }
+      },
       child: Scaffold(
         body: Stack(
           fit: StackFit.expand,
           children: [
             const _RegistrationBackground(),
             SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isWide = constraints.maxWidth >= _wideBreakpoint;
-                  final horizontalPadding = constraints.maxWidth >= 600
-                      ? 32.0
-                      : 16.0;
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth >= _wideBreakpoint;
+                      final horizontalPadding = constraints.maxWidth >= 600
+                          ? 32.0
+                          : 16.0;
 
-                  return SingleChildScrollView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding,
-                      24,
-                      horizontalPadding,
-                      28,
-                    ),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: isWide ? 1120 : 540,
+                      return SingleChildScrollView(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding,
+                          24,
+                          horizontalPadding,
+                          28,
                         ),
-                        child: isWide
-                            ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Expanded(
-                                    flex: 5,
-                                    child: RegistrationBrandPanel(
-                                      compact: false,
-                                    ),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: isWide ? 1120 : 540,
+                            ),
+                            child: isWide
+                                ? Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      const Expanded(
+                                        flex: 5,
+                                        child: RegistrationBrandPanel(
+                                          compact: false,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 32),
+                                      Expanded(
+                                        flex: 4,
+                                        child: RegistrationFormCard(
+                                          onLocaleChanged: onLocaleChanged,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const RegistrationBrandPanel(compact: true),
+                                      const SizedBox(height: 20),
+                                      RegistrationFormCard(
+                                        onLocaleChanged: onLocaleChanged,
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 32),
-                                  Expanded(
-                                    flex: 4,
-                                    child: RegistrationFormCard(
-                                      onLocaleChanged: onLocaleChanged,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const RegistrationBrandPanel(compact: true),
-                                  const SizedBox(height: 20),
-                                  RegistrationFormCard(
-                                    onLocaleChanged: onLocaleChanged,
-                                  ),
-                                ],
-                              ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  if (context.canPop())
+                    PositionedDirectional(
+                      top: 12,
+                      start: 12,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.black.withValues(alpha: 0.35),
+                          child: BackButton(
+                            color: Colors.white,
+                            onPressed: () => context.pop(false),
+                          ),
+                        ),
                       ),
                     ),
-                  );
-                },
+                ],
               ),
             ),
           ],

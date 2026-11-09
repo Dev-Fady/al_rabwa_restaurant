@@ -164,7 +164,7 @@ class _ApiService implements ApiService {
     String? lang,
     String? xLocale,
   }) async {
-    final _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{'requiresToken': true};
     final queryParameters = <String, dynamic>{r'lang': lang};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{r'x-locale': xLocale};

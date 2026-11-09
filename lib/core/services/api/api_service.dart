@@ -41,6 +41,7 @@ abstract class ApiService {
   });
 
   @POST(ApiConstants.addresses)
+  @Extra(const <String, Object>{'requiresToken': true})
   Future<HttpResponse<dynamic>> createAddress({
     @Body() required Map<String, dynamic> body,
     @Query('lang') String? lang,

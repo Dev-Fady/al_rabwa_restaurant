@@ -102,13 +102,13 @@ void main() {
     await _finishSplash(tester);
   });
 
-  testWidgets('opens registration when no token is stored', (tester) async {
+  testWidgets('opens home when splash completes without token', (tester) async {
     await _pumpSplash(tester, storage: _FakeSecureStorage());
 
     await _finishSplash(tester);
 
-    expect(find.text('register-screen'), findsOneWidget);
-    expect(find.text('home-screen'), findsNothing);
+    expect(find.text('home-screen'), findsOneWidget);
+    expect(find.text('register-screen'), findsNothing);
   });
 
   testWidgets('opens home when a token is already stored', (tester) async {

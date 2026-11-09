@@ -1,34 +1,72 @@
+import 'package:al_rabwa_restaurant/core/constants/api_constants.dart';
 import 'package:al_rabwa_restaurant/core/constants/app_keys.dart';
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_router.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/utils/auth_helper.dart';
 import 'package:dio/dio.dart';
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 
-/// Adds the bearer token and the backend locale to every request, and
-/// invalidates the local session when the backend answers 401.
-///
-/// This is a plain [Interceptor], not a [QueuedInterceptor]: nothing here
-/// depends on the previous request finishing (there is no token refresh), and
-/// the queue would run `onRequest` — including its `await`ed secure-storage
-/// read — strictly one request at a time, delaying every parallel screen load
-/// (the home tab alone fires several reads at once).
+/// Adds the bearer token and backend locale to requests, prevents unauthenticated
+/// calls to protected endpoints by redirecting to device registration, and
+/// handles 401 Unauthorized responses.
 class AuthInterceptor extends Interceptor {
   final FlutterSecureStorage storage;
   final Dio dio;
 
+  static const String requiresTokenExtra = 'requiresToken';
+  static const String requiresTokenHeader = 'requires-token';
+
+  static bool _isNavigatingToRegistration = false;
+
   AuthInterceptor({required this.storage, required this.dio});
+
+  @visibleForTesting
+  static void resetNavigationFlag() {
+    _isNavigatingToRegistration = false;
+  }
+
+  /// Whether the request target requires an authentication Bearer token.
+  bool requiresBearerToken(RequestOptions options) {
+    if (options.extra[requiresTokenExtra] == true) return true;
+    final headerValue = options.headers[requiresTokenHeader];
+    if (headerValue == 'true' || headerValue == true) return true;
+
+    final path = options.path;
+    // Registration endpoint never requires a token.
+    if (path.contains(ApiConstants.device)) return false;
+
+    // Public storefront endpoints never require a token.
+    if (path.contains(ApiConstants.settings) ||
+        path.contains(ApiConstants.categories) ||
+        path.contains('items')) {
+      return false;
+    }
+
+    // Default known protected endpoints.
+    if (path.contains(ApiConstants.addresses) ||
+        path.contains(ApiConstants.orders) ||
+        path.contains(ApiConstants.user) ||
+        path.contains(ApiConstants.deleteAccount) ||
+        path.contains(ApiConstants.logout)) {
+      return true;
+    }
+
+    return false;
+  }
 
   @override
   void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    final requiresToken = requiresBearerToken(options);
+    options.headers.remove(requiresTokenHeader);
+
     // Secure storage can throw on web (e.g. Safari private mode with
-    // storage blocked). A token read failure must never fail the request.
+    // storage blocked). A token read failure must never crash the app.
     String? accessToken;
     try {
       accessToken = await storage.read(key: AppKeys.accessToken);
@@ -36,7 +74,28 @@ class AuthInterceptor extends Interceptor {
       accessToken = null;
     }
 
-    if (accessToken != null && accessToken.isNotEmpty) {
+    final hasToken = accessToken != null && accessToken.trim().isNotEmpty;
+
+    // If the endpoint requires authentication but no token exists,
+    // intercept the call, prompt device registration, and reject.
+    if (requiresToken && !hasToken) {
+      _goToRegistration();
+      handler.reject(
+        DioException(
+          requestOptions: options,
+          response: Response(
+            requestOptions: options,
+            statusCode: 401,
+            statusMessage: 'Unauthorized: Device registration required',
+          ),
+          type: DioExceptionType.badResponse,
+          error: 'Unauthorized: Device registration required',
+        ),
+      );
+      return;
+    }
+
+    if (hasToken) {
       options.headers['Authorization'] = 'Bearer $accessToken';
     }
 
@@ -54,9 +113,6 @@ class AuthInterceptor extends Interceptor {
 
   String _resolveLocale() {
     try {
-      // CacheHelper stores the app language under `locale_code`
-      // (see SettingsCubit). Read directly to avoid adding a new
-      // dependency to this interceptor.
       final stored = CacheHelper.sharedPreferences.getString('locale_code');
       if (stored != null && stored.trim().isNotEmpty) {
         return stored.trim();
@@ -67,40 +123,47 @@ class AuthInterceptor extends Interceptor {
     return 'ar';
   }
 
-  /// The backend rejected the bearer token we sent (expired, revoked, or a
-  /// leftover from an install that kept the local flags but lost the keystore
-  /// key). The caller still gets the error so the screen can show it, while
-  /// the local session is invalidated and the user is taken to the login
-  /// screen instead of every following call failing the same way.
-  ///
-  /// Only signed-in sessions are handled: guests browse without a token by
-  /// design, and a signed-out user must never be bounced from an auth screen.
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    // Propagate first: the failing screen must never wait on local storage.
     handler.next(err);
 
     if (err.response?.statusCode != 401) return;
-    if (!AuthHelper.hasLoginFlag) return;
 
     await AuthHelper.clearSession(storage);
-    _goToLogin();
+    _goToRegistration();
   }
 
-  /// Sends the user to the login screen, once a navigator exists.
-  ///
-  /// Navigation is deferred to the end of the frame: interceptors run outside
-  /// the build phase but can overlap one, and several parallel 401s may
-  /// schedule it together (repeating `go` on the same location is a no-op).
-  void _goToLogin() {
+  /// Sends the user to the device registration screen, once a navigator exists.
+  void _goToRegistration() {
     final navigatorKey = AppRouter.rootNavigatorKey;
-    // No navigator yet (cold start before the first frame, or a unit test):
-    // the session is already cleared, so the next launch lands on login.
     if (navigatorKey.currentContext == null) return;
+    if (_isNavigatingToRegistration) return;
+    _isNavigatingToRegistration = true;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (navigatorKey.currentContext == null) return;
-      AppRouter.router.go(AppRoutes.login);
+      final context = navigatorKey.currentContext;
+      if (context == null) {
+        _isNavigatingToRegistration = false;
+        return;
+      }
+
+      try {
+        final currentRoute = GoRouterState.of(context).uri.toString();
+        if (currentRoute == AppRoutes.registration) {
+          _isNavigatingToRegistration = false;
+          return;
+        }
+      } catch (_) {}
+
+      try {
+        AppRouter.router.push(AppRoutes.registration).then((_) {
+          _isNavigatingToRegistration = false;
+        }).catchError((_) {
+          _isNavigatingToRegistration = false;
+        });
+      } catch (_) {
+        _isNavigatingToRegistration = false;
+      }
     });
   }
 }

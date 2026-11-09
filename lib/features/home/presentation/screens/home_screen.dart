@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
+import 'package:al_rabwa_restaurant/core/utils/auth_helper.dart';
 import 'package:al_rabwa_restaurant/core/widget/app_network_image.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
@@ -78,6 +79,9 @@ class _HomeContentState extends State<_HomeContent> {
 
   /// Opens the add-address form and shows the saved address in the bar.
   Future<void> _openAddAddress(BuildContext context) async {
+    final authed = await AuthHelper.ensureAuthenticated(context);
+    if (!authed || !mounted) return;
+
     final address = await context.push<Address>(AppRoutes.addAddress);
     if (!mounted || address == null) return;
     setState(() => _deliveryAddress = address);
