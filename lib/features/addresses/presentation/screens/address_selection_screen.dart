@@ -55,102 +55,130 @@ class AddressSelectionScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(
-        backgroundColor: context.appColors.surface,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        leadingWidth: 64,
-        leading: const Padding(
-          padding: EdgeInsetsDirectional.only(start: 8),
-          child: Center(child: ItemBackButton()),
-        ),
-        title: Text(
-          l10n.addressSelectTitle,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: context.appColors.brandGreen,
-            fontWeight: FontWeight.w900,
+    return BlocListener<AddressListCubit, AddressListState>(
+      listenWhen: (previous, current) =>
+          current.defaultError != null &&
+          previous.defaultError != current.defaultError,
+      listener: (context, state) {
+        final raw = state.defaultError?.trim() ?? '';
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(raw.isEmpty ? l10n.addressSetDefaultError : raw),
+            ),
+          );
+      },
+      child: Scaffold(
+        backgroundColor: context.appColors.background,
+        appBar: AppBar(
+          backgroundColor: context.appColors.surface,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          leadingWidth: 64,
+          leading: const Padding(
+            padding: EdgeInsetsDirectional.only(start: 8),
+            child: Center(child: ItemBackButton()),
           ),
+          title: Text(
+            l10n.addressSelectTitle,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: context.appColors.brandGreen,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final horizontalPadding = constraints.maxWidth >= 600 ? 32.0 : 16.0;
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final horizontalPadding = constraints.maxWidth >= 600
+                  ? 32.0
+                  : 16.0;
 
-            return Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 640),
-                child: BlocBuilder<AddressListCubit, AddressListState>(
-                  builder: (context, state) {
-                    return ListView(
-                      padding: EdgeInsets.fromLTRB(
-                        horizontalPadding,
-                        16,
-                        horizontalPadding,
-                        28,
-                      ),
-                      children: [
-                        Text(
-                          l10n.addressSelectSubtitle,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 640),
+                  child: BlocBuilder<AddressListCubit, AddressListState>(
+                    builder: (context, state) {
+                      final selectedId = _selectedId(state);
+
+                      return ListView(
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding,
+                          16,
+                          horizontalPadding,
+                          28,
+                        ),
+                        children: [
+                          Text(
+                            l10n.addressSelectSubtitle,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        _AddAddressButton(
-                          label: l10n.addressAddTitle,
-                          onTap: () => _addNewAddress(context),
-                        ),
-                        const SizedBox(height: 22),
-                        if (state.hasAddresses) ...[
-                          _SectionTitle(label: l10n.addressSavedTitle),
-                          if (state.hasError) ...[
+                          const SizedBox(height: 16),
+                          _AddAddressButton(
+                            label: l10n.addressAddTitle,
+                            onTap: () => _addNewAddress(context),
+                          ),
+                          const SizedBox(height: 22),
+                          if (state.hasAddresses) ...[
+                            _SectionTitle(label: l10n.addressSavedTitle),
+                            if (state.hasError) ...[
+                              const SizedBox(height: 10),
+                              _InlineError(
+                                message: _errorMessage(l10n, state),
+                                retryLabel: l10n.retry,
+                                onRetry: () =>
+                                    context.read<AddressListCubit>().load(),
+                              ),
+                            ],
                             const SizedBox(height: 10),
-                            _InlineError(
+                            for (final address in state.addresses)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: AddressCard(
+                                  key: ValueKey('address-${address.id}'),
+                                  address: address,
+                                  selected: address.id == selectedId,
+                                  isDefault: state.isDefault(address.id),
+                                  isSettingDefault: state.isSettingDefault(
+                                    address.id,
+                                  ),
+                                  onTap: () => _selectAddress(context, address),
+                                  onDetails: address.id == null
+                                      ? null
+                                      : () => _openDetails(context, address),
+                                  onEdit: address.id == null
+                                      ? null
+                                      : () => _editAddress(context, address),
+                                  onSetDefault: address.id == null
+                                      ? null
+                                      : () => context
+                                            .read<AddressListCubit>()
+                                            .setDefault(address.id!),
+                                ),
+                              ),
+                          ] else if (state.isLoading)
+                            const _LoadingAddresses()
+                          else if (state.hasError)
+                            _AddressListError(
                               message: _errorMessage(l10n, state),
                               retryLabel: l10n.retry,
                               onRetry: () =>
                                   context.read<AddressListCubit>().load(),
-                            ),
-                          ],
-                          const SizedBox(height: 10),
-                          for (final address in state.addresses)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: AddressCard(
-                                key: ValueKey('address-${address.id}'),
-                                address: address,
-                                selected: address.id == selectedAddressId,
-                                onTap: () => _selectAddress(context, address),
-                                onDetails: address.id == null
-                                    ? null
-                                    : () => _openDetails(context, address),
-                                onEdit: address.id == null
-                                    ? null
-                                    : () => _editAddress(context, address),
-                              ),
-                            ),
-                        ] else if (state.isLoading)
-                          const _LoadingAddresses()
-                        else if (state.hasError)
-                          _AddressListError(
-                            message: _errorMessage(l10n, state),
-                            retryLabel: l10n.retry,
-                            onRetry: () =>
-                                context.read<AddressListCubit>().load(),
-                          )
-                        else
-                          _EmptyAddresses(message: l10n.addressListEmpty),
-                      ],
-                    );
-                  },
+                            )
+                          else
+                            _EmptyAddresses(message: l10n.addressListEmpty),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -159,6 +187,18 @@ class AddressSelectionScreen extends StatelessWidget {
   String _errorMessage(AppLocalizations l10n, AddressListState state) {
     final raw = state.errorMessage?.trim() ?? '';
     return raw.isEmpty ? l10n.addressListError : raw;
+  }
+
+  /// The address currently used for delivery when it is still in the list;
+  /// otherwise the saved default is shown as the pre-selected choice.
+  int? _selectedId(AddressListState state) {
+    final current = selectedAddressId;
+    if (current != null &&
+        state.addresses.any((address) => address.id == current)) {
+      return current;
+    }
+
+    return state.defaultAddressId;
   }
 }
 

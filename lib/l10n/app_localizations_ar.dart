@@ -36,8 +36,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeWelcomeTitle => 'أهلاً بك في مطعم الربوة';
 
   @override
-  String get homeWelcomeSubtitle =>
-      'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
+  String get homeWelcomeSubtitle => 'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
 
   @override
   String get storeOpenNow => 'مفتوح الآن — نستقبل طلباتك';
@@ -67,8 +66,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retry => 'إعادة المحاولة';
 
   @override
-  String get storeSettingsError =>
-      'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
+  String get storeSettingsError => 'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
 
   @override
   String get loadingStore => 'جارٍ تحميل المطعم...';
@@ -152,8 +150,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeCategoriesViewAll => 'عرض الكل';
 
   @override
-  String get homeCategoriesHint =>
-      'اسحب الأقسام يمينًا ويسارًا أو اضغط على قسم لفتحه';
+  String get homeCategoriesHint => 'اسحب الأقسام يمينًا ويسارًا أو اضغط على قسم لفتحه';
 
   @override
   String get homeCategoriesError => 'تعذر تحميل أقسام المنيو.';
@@ -245,8 +242,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get itemDetailsSpecialInstructions => 'تعليمات خاصة';
 
   @override
-  String get itemDetailsSpecialInstructionsHint =>
-      'مثل: بدون بصل، مستوى الطهي...';
+  String get itemDetailsSpecialInstructionsHint => 'مثل: بدون بصل، مستوى الطهي...';
 
   @override
   String get itemDetailsIncreaseQuantity => 'زيادة الكمية';
@@ -297,8 +293,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get registerWelcomeTitle => 'أهلاً بك في مطعم الربوة';
 
   @override
-  String get registerWelcomeSubtitle =>
-      'أخبرنا قليلاً عنك وابدأ الطلب في ثوانٍ.';
+  String get registerWelcomeSubtitle => 'أخبرنا قليلاً عنك وابدأ الطلب في ثوانٍ.';
 
   @override
   String get registerHeroBadge => 'مطعم الربوة';
@@ -337,8 +332,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get registerPhoneInvalid => 'يرجى إدخال رقم هاتف صالح.';
 
   @override
-  String get registerPrivacyNote =>
-      'يتم حفظ جلستك بأمان على هذا الجهاز. بالمتابعة، أنت توافق على الشروط وسياسة الخصوصية.';
+  String get registerPrivacyNote => 'يتم حفظ جلستك بأمان على هذا الجهاز. بالمتابعة، أنت توافق على الشروط وسياسة الخصوصية.';
 
   @override
   String get registerFeatureFresh => 'يُحضّر طازجاً';
@@ -365,8 +359,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressDetailsInfo => 'بيانات العنوان';
 
   @override
-  String get addressDetailsError =>
-      'تعذّر تحميل تفاصيل العنوان، يرجى المحاولة مرة أخرى.';
+  String get addressDetailsError => 'تعذّر تحميل تفاصيل العنوان، يرجى المحاولة مرة أخرى.';
 
   @override
   String get addressOptions => 'خيارات العنوان';
@@ -375,14 +368,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressViewDetails => 'عرض التفاصيل';
 
   @override
+  String get addressSetDefault => 'تعيين كافتراضي';
+
+  @override
+  String get addressDefault => 'افتراضي';
+
+  @override
+  String get addressSetDefaultError => 'تعذّر تعيين هذا العنوان كافتراضي، يرجى المحاولة مرة أخرى.';
+
+  @override
   String get addressCoordinates => 'الإحداثيات';
 
   @override
   String get addressSelectTitle => 'اختر عنوان التوصيل';
 
   @override
-  String get addressSelectSubtitle =>
-      'اختر عنوانًا محفوظًا أو أضف عنوانًا جديدًا.';
+  String get addressSelectSubtitle => 'اختر عنوانًا محفوظًا أو أضف عنوانًا جديدًا.';
 
   @override
   String get addressSavedTitle => 'العناوين المحفوظة';
@@ -391,8 +392,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressListEmpty => 'لم تحفظ أي عنوان بعد.';
 
   @override
-  String get addressListError =>
-      'تعذّر تحميل عناوينك المحفوظة، يرجى المحاولة مرة أخرى.';
+  String get addressListError => 'تعذّر تحميل عناوينك المحفوظة، يرجى المحاولة مرة أخرى.';
 
   @override
   String get addressOutsideArea => 'خارج نطاق التوصيل';
@@ -455,29 +455,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressBuildingRequired => 'يرجى إدخال رقم المبنى.';
 
   @override
-  String get addressOutsideQatar =>
-      'الموقع المحدد خارج قطر. حرّك الخريطة لاختيار موقع داخل الدولة.';
+  String get addressOutsideQatar => 'الموقع المحدد خارج قطر. حرّك الخريطة لاختيار موقع داخل الدولة.';
 
   @override
   String get addressSaveError => 'تعذّر حفظ العنوان، يرجى المحاولة مرة أخرى.';
 
   @override
-  String get addressNotDeliverable =>
-      'تم حفظ العنوان، لكنه خارج نطاق التوصيل الحالي.';
+  String get addressNotDeliverable => 'تم حفظ العنوان، لكنه خارج نطاق التوصيل الحالي.';
 
   @override
-  String get addressLocationServiceDisabled =>
-      'خدمة الموقع غير مفعّلة. فعّلها من إعدادات الجهاز ثم حاول مجددًا.';
+  String get addressLocationServiceDisabled => 'خدمة الموقع غير مفعّلة. فعّلها من إعدادات الجهاز ثم حاول مجددًا.';
 
   @override
-  String get addressLocationPermissionDenied =>
-      'يجب السماح بالوصول إلى الموقع لاستخدام موقعك الحالي.';
+  String get addressLocationPermissionDenied => 'يجب السماح بالوصول إلى الموقع لاستخدام موقعك الحالي.';
 
   @override
-  String get addressLocationPermissionDeniedForever =>
-      'إذن الموقع مرفوض. يمكنك تفعيله من إعدادات التطبيق.';
+  String get addressLocationPermissionDeniedForever => 'إذن الموقع مرفوض. يمكنك تفعيله من إعدادات التطبيق.';
 
   @override
-  String get addressLocationUnavailable =>
-      'تعذّر تحديد موقعك الحالي. حرّك الخريطة يدويًا.';
+  String get addressLocationUnavailable => 'تعذّر تحديد موقعك الحالي. حرّك الخريطة يدويًا.';
 }

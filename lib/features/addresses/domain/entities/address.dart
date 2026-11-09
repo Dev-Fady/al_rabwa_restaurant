@@ -38,6 +38,7 @@ class Address {
     required this.notes,
     required this.point,
     required this.lastUsedAt,
+    this.isDefault = false,
   });
 
   final int? id;
@@ -67,6 +68,9 @@ class Address {
   final String notes;
   final GeoPoint? point;
   final DateTime? lastUsedAt;
+
+  /// Whether the backend marked this address as the customer's default.
+  final bool isDefault;
 
   /// Name to show in a location bar: the customer's label, the backend title,
   /// then the assembled summary.

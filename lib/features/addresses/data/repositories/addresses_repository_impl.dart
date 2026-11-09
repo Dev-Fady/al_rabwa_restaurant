@@ -88,6 +88,14 @@ class AddressesRepositoryImpl implements AddressesRepository {
     );
   }
 
+  @override
+  Future<Either<Failure, Address>> setDefaultAddress({
+    required int id,
+    String lang = 'ar',
+  }) {
+    return _run(() => remoteDataSource.setDefaultAddress(id: id, lang: lang));
+  }
+
   /// Runs one address request and maps its envelope to [Address].
   Future<Either<Failure, Address>> _run(
     Future<AddressResponse> Function() request,

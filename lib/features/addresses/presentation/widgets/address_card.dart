@@ -10,19 +10,31 @@ class AddressCard extends StatelessWidget {
     required this.address,
     required this.selected,
     required this.onTap,
+    this.isDefault = false,
+    this.isSettingDefault = false,
     this.onDetails,
     this.onEdit,
+    this.onSetDefault,
   });
 
   final Address address;
   final bool selected;
   final VoidCallback onTap;
 
+  /// Whether the backend currently treats this address as the default.
+  final bool isDefault;
+
+  /// Whether a "set as default" request is running for this address.
+  final bool isSettingDefault;
+
   /// Opens the read-only details screen for this address.
   final VoidCallback? onDetails;
 
   /// Opens the add-address form prefilled with this address.
   final VoidCallback? onEdit;
+
+  /// Marks this address as the customer's default.
+  final VoidCallback? onSetDefault;
 
   IconData get _kindIcon => switch (address.kind) {
     AddressKind.home => Icons.home_rounded,
@@ -94,12 +106,32 @@ class AddressCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         _NotDeliverableBadge(label: l10n.addressOutsideArea),
                       ],
+                      if (isDefault) ...[
+                        const SizedBox(height: 8),
+                        _DefaultBadge(label: l10n.addressDefault),
+                      ],
                     ],
                   ),
                 ),
                 const SizedBox(width: 10),
-                if (onDetails != null || onEdit != null)
-                  _AddressMenu(onDetails: onDetails, onEdit: onEdit),
+                if (isSettingDefault)
+                  const Padding(
+                    padding: EdgeInsetsDirectional.only(top: 9, bottom: 9),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2.2),
+                    ),
+                  )
+                else if (onDetails != null ||
+                    onEdit != null ||
+                    onSetDefault != null)
+                  _AddressMenu(
+                    onDetails: onDetails,
+                    onEdit: onEdit,
+                    onSetDefault: onSetDefault,
+                    canSetDefault: !isDefault,
+                  ),
                 Icon(
                   selected
                       ? Icons.check_circle_rounded
@@ -172,13 +204,53 @@ class _NotDeliverableBadge extends StatelessWidget {
   }
 }
 
-enum _AddressAction { details, edit }
+class _DefaultBadge extends StatelessWidget {
+  const _DefaultBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.appColors.brandGreen;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: brand.withValues(alpha: 0.11),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.star_rounded, size: 13, color: brand),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: brand,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+enum _AddressAction { details, edit, setDefault }
 
 class _AddressMenu extends StatelessWidget {
-  const _AddressMenu({this.onDetails, this.onEdit});
+  const _AddressMenu({
+    this.onDetails,
+    this.onEdit,
+    this.onSetDefault,
+    this.canSetDefault = false,
+  });
 
   final VoidCallback? onDetails;
   final VoidCallback? onEdit;
+  final VoidCallback? onSetDefault;
+  final bool canSetDefault;
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +267,8 @@ class _AddressMenu extends StatelessWidget {
             onDetails?.call();
           case _AddressAction.edit:
             onEdit?.call();
+          case _AddressAction.setDefault:
+            onSetDefault?.call();
         }
       },
       itemBuilder: (context) => [
@@ -217,6 +291,17 @@ class _AddressMenu extends StatelessWidget {
                 const Icon(Icons.edit_outlined, size: 20),
                 const SizedBox(width: 10),
                 Flexible(child: Text(l10n.addressEditTitle)),
+              ],
+            ),
+          ),
+        if (onSetDefault != null && canSetDefault)
+          PopupMenuItem(
+            value: _AddressAction.setDefault,
+            child: Row(
+              children: [
+                const Icon(Icons.star_outline_rounded, size: 20),
+                const SizedBox(width: 10),
+                Flexible(child: Text(l10n.addressSetDefault)),
               ],
             ),
           ),

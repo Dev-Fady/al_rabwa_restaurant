@@ -14,4 +14,5 @@ class ApiConstants {
   static const String orders = 'orders';
   static const String addresses = 'addresses';
   static const String addressDetails = 'addresses/{id}';
+  static const String addressDefault = 'addresses/{id}/default';
 }

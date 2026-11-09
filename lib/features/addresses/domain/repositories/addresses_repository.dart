@@ -34,4 +34,9 @@ abstract class AddressesRepository {
     required GeoPoint point,
     String lang = 'ar',
   });
+
+  Future<Either<Failure, Address>> setDefaultAddress({
+    required int id,
+    String lang = 'ar',
+  });
 }

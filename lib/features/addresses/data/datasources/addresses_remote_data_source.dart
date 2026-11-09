@@ -35,6 +35,11 @@ abstract class AddressesRemoteDataSource {
     required GeoPoint point,
     String lang = 'ar',
   });
+
+  Future<AddressResponse> setDefaultAddress({
+    required int id,
+    String lang = 'ar',
+  });
 }
 
 class AddressesRemoteDataSourceImpl implements AddressesRemoteDataSource {
@@ -144,6 +149,23 @@ class AddressesRemoteDataSourceImpl implements AddressesRemoteDataSource {
     return _parseResponse(
       response.data,
       failureMessage: 'Failed to update the address.',
+    );
+  }
+
+  @override
+  Future<AddressResponse> setDefaultAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    final response = await apiService.setDefaultAddress(
+      id: id,
+      lang: lang,
+      xLocale: lang,
+    );
+
+    return _parseResponse(
+      response.data,
+      failureMessage: 'Failed to set the default address.',
     );
   }
 

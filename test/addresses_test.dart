@@ -77,6 +77,7 @@ class _FakeApiService implements ApiService {
   int getAddressesCalls = 0;
   int getAddressCalls = 0;
   int updateAddressCalls = 0;
+  int setDefaultCalls = 0;
   int? lastAddressId;
 
   @override
@@ -175,6 +176,30 @@ class _FakeApiService implements ApiService {
   }
 
   @override
+  Future<HttpResponse<dynamic>> setDefaultAddress({
+    required int id,
+    String? lang,
+    String? xLocale,
+  }) async {
+    setDefaultCalls++;
+    lastAddressId = id;
+    lastLang = lang;
+    lastLocale = xLocale;
+
+    final failure = error;
+    if (failure != null) throw failure;
+
+    return HttpResponse<dynamic>(
+      payload,
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: 'addresses/$id/default'),
+        data: payload,
+        statusCode: 200,
+      ),
+    );
+  }
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -183,12 +208,15 @@ class _FakeAddressesRepository implements AddressesRepository {
   Either<Failure, List<Address>>? fetchResult;
   Either<Failure, Address>? detailsResult;
   Either<Failure, Address>? updateResult;
+  Either<Failure, Address>? defaultResult;
   int calls = 0;
   int fetchCalls = 0;
   int fetchAddressCalls = 0;
   int updateCalls = 0;
+  int setDefaultCalls = 0;
   int? lastAddressId;
   int? lastUpdateId;
+  int? lastDefaultId;
   AddressKind? lastKind;
   GeoPoint? lastPoint;
   String? lastLang;
@@ -252,6 +280,17 @@ class _FakeAddressesRepository implements AddressesRepository {
     lastLang = lang;
     lastArea = area;
     return updateResult ?? result ?? Right(_address());
+  }
+
+  @override
+  Future<Either<Failure, Address>> setDefaultAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    setDefaultCalls++;
+    lastDefaultId = id;
+    lastLang = lang;
+    return defaultResult ?? result ?? Right(_address());
   }
 }
 
@@ -504,6 +543,35 @@ void main() {
         ),
       );
     });
+
+    test('marks an address as default and sends the language', () async {
+      final payload = _addressPayload();
+      payload['data']['id'] = 3;
+      api.payload = payload;
+
+      final response = await dataSource.setDefaultAddress(id: 3, lang: 'en');
+
+      expect(response.data?.id, 3);
+      expect(api.setDefaultCalls, 1);
+      expect(api.lastAddressId, 3);
+      expect(api.lastLang, 'en');
+      expect(api.lastLocale, 'en');
+    });
+
+    test('throws the API message when setting the default fails', () async {
+      api.payload = {'success': false, 'message': 'Unauthorized'};
+
+      expect(
+        () => dataSource.setDefaultAddress(id: 3),
+        throwsA(
+          isA<ServerFailure>().having(
+            (failure) => failure.message,
+            'message',
+            'Unauthorized',
+          ),
+        ),
+      );
+    });
   });
 
   group('AddressesRepositoryImpl', () {
@@ -592,6 +660,25 @@ void main() {
         notes: '',
         point: _qatarPoint,
       );
+
+      expect(result.isLeft(), isTrue);
+      result.fold(
+        (failure) => expect(failure, isA<ServerFailure>()),
+        (_) => fail('expected a failure'),
+      );
+    });
+
+    test('wraps a transport error when setting the default', () async {
+      final repository = AddressesRepositoryImpl(
+        remoteDataSource: _RemoteDataSourceThrows(
+          DioException(
+            requestOptions: RequestOptions(path: 'addresses/3/default'),
+            type: DioExceptionType.badResponse,
+          ),
+        ),
+      );
+
+      final result = await repository.setDefaultAddress(id: 3);
 
       expect(result.isLeft(), isTrue);
       result.fold(
@@ -775,6 +862,67 @@ void main() {
       expect(cubit.state.status, AddressListStatus.failure);
       expect(cubit.state.hasAddresses, isTrue);
       expect(cubit.state.errorMessage, 'offline');
+    });
+
+    test('adopts the is_default flag returned by the list', () async {
+      final flagged = AddressResponse.fromJson({
+        'data': {
+          ...(_addressPayload()['data'] as Map<String, dynamic>),
+          'id': 3,
+          'is_default': true,
+        },
+      }).toEntity()!;
+      repository.fetchResult = Right([flagged, _address()]);
+
+      await cubit.load();
+
+      expect(cubit.state.defaultAddressId, 3);
+      expect(cubit.state.isDefault(3), isTrue);
+      expect(cubit.state.isDefault(1), isFalse);
+    });
+
+    test('sets the default address and keeps the list', () async {
+      final second = AddressResponse.fromJson({
+        'data': {
+          ...(_addressPayload()['data'] as Map<String, dynamic>),
+          'id': 3,
+          'label': 'الشركة',
+        },
+      }).toEntity()!;
+      repository.fetchResult = Right([second, _address()]);
+      await cubit.load();
+
+      final updated = AddressResponse.fromJson({
+        'data': {
+          ...(_addressPayload()['data'] as Map<String, dynamic>),
+          'id': 3,
+          'label': 'الشركة',
+        },
+      }).toEntity()!;
+      repository.defaultResult = Right(updated);
+
+      await cubit.setDefault(3);
+
+      expect(repository.setDefaultCalls, 1);
+      expect(repository.lastDefaultId, 3);
+      expect(repository.lastLang, 'en');
+      expect(cubit.state.defaultAddressId, 3);
+      expect(cubit.state.isDefault(3), isTrue);
+      expect(cubit.state.settingDefaultId, isNull);
+      expect(cubit.state.addresses, hasLength(2));
+      expect(cubit.state.defaultError, isNull);
+    });
+
+    test('emits the API message when setting the default fails', () async {
+      await cubit.load();
+      repository.defaultResult = Left(ServerFailure('Unauthorized'));
+
+      await cubit.setDefault(1);
+
+      expect(cubit.state.defaultAddressId, isNull);
+      expect(cubit.state.settingDefaultId, isNull);
+      expect(cubit.state.defaultError, 'Unauthorized');
+      expect(cubit.state.addresses, hasLength(1));
     });
   });
 
@@ -968,11 +1116,22 @@ void main() {
 
       expect(find.text('تعديل العنوان'), findsOneWidget);
       expect(find.text('حفظ التعديلات'), findsOneWidget);
-      expect(find.text('البيت'), findsOneWidget);
-      expect(find.text('السد'), findsOneWidget);
-      expect(find.text('شارع 901'), findsOneWidget);
-      expect(find.text('مبنى 35، الطابق 2'), findsOneWidget);
-      expect(find.text('الباب الأخضر'), findsOneWidget);
+
+      final values = tester
+          .widgetList<EditableText>(find.byType(EditableText))
+          .map((widget) => widget.controller.text)
+          .toList();
+      expect(
+        values,
+        containsAll(<String>[
+          'البيت',
+          'السد',
+          'شارع 901',
+          'مبنى 35، الطابق 2',
+          'الباب الأخضر',
+        ]),
+      );
+      expect(find.text('25.28540, 51.53100'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });
@@ -1114,6 +1273,80 @@ void main() {
       expect(find.byIcon(Icons.more_horiz_rounded), findsNothing);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('sets the address as default from the menu', (tester) async {
+      var defaultTaps = 0;
+
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: AddressCard(
+              address: _address(),
+              selected: false,
+              onTap: () {},
+              onSetDefault: () => defaultTaps++,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.more_horiz_rounded));
+      await tester.pumpAndSettle();
+      expect(find.text('تعيين كافتراضي'), findsOneWidget);
+
+      await tester.tap(find.text('تعيين كافتراضي'));
+      await tester.pumpAndSettle();
+
+      expect(defaultTaps, 1);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('marks the default address and hides the action', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: AddressCard(
+              address: _address(),
+              selected: false,
+              isDefault: true,
+              onTap: () {},
+              onSetDefault: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('افتراضي'), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.more_horiz_rounded));
+      await tester.pumpAndSettle();
+      expect(find.text('تعيين كافتراضي'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('shows a spinner while the default is being saved', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: AddressCard(
+              address: _address(),
+              selected: false,
+              isSettingDefault: true,
+              onTap: () {},
+              onSetDefault: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byIcon(Icons.more_horiz_rounded), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
   });
 
   group('AddressSelectionScreen', () {
@@ -1214,6 +1447,94 @@ void main() {
       expect(find.text('البيت'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('sets a saved address as the default', (tester) async {
+      final repository = repositoryWith([_address()]);
+
+      await tester.pumpWidget(buildSelection(repository));
+      await tester.pump();
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.more_horiz_rounded).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('تعيين كافتراضي'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(repository.setDefaultCalls, 1);
+      expect(repository.lastDefaultId, 1);
+      expect(find.text('افتراضي'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('pre-selects the default address', (tester) async {
+      final flagged = AddressResponse.fromJson({
+        'data': {
+          ...(_addressPayload()['data'] as Map<String, dynamic>),
+          'id': 3,
+          'label': 'الشركة',
+          'title': 'الشركة',
+          'is_default': true,
+        },
+      }).toEntity()!;
+      final repository = repositoryWith([flagged, _address()]);
+
+      await tester.pumpWidget(buildSelection(repository));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.radio_button_unchecked_rounded), findsOneWidget);
+      expect(find.text('افتراضي'), findsOneWidget);
+
+      final defaultCard = find.ancestor(
+        of: find.text('الشركة'),
+        matching: find.byType(AddressCard),
+      );
+      expect(
+        find.descendant(
+          of: defaultCard,
+          matching: find.byIcon(Icons.check_circle_rounded),
+        ),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+      'keeps the current delivery address selected over the default',
+      (tester) async {
+        final flagged = AddressResponse.fromJson({
+          'data': {
+            ...(_addressPayload()['data'] as Map<String, dynamic>),
+            'id': 3,
+            'label': 'الشركة',
+            'title': 'الشركة',
+            'is_default': true,
+          },
+        }).toEntity()!;
+        final repository = repositoryWith([flagged, _address()]);
+
+        await tester.pumpWidget(
+          buildSelection(repository, selectedAddressId: 1),
+        );
+        await tester.pump();
+        await tester.pump();
+
+        final currentCard = find.ancestor(
+          of: find.text('البيت'),
+          matching: find.byType(AddressCard),
+        );
+        expect(
+          find.descendant(
+            of: currentCard,
+            matching: find.byIcon(Icons.check_circle_rounded),
+          ),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('fits a small phone at 2x text scale without overflow', (
       tester,
@@ -1326,6 +1647,14 @@ class _RemoteDataSourceThrows implements AddressesRemoteDataSource {
     required String building,
     required String notes,
     required GeoPoint point,
+    String lang = 'ar',
+  }) async {
+    throw error;
+  }
+
+  @override
+  Future<AddressResponse> setDefaultAddress({
+    required int id,
     String lang = 'ar',
   }) async {
     throw error;

@@ -71,4 +71,12 @@ abstract class ApiService {
     @Query('lang') String? lang,
     @Header('x-locale') String? xLocale,
   });
+
+  @POST(ApiConstants.addressDefault)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> setDefaultAddress({
+    @Path('id') required int id,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
 }

@@ -55,6 +55,7 @@ AddressModel _$AddressModelFromJson(Map<String, dynamic> json) => AddressModel(
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
   lastUsedAt: json['last_used_at'] as String?,
+  isDefault: json['is_default'] as bool?,
 );
 
 Map<String, dynamic> _$AddressModelToJson(AddressModel instance) =>
@@ -74,4 +75,5 @@ Map<String, dynamic> _$AddressModelToJson(AddressModel instance) =>
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'last_used_at': instance.lastUsedAt,
+      'is_default': instance.isDefault,
     };

@@ -103,6 +103,10 @@ class AddressModel {
   @JsonKey(name: 'last_used_at')
   final String? lastUsedAt;
 
+  /// Optional upstream flag; the list may or may not include it.
+  @JsonKey(name: 'is_default')
+  final bool? isDefault;
+
   const AddressModel({
     this.id,
     this.kind,
@@ -119,6 +123,7 @@ class AddressModel {
     this.latitude,
     this.longitude,
     this.lastUsedAt,
+    this.isDefault,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) =>
@@ -148,6 +153,7 @@ class AddressModel {
           ? null
           : GeoPoint(latitude: lat, longitude: lng),
       lastUsedAt: lastUsedAt == null ? null : DateTime.tryParse(lastUsedAt!),
+      isDefault: isDefault ?? false,
     );
   }
 
