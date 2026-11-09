@@ -12,6 +12,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Al Rabwa Restaurant';
 
   @override
+  String get splashTagline => 'Fresh flavors, warm hospitality';
+
+  @override
+  String get splashLoading => 'Preparing your table…';
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -30,8 +36,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWelcomeTitle => 'Welcome to Al Rabwa Restaurant';
 
   @override
-  String get homeWelcomeSubtitle =>
-      'Pick your favorite dishes from the menu and enjoy a special dining experience.';
+  String get homeWelcomeSubtitle => 'Pick your favorite dishes from the menu and enjoy a special dining experience.';
 
   @override
   String get storeOpenNow => 'Open now — taking orders';
@@ -61,8 +66,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Try again';
 
   @override
-  String get storeSettingsError =>
-      'Couldn\'t load the restaurant. Check your connection and try again.';
+  String get storeSettingsError => 'Couldn\'t load the restaurant. Check your connection and try again.';
 
   @override
   String get loadingStore => 'Loading the restaurant...';
@@ -235,8 +239,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemDetailsSpecialInstructions => 'Special instructions';
 
   @override
-  String get itemDetailsSpecialInstructionsHint =>
-      'e.g. no onions, cooking level...';
+  String get itemDetailsSpecialInstructionsHint => 'e.g. no onions, cooking level...';
 
   @override
   String get itemDetailsIncreaseQuantity => 'Increase quantity';
@@ -287,8 +290,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerWelcomeTitle => 'Welcome to Al Rabwa';
 
   @override
-  String get registerWelcomeSubtitle =>
-      'Tell us a little about you and start ordering in seconds.';
+  String get registerWelcomeSubtitle => 'Tell us a little about you and start ordering in seconds.';
 
   @override
   String get registerHeroBadge => 'Al Rabwa Restaurant';
@@ -297,8 +299,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerFormTitle => 'Create your profile';
 
   @override
-  String get registerFormSubtitle =>
-      'We\'ll use your details to personalize your orders.';
+  String get registerFormSubtitle => 'We\'ll use your details to personalize your orders.';
 
   @override
   String get registerNameHint => 'e.g. Ahmed Mohamed';
@@ -328,8 +329,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerPhoneInvalid => 'Please enter a valid phone number.';
 
   @override
-  String get registerPrivacyNote =>
-      'Your session is stored securely on this device. By continuing, you agree to our terms and privacy policy.';
+  String get registerPrivacyNote => 'Your session is stored securely on this device. By continuing, you agree to our terms and privacy policy.';
 
   @override
   String get registerFeatureFresh => 'Freshly prepared';

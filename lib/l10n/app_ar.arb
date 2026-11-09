@@ -1,6 +1,8 @@
 {
   "@@locale": "ar",
   "appTitle": "مطعم الربوة",
+  "splashTagline": "نكهات طازجة وكرم ضيافة",
+  "splashLoading": "نجهّز طاولتك…",
   "navHome": "الرئيسية",
   "navMenu": "المنيو",
   "navCart": "السلة",

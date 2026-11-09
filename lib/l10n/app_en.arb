@@ -1,6 +1,8 @@
 {
   "@@locale": "en",
   "appTitle": "Al Rabwa Restaurant",
+  "splashTagline": "Fresh flavors, warm hospitality",
+  "splashLoading": "Preparing your table…",
   "navHome": "Home",
   "navMenu": "Menu",
   "navCart": "Cart",
