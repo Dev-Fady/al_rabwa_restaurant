@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
@@ -44,6 +46,18 @@ class _FakeRepository implements SettingsRepository {
       throw failure;
     }
     return Right(result!);
+  }
+}
+
+/// Keeps the settings request pending so the loading state stays on screen.
+class _PendingRepository implements SettingsRepository {
+  final Completer<Either<Failure, RestaurantSettings>> completer = Completer();
+
+  @override
+  Future<Either<Failure, RestaurantSettings>> fetchSettings({
+    String lang = 'ar',
+  }) {
+    return completer.future;
   }
 }
 
@@ -169,7 +183,7 @@ class _FakeMenuItemsRepository implements MenuItemsRepository {
 
 Future<StoreConfigCubit> _pumpHome(
   WidgetTester tester, {
-  required _FakeRepository repository,
+  required SettingsRepository repository,
   List<Address> addresses = const [],
   Size size = const Size(390, 844),
   double textScale = 1,
@@ -439,6 +453,43 @@ void main() {
     expect(find.text('مشاوي على الفحم'), findsOneWidget);
     expect(find.text('إعادة المحاولة'), findsNothing);
   });
+
+  testWidgets('shows a shimmer skeleton while the settings load', (
+    tester,
+  ) async {
+    final repository = _PendingRepository();
+    await _pumpHome(tester, repository: repository);
+
+    expect(find.byKey(const ValueKey('home-loading-shimmer')), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+
+    repository.completer.complete(Right(sampleSettingsWithoutImages()));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('home-loading-shimmer')), findsNothing);
+    expect(find.text('مشاوي على الفحم'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'keeps the loading shimmer layout overflow-free on a small phone',
+    (tester) async {
+      await _pumpHome(
+        tester,
+        repository: _PendingRepository(),
+        size: const Size(320, 640),
+        textScale: 2,
+      );
+
+      expect(
+        find.byKey(const ValueKey('home-loading-shimmer')),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('fits a small phone at 2x text scale without overflow', (
     tester,

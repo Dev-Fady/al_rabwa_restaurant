@@ -11,6 +11,7 @@ import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_cate
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_delivery_location_bar.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_banner_carousel.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_header.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_loading_shimmer.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_order_type_selector.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_search_bar.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_status_body.dart';
@@ -32,11 +33,14 @@ class HomeScreen extends StatelessWidget {
         return Scaffold(
           body: SafeArea(
             child: settings == null
-                ? HomeStatusBody(
-                    state: state,
-                    onRetry: () =>
-                        context.read<StoreConfigCubit>().load(refresh: true),
-                  )
+                ? state.status == StoreConfigStatus.failure
+                      ? HomeStatusBody(
+                          state: state,
+                          onRetry: () => context.read<StoreConfigCubit>().load(
+                            refresh: true,
+                          ),
+                        )
+                      : const HomeLoadingShimmer()
                 : _HomeContent(settings: settings),
           ),
         );
