@@ -78,6 +78,7 @@ class _FakeApiService implements ApiService {
   int getAddressCalls = 0;
   int updateAddressCalls = 0;
   int setDefaultCalls = 0;
+  int deleteAddressCalls = 0;
   int? lastAddressId;
 
   @override
@@ -200,6 +201,29 @@ class _FakeApiService implements ApiService {
   }
 
   @override
+  Future<HttpResponse<dynamic>> deleteAddress({
+    required int id,
+    String? lang,
+    String? xLocale,
+  }) async {
+    deleteAddressCalls++;
+    lastAddressId = id;
+    lastLang = lang;
+    lastLocale = xLocale;
+
+    final failure = error;
+    if (failure != null) throw failure;
+
+    return HttpResponse<dynamic>(
+      null,
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: 'addresses/$id'),
+        statusCode: 204,
+      ),
+    );
+  }
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -209,14 +233,17 @@ class _FakeAddressesRepository implements AddressesRepository {
   Either<Failure, Address>? detailsResult;
   Either<Failure, Address>? updateResult;
   Either<Failure, Address>? defaultResult;
+  Either<Failure, Unit>? deleteResult;
   int calls = 0;
   int fetchCalls = 0;
   int fetchAddressCalls = 0;
   int updateCalls = 0;
   int setDefaultCalls = 0;
+  int deleteCalls = 0;
   int? lastAddressId;
   int? lastUpdateId;
   int? lastDefaultId;
+  int? lastDeleteId;
   AddressKind? lastKind;
   GeoPoint? lastPoint;
   String? lastLang;
@@ -291,6 +318,17 @@ class _FakeAddressesRepository implements AddressesRepository {
     lastDefaultId = id;
     lastLang = lang;
     return defaultResult ?? result ?? Right(_address());
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    deleteCalls++;
+    lastDeleteId = id;
+    lastLang = lang;
+    return deleteResult ?? const Right(unit);
   }
 }
 
@@ -572,6 +610,15 @@ void main() {
         ),
       );
     });
+
+    test('deletes an address and sends the language', () async {
+      await dataSource.deleteAddress(id: 3, lang: 'en');
+
+      expect(api.deleteAddressCalls, 1);
+      expect(api.lastAddressId, 3);
+      expect(api.lastLang, 'en');
+      expect(api.lastLocale, 'en');
+    });
   });
 
   group('AddressesRepositoryImpl', () {
@@ -683,6 +730,37 @@ void main() {
       expect(result.isLeft(), isTrue);
       result.fold(
         (failure) => expect(failure, isA<ServerFailure>()),
+        (_) => fail('expected a failure'),
+      );
+    });
+
+    test('wraps a transport error when deleting an address', () async {
+      final repository = AddressesRepositoryImpl(
+        remoteDataSource: _RemoteDataSourceThrows(
+          DioException(
+            requestOptions: RequestOptions(path: 'addresses/3'),
+            type: DioExceptionType.badResponse,
+            response: Response<dynamic>(
+              requestOptions: RequestOptions(path: 'addresses/3'),
+              statusCode: 404,
+              data: {'message': 'عنوان غير موجود.'},
+            ),
+          ),
+        ),
+      );
+
+      final result = await repository.deleteAddress(id: 3);
+
+      expect(result.isLeft(), isTrue);
+      result.fold(
+        (failure) => expect(
+          failure,
+          isA<ServerFailure>().having(
+            (failure) => failure.message,
+            'message',
+            'عنوان غير موجود.',
+          ),
+        ),
         (_) => fail('expected a failure'),
       );
     });
@@ -924,6 +1002,45 @@ void main() {
       expect(cubit.state.defaultError, 'Unauthorized');
       expect(cubit.state.addresses, hasLength(1));
     });
+
+    test('deletes an address and removes it from the list', () async {
+      final second = AddressResponse.fromJson({
+        'data': {
+          ...(_addressPayload()['data'] as Map<String, dynamic>),
+          'id': 3,
+          'label': 'الشركة',
+          'is_default': true,
+        },
+      }).toEntity()!;
+      repository.fetchResult = Right([second, _address()]);
+
+      await cubit.load();
+      expect(cubit.state.defaultAddressId, 3);
+
+      await cubit.deleteAddress(3);
+
+      expect(repository.deleteCalls, 1);
+      expect(repository.lastDeleteId, 3);
+      expect(repository.lastLang, 'en');
+      expect(cubit.state.addresses.map((address) => address.id), [1]);
+      expect(cubit.state.defaultAddressId, isNull);
+      expect(cubit.state.deletingAddressId, isNull);
+      expect(cubit.state.deleteError, isNull);
+    });
+
+    test(
+      'keeps the list and emits the API message when deleting fails',
+      () async {
+        await cubit.load();
+        repository.deleteResult = Left(ServerFailure('عنوان غير موجود.'));
+
+        await cubit.deleteAddress(1);
+
+        expect(cubit.state.addresses, hasLength(1));
+        expect(cubit.state.deletingAddressId, isNull);
+        expect(cubit.state.deleteError, 'عنوان غير موجود.');
+      },
+    );
   });
 
   group('AddressDetailsCubit', () {
@@ -977,6 +1094,31 @@ void main() {
 
       expect(cubit.state.address?.building, 'مبنى 40، شقة 5');
       expect(repository.fetchAddressCalls, 1);
+    });
+
+    test('deletes the address and marks it as deleted', () async {
+      await cubit.load();
+
+      await cubit.deleteAddress();
+
+      expect(repository.deleteCalls, 1);
+      expect(repository.lastDeleteId, 3);
+      expect(repository.lastLang, 'en');
+      expect(cubit.state.isDeleted, isTrue);
+      expect(cubit.state.isDeleting, isFalse);
+      expect(cubit.state.deleteError, isNull);
+    });
+
+    test('emits the API message when deleting fails', () async {
+      await cubit.load();
+      repository.deleteResult = Left(ServerFailure('عنوان غير موجود.'));
+
+      await cubit.deleteAddress();
+
+      expect(cubit.state.isDeleted, isFalse);
+      expect(cubit.state.isDeleting, isFalse);
+      expect(cubit.state.deleteError, 'عنوان غير موجود.');
+      expect(cubit.state.address, isNotNull);
     });
   });
 
@@ -1172,6 +1314,7 @@ void main() {
       expect(find.text('شارع 901'), findsOneWidget);
       expect(find.text('مبنى 35، الطابق 2'), findsOneWidget);
       expect(find.text('تعديل العنوان'), findsOneWidget);
+      expect(find.text('حذف العنوان'), findsOneWidget);
       expect(find.text('المنزل'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
@@ -1301,6 +1444,35 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('sets the address as default from the checkbox', (
+      tester,
+    ) async {
+      var defaultTaps = 0;
+      var cardTaps = 0;
+
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: AddressCard(
+              address: _address(),
+              selected: false,
+              onTap: () => cardTaps++,
+              onSetDefault: () => defaultTaps++,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(Checkbox), findsOneWidget);
+
+      await tester.tap(find.byType(Checkbox));
+      await tester.pump();
+
+      expect(defaultTaps, 1);
+      expect(cardTaps, 0);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('marks the default address and hides the action', (
       tester,
     ) async {
@@ -1319,10 +1491,38 @@ void main() {
       );
 
       expect(find.text('افتراضي'), findsOneWidget);
+      expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
 
       await tester.tap(find.byIcon(Icons.more_horiz_rounded));
       await tester.pumpAndSettle();
       expect(find.text('تعيين كافتراضي'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('deletes the address from the menu', (tester) async {
+      var deleteTaps = 0;
+
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: AddressCard(
+              address: _address(),
+              selected: false,
+              onTap: () {},
+              onDelete: () => deleteTaps++,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.more_horiz_rounded));
+      await tester.pumpAndSettle();
+      expect(find.text('حذف العنوان'), findsOneWidget);
+
+      await tester.tap(find.text('حذف العنوان'));
+      await tester.pumpAndSettle();
+
+      expect(deleteTaps, 1);
       expect(tester.takeException(), isNull);
     });
 
@@ -1448,7 +1648,27 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('sets a saved address as the default', (tester) async {
+    testWidgets('sets a saved address as the default from its checkbox', (
+      tester,
+    ) async {
+      final repository = repositoryWith([_address()]);
+
+      await tester.pumpWidget(buildSelection(repository));
+      await tester.pump();
+      await tester.pump();
+
+      await tester.tap(find.byType(Checkbox).first);
+      await tester.pump();
+      await tester.pump();
+
+      expect(repository.setDefaultCalls, 1);
+      expect(repository.lastDefaultId, 1);
+      expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
+      expect(find.text('افتراضي'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('deletes a saved address after confirmation', (tester) async {
       final repository = repositoryWith([_address()]);
 
       await tester.pumpWidget(buildSelection(repository));
@@ -1457,13 +1677,42 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.more_horiz_rounded).first);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('تعيين كافتراضي'));
+      await tester.tap(find.text('حذف العنوان'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('حذف العنوان؟'), findsOneWidget);
+      expect(find.textContaining('البيت'), findsWidgets);
+
+      await tester.tap(find.text('حذف'));
+      await tester.pumpAndSettle();
+
+      expect(repository.deleteCalls, 1);
+      expect(repository.lastDeleteId, 1);
+      expect(find.text('البيت'), findsNothing);
+      expect(find.text('لم تحفظ أي عنوان بعد.'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('keeps the address when deleting fails', (tester) async {
+      final repository = repositoryWith([_address()])
+        ..deleteResult = Left(ServerFailure(''));
+
+      await tester.pumpWidget(buildSelection(repository));
       await tester.pump();
       await tester.pump();
 
-      expect(repository.setDefaultCalls, 1);
-      expect(repository.lastDefaultId, 1);
-      expect(find.text('افتراضي'), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.more_horiz_rounded).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('حذف العنوان'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('حذف'));
+      await tester.pumpAndSettle();
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AddressSelectionScreen)),
+      )!;
+      expect(find.text(l10n.addressDeleteError), findsOneWidget);
+      expect(find.text('البيت'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -1484,7 +1733,10 @@ void main() {
       await tester.pump();
 
       expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.radio_button_unchecked_rounded), findsOneWidget);
+      final checkboxes = tester
+          .widgetList<Checkbox>(find.byType(Checkbox))
+          .toList(growable: false);
+      expect(checkboxes.map((checkbox) => checkbox.value), [true, false]);
       expect(find.text('افتراضي'), findsOneWidget);
 
       final defaultCard = find.ancestor(
@@ -1657,6 +1909,11 @@ class _RemoteDataSourceThrows implements AddressesRemoteDataSource {
     required int id,
     String lang = 'ar',
   }) async {
+    throw error;
+  }
+
+  @override
+  Future<void> deleteAddress({required int id, String lang = 'ar'}) async {
     throw error;
   }
 }

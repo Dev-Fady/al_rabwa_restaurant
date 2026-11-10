@@ -143,6 +143,19 @@
   "addressSetDefault": "تعيين كافتراضي",
   "addressDefault": "افتراضي",
   "addressSetDefaultError": "تعذّر تعيين هذا العنوان كافتراضي، يرجى المحاولة مرة أخرى.",
+  "addressDelete": "حذف العنوان",
+  "addressDeleteConfirmTitle": "حذف العنوان؟",
+  "addressDeleteConfirmMessage": "هل تريد حذف \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "@addressDeleteConfirmMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "addressDeleteConfirm": "حذف",
+  "addressDeleteCancel": "إلغاء",
+  "addressDeleteError": "تعذّر حذف العنوان، يرجى المحاولة مرة أخرى.",
   "addressCoordinates": "الإحداثيات",
   "addressSelectTitle": "اختر عنوان التوصيل",
   "addressSelectSubtitle": "اختر عنوانًا محفوظًا أو أضف عنوانًا جديدًا.",

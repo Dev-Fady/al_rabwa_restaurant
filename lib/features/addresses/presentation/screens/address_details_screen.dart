@@ -4,6 +4,7 @@ import 'package:al_rabwa_restaurant/core/widget/app_text_button.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_details_cubit.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_details_state.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/widgets/delete_address_dialog.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/item_details_widgets.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -24,86 +25,130 @@ class AddressDetailsScreen extends StatelessWidget {
     context.read<AddressDetailsCubit>().applyAddress(updated);
   }
 
+  Future<void> _deleteAddress(BuildContext context, Address address) async {
+    final confirmed = await showDeleteAddressDialog(
+      context,
+      addressName: address.displayName,
+    );
+    if (!context.mounted || !confirmed) return;
+
+    await context.read<AddressDetailsCubit>().deleteAddress();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(
-        backgroundColor: context.appColors.surface,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        leadingWidth: 64,
-        leading: const Padding(
-          padding: EdgeInsetsDirectional.only(start: 8),
-          child: Center(child: ItemBackButton()),
-        ),
-        title: Text(
-          l10n.addressDetailsTitle,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: context.appColors.brandGreen,
-            fontWeight: FontWeight.w900,
+    return BlocListener<AddressDetailsCubit, AddressDetailsState>(
+      listenWhen: (previous, current) =>
+          previous.isDeleted != current.isDeleted ||
+          (current.deleteError != null &&
+              previous.deleteError != current.deleteError),
+      listener: (context, state) {
+        if (state.isDeleted) {
+          context.pop();
+          return;
+        }
+
+        final deleteError = state.deleteError;
+        if (deleteError == null) return;
+
+        final raw = deleteError.trim();
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(raw.isEmpty ? l10n.addressDeleteError : raw),
+            ),
+          );
+      },
+      child: Scaffold(
+        backgroundColor: context.appColors.background,
+        appBar: AppBar(
+          backgroundColor: context.appColors.surface,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          leadingWidth: 64,
+          leading: const Padding(
+            padding: EdgeInsetsDirectional.only(start: 8),
+            child: Center(child: ItemBackButton()),
           ),
+          title: Text(
+            l10n.addressDetailsTitle,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: context.appColors.brandGreen,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final horizontalPadding = constraints.maxWidth >= 600 ? 32.0 : 16.0;
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final horizontalPadding = constraints.maxWidth >= 600
+                  ? 32.0
+                  : 16.0;
 
-            return Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 640),
-                child: BlocBuilder<AddressDetailsCubit, AddressDetailsState>(
-                  builder: (context, state) {
-                    final address = state.address;
-                    if (address == null && state.isLoading) {
-                      return const _DetailsLoading();
-                    }
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 640),
+                  child: BlocBuilder<AddressDetailsCubit, AddressDetailsState>(
+                    builder: (context, state) {
+                      final address = state.address;
+                      if (address == null && state.isLoading) {
+                        return const _DetailsLoading();
+                      }
 
-                    if (address == null) {
-                      return _DetailsError(
-                        message: _errorMessage(l10n, state),
-                        retryLabel: l10n.retry,
-                        onRetry: () =>
-                            context.read<AddressDetailsCubit>().load(),
-                      );
-                    }
+                      if (address == null) {
+                        return _DetailsError(
+                          message: _errorMessage(l10n, state),
+                          retryLabel: l10n.retry,
+                          onRetry: () =>
+                              context.read<AddressDetailsCubit>().load(),
+                        );
+                      }
 
-                    return ListView(
-                      padding: EdgeInsets.fromLTRB(
-                        horizontalPadding,
-                        16,
-                        horizontalPadding,
-                        28,
-                      ),
-                      children: [
-                        _AddressHeader(address: address),
-                        const SizedBox(height: 16),
-                        _AddressDetailsCard(address: address),
-                        const SizedBox(height: 22),
-                        AppTextButton(
-                          buttonText: l10n.addressEditTitle,
-                          onPressed: () => _editAddress(context, address),
-                          backgroundColor: context.appColors.brandGreen,
-                          borderRadius: 16,
-                          buttonHeight: 54,
-                          textStyle: TextStyle(
-                            color: theme.colorScheme.onPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                          ),
+                      return ListView(
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding,
+                          16,
+                          horizontalPadding,
+                          28,
                         ),
-                      ],
-                    );
-                  },
+                        children: [
+                          _AddressHeader(address: address),
+                          const SizedBox(height: 16),
+                          _AddressDetailsCard(address: address),
+                          const SizedBox(height: 22),
+                          AppTextButton(
+                            buttonText: l10n.addressEditTitle,
+                            onPressed: () => _editAddress(context, address),
+                            backgroundColor: context.appColors.brandGreen,
+                            borderRadius: 16,
+                            buttonHeight: 54,
+                            textStyle: TextStyle(
+                              color: theme.colorScheme.onPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _DeleteAddressButton(
+                            label: l10n.addressDelete,
+                            isLoading: state.isDeleting,
+                            onPressed: state.isDeleting
+                                ? null
+                                : () => _deleteAddress(context, address),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -323,6 +368,52 @@ class _DetailRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _DeleteAddressButton extends StatelessWidget {
+  const _DeleteAddressButton({
+    required this.label,
+    required this.isLoading,
+    required this.onPressed,
+  });
+
+  final String label;
+  final bool isLoading;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return OutlinedButton.icon(
+      onPressed: isLoading ? null : onPressed,
+      icon: isLoading
+          ? SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.2,
+                color: colors.error,
+              ),
+            )
+          : const Icon(Icons.delete_outline_rounded, size: 21),
+      label: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontWeight: FontWeight.w800),
+      ),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: colors.error,
+        minimumSize: const Size.fromHeight(54),
+        side: BorderSide(
+          color: colors.error.withValues(alpha: 0.5),
+          width: 1.2,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
     );
   }
 }

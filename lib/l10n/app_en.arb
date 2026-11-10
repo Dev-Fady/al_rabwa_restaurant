@@ -143,6 +143,19 @@
   "addressSetDefault": "Set as default",
   "addressDefault": "Default",
   "addressSetDefaultError": "Couldn't set this address as the default. Please try again.",
+  "addressDelete": "Delete address",
+  "addressDeleteConfirmTitle": "Delete address?",
+  "addressDeleteConfirmMessage": "Delete \"{name}\"? This can't be undone.",
+  "@addressDeleteConfirmMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "addressDeleteConfirm": "Delete",
+  "addressDeleteCancel": "Cancel",
+  "addressDeleteError": "Couldn't delete the address. Please try again.",
   "addressCoordinates": "Coordinates",
   "addressSelectTitle": "Select delivery address",
   "addressSelectSubtitle": "Choose a saved address or add a new one.",

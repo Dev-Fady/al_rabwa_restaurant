@@ -39,4 +39,9 @@ abstract class AddressesRepository {
     required int id,
     String lang = 'ar',
   });
+
+  Future<Either<Failure, Unit>> deleteAddress({
+    required int id,
+    String lang = 'ar',
+  });
 }

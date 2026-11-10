@@ -40,6 +40,8 @@ abstract class AddressesRemoteDataSource {
     required int id,
     String lang = 'ar',
   });
+
+  Future<void> deleteAddress({required int id, String lang = 'ar'});
 }
 
 class AddressesRemoteDataSourceImpl implements AddressesRemoteDataSource {
@@ -167,6 +169,14 @@ class AddressesRemoteDataSourceImpl implements AddressesRemoteDataSource {
       response.data,
       failureMessage: 'Failed to set the default address.',
     );
+  }
+
+  @override
+  Future<void> deleteAddress({required int id, String lang = 'ar'}) async {
+    // A successful delete answers `204 No Content`, so there is no envelope to
+    // parse. Non-2xx responses (e.g. `404` for an unknown address) are thrown
+    // by Dio and mapped to a [ServerFailure] by the repository.
+    await apiService.deleteAddress(id: id, lang: lang, xLocale: lang);
   }
 
   Map<String, dynamic> _body({

@@ -1,10 +1,14 @@
 import 'package:al_rabwa_restaurant/core/error/failure.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
+import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
+import 'package:al_rabwa_restaurant/features/addresses/domain/entities/geo_point.dart';
+import 'package:al_rabwa_restaurant/features/addresses/domain/repositories/addresses_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/menu_category.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/menu_categories_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_delivery_address_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
@@ -17,6 +21,7 @@ import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -51,6 +56,96 @@ class _FakeCategoriesRepository implements MenuCategoriesRepository {
   }
 }
 
+class _FakeAddressesRepository implements AddressesRepository {
+  _FakeAddressesRepository([this.addresses = const []]);
+
+  final List<Address> addresses;
+
+  @override
+  Future<Either<Failure, List<Address>>> fetchAddresses({
+    String lang = 'ar',
+  }) async {
+    return Right(addresses);
+  }
+
+  @override
+  Future<Either<Failure, Address>> fetchAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, Address>> createAddress({
+    required AddressKind kind,
+    required String label,
+    required String area,
+    required String street,
+    required String building,
+    required String notes,
+    required GeoPoint point,
+    String lang = 'ar',
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, Address>> updateAddress({
+    required int id,
+    required AddressKind kind,
+    required String label,
+    required String area,
+    required String street,
+    required String building,
+    required String notes,
+    required GeoPoint point,
+    String lang = 'ar',
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, Address>> setDefaultAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    throw UnimplementedError();
+  }
+}
+
+Address _address({
+  required int id,
+  required String label,
+  bool isDefault = false,
+}) {
+  return Address(
+    id: id,
+    kind: AddressKind.home,
+    kindLabel: 'المنزل',
+    label: label,
+    title: label,
+    summary: 'الدوحة',
+    deliveryZone: null,
+    isDeliverable: true,
+    area: 'الدوحة',
+    street: 'شارع 1',
+    building: 'مبنى 2',
+    notes: '',
+    point: null,
+    lastUsedAt: null,
+    isDefault: isDefault,
+  );
+}
+
 class _FakeMenuItemsRepository implements MenuItemsRepository {
   int? lastCategoryId;
 
@@ -75,6 +170,7 @@ class _FakeMenuItemsRepository implements MenuItemsRepository {
 Future<StoreConfigCubit> _pumpHome(
   WidgetTester tester, {
   required _FakeRepository repository,
+  List<Address> addresses = const [],
   Size size = const Size(390, 844),
   double textScale = 1,
 }) async {
@@ -85,6 +181,11 @@ Future<StoreConfigCubit> _pumpHome(
   addTearDown(cubit.close);
   final categoriesCubit = HomeCategoriesCubit(_FakeCategoriesRepository());
   addTearDown(categoriesCubit.close);
+  final deliveryAddressCubit = HomeDeliveryAddressCubit(
+    _FakeAddressesRepository(addresses),
+    const FlutterSecureStorage(),
+  )..load();
+  addTearDown(deliveryAddressCubit.close);
 
   await tester.pumpWidget(
     MaterialApp(
@@ -102,6 +203,7 @@ Future<StoreConfigCubit> _pumpHome(
         providers: [
           BlocProvider.value(value: cubit),
           BlocProvider.value(value: categoriesCubit),
+          BlocProvider.value(value: deliveryAddressCubit),
         ],
         child: const HomeScreen(),
       ),
@@ -137,6 +239,11 @@ Future<_HomeRouterHarness> _pumpHomeWithRouter(
   final itemsRepository = _FakeMenuItemsRepository();
   final menuCubit = MenuCubit(_FakeCategoriesRepository(), itemsRepository);
   addTearDown(menuCubit.close);
+  final deliveryAddressCubit = HomeDeliveryAddressCubit(
+    _FakeAddressesRepository(),
+    const FlutterSecureStorage(),
+  );
+  addTearDown(deliveryAddressCubit.close);
 
   final router = GoRouter(
     initialLocation: AppRoutes.home,
@@ -164,6 +271,7 @@ Future<_HomeRouterHarness> _pumpHomeWithRouter(
         BlocProvider.value(value: storeCubit),
         BlocProvider.value(value: categoriesCubit),
         BlocProvider.value(value: menuCubit),
+        BlocProvider.value(value: deliveryAddressCubit),
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -226,6 +334,23 @@ void main() {
     expect(find.text('ر.ق · QAR'), findsOneWidget);
     expect(find.text('تصفح المنيو'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('shows the saved default address in the delivery bar', (
+    tester,
+  ) async {
+    await _pumpHome(
+      tester,
+      repository: _FakeRepository(result: sampleSettingsWithoutImages()),
+      addresses: [
+        _address(id: 1, label: 'البيت'),
+        _address(id: 2, label: 'العمل', isDefault: true),
+      ],
+    );
+    await tester.pump();
+
+    expect(find.textContaining('العمل'), findsOneWidget);
+    expect(find.textContaining('البيت'), findsNothing);
   });
 
   testWidgets('renders optional fees, reservations and contact details', (

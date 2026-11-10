@@ -54,4 +54,21 @@ class AddressDetailsCubit extends Cubit<AddressDetailsState> {
       ),
     );
   }
+
+  /// Deletes the loaded address; [AddressDetailsState.isDeleted] then tells the
+  /// screen to close.
+  Future<void> deleteAddress() async {
+    if (state.isDeleting || state.isDeleted) return;
+
+    emit(state.copyWith(isDeleting: true, clearDeleteError: true));
+
+    final result = await _repository.deleteAddress(id: addressId, lang: lang);
+    if (isClosed) return;
+
+    result.fold(
+      (failure) =>
+          emit(state.copyWith(isDeleting: false, deleteError: failure.message)),
+      (_) => emit(state.copyWith(isDeleting: false, isDeleted: true)),
+    );
+  }
 }

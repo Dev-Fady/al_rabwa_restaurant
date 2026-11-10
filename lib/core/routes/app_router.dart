@@ -8,6 +8,7 @@ import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/addres
 import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/add_address_screen.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/address_details_screen.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/address_selection_screen.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_delivery_address_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/item_details_screen.dart';
@@ -119,7 +120,16 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: AppRoutes.home,
-                builder: (context, state) => const HomeScreen(),
+                builder: (context, state) {
+                  final lang = Localizations.localeOf(context).languageCode;
+
+                  return BlocProvider<HomeDeliveryAddressCubit>(
+                    create: (_) =>
+                        getIt<HomeDeliveryAddressCubit>(param1: lang)
+                          ..loadIfAuthenticated(),
+                    child: const HomeScreen(),
+                  );
+                },
               ),
             ],
           ),

@@ -96,6 +96,23 @@ class AddressesRepositoryImpl implements AddressesRepository {
     return _run(() => remoteDataSource.setDefaultAddress(id: id, lang: lang));
   }
 
+  @override
+  Future<Either<Failure, Unit>> deleteAddress({
+    required int id,
+    String lang = 'ar',
+  }) async {
+    try {
+      await remoteDataSource.deleteAddress(id: id, lang: lang);
+      return Right(unit);
+    } on Failure catch (failure) {
+      return Left(failure);
+    } on DioException catch (error) {
+      return Left(ServerFailure.fromDioException(error));
+    } catch (error) {
+      return Left(ServerFailure.fromError(error));
+    }
+  }
+
   /// Runs one address request and maps its envelope to [Address].
   Future<Either<Failure, Address>> _run(
     Future<AddressResponse> Function() request,

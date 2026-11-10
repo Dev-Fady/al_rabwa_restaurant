@@ -3,6 +3,8 @@ import 'package:al_rabwa_restaurant/core/utils/auth_helper.dart';
 import 'package:al_rabwa_restaurant/core/widget/app_network_image.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_delivery_address_cubit.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_delivery_address_state.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_state.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/widgets/home_categories_section.dart';
@@ -55,9 +57,6 @@ class _HomeContent extends StatefulWidget {
 class _HomeContentState extends State<_HomeContent> {
   late String _selectedOrderType;
 
-  /// Last address saved from the add-address screen in this session.
-  Address? _deliveryAddress;
-
   @override
   void initState() {
     super.initState();
@@ -78,16 +77,29 @@ class _HomeContentState extends State<_HomeContent> {
   }
 
   /// Opens the saved-address picker and shows the chosen address in the bar.
+  ///
+  /// The list is reloaded afterwards so a registration that just happened, or
+  /// a default/delete change made inside the picker, is reflected even when
+  /// the customer comes back without picking anything.
   Future<void> _selectDeliveryAddress(BuildContext context) async {
+    final cubit = context.read<HomeDeliveryAddressCubit>();
     final authed = await AuthHelper.ensureAuthenticated(context);
     if (!authed || !context.mounted) return;
 
     final address = await context.push<Address>(
       AppRoutes.selectAddress,
-      extra: _deliveryAddress?.id,
+      extra: cubit.state.selectedAddress?.id,
     );
-    if (!context.mounted || address == null) return;
-    setState(() => _deliveryAddress = address);
+    if (!context.mounted) return;
+
+    if (address != null) {
+      cubit.select(address);
+      await cubit.load(force: true);
+    } else {
+      // Back from the picker without choosing: re-resolve to the saved default
+      // so a default changed there is reflected on the home bar.
+      await cubit.load(preferDefault: true, force: true);
+    }
   }
 
   @override
@@ -130,9 +142,16 @@ class _HomeContentState extends State<_HomeContent> {
                       const SizedBox(height: 14),
 
                       // 2. Delivery location selection bar
-                      HomeDeliveryLocationBar(
-                        selectedAddress: _deliveryAddress?.displayName,
-                        onTap: () => _selectDeliveryAddress(context),
+                      BlocSelector<
+                        HomeDeliveryAddressCubit,
+                        HomeDeliveryAddressState,
+                        Address?
+                      >(
+                        selector: (state) => state.selectedAddress,
+                        builder: (context, address) => HomeDeliveryLocationBar(
+                          selectedAddress: address?.displayName,
+                          onTap: () => _selectDeliveryAddress(context),
+                        ),
                       ),
                       const SizedBox(height: 12),
 

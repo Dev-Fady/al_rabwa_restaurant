@@ -79,4 +79,12 @@ abstract class ApiService {
     @Query('lang') String? lang,
     @Header('x-locale') String? xLocale,
   });
+
+  @DELETE(ApiConstants.addressDetails)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> deleteAddress({
+    @Path('id') required int id,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
 }

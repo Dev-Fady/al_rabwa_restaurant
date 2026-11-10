@@ -19,6 +19,7 @@ import 'package:al_rabwa_restaurant/features/home/data/repositories/settings_rep
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/menu_categories_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/settings_repository.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
+import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_delivery_address_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/store_config_cubit.dart';
 import 'package:al_rabwa_restaurant/features/menu/data/datasources/menu_items_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/menu/data/repositories/menu_items_repository_impl.dart';
@@ -170,6 +171,14 @@ Future<void> setupGetIt() async {
     (id, lang) => AddressDetailsCubit(
       getIt<AddressesRepository>(),
       addressId: id,
+      lang: lang,
+    ),
+  );
+
+  getIt.registerFactoryParam<HomeDeliveryAddressCubit, String, void>(
+    (lang, _) => HomeDeliveryAddressCubit(
+      getIt<AddressesRepository>(),
+      getIt<FlutterSecureStorage>(),
       lang: lang,
     ),
   );

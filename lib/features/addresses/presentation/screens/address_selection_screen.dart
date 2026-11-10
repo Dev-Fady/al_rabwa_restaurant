@@ -4,6 +4,7 @@ import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.d
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_list_cubit.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/address_list_state.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/widgets/address_card.dart';
+import 'package:al_rabwa_restaurant/features/addresses/presentation/widgets/delete_address_dialog.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/item_details_widgets.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,19 @@ class AddressSelectionScreen extends StatelessWidget {
     context.read<AddressListCubit>().load();
   }
 
+  Future<void> _deleteAddress(BuildContext context, Address address) async {
+    final id = address.id;
+    if (id == null) return;
+
+    final confirmed = await showDeleteAddressDialog(
+      context,
+      addressName: address.displayName,
+    );
+    if (!context.mounted || !confirmed) return;
+
+    await context.read<AddressListCubit>().deleteAddress(id);
+  }
+
   void _selectAddress(BuildContext context, Address address) {
     Navigator.of(context).pop(address);
   }
@@ -57,17 +71,30 @@ class AddressSelectionScreen extends StatelessWidget {
 
     return BlocListener<AddressListCubit, AddressListState>(
       listenWhen: (previous, current) =>
-          current.defaultError != null &&
-          previous.defaultError != current.defaultError,
+          (current.defaultError != null &&
+              previous.defaultError != current.defaultError) ||
+          (current.deleteError != null &&
+              previous.deleteError != current.deleteError),
       listener: (context, state) {
-        final raw = state.defaultError?.trim() ?? '';
+        final defaultError = state.defaultError;
+        final deleteError = state.deleteError;
+
+        final String? message;
+        if (deleteError != null) {
+          final raw = deleteError.trim();
+          message = raw.isEmpty ? l10n.addressDeleteError : raw;
+        } else if (defaultError != null) {
+          final raw = defaultError.trim();
+          message = raw.isEmpty ? l10n.addressSetDefaultError : raw;
+        } else {
+          message = null;
+        }
+
+        if (message == null) return;
+
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Text(raw.isEmpty ? l10n.addressSetDefaultError : raw),
-            ),
-          );
+          ..showSnackBar(SnackBar(content: Text(message)));
       },
       child: Scaffold(
         backgroundColor: context.appColors.background,
@@ -146,6 +173,7 @@ class AddressSelectionScreen extends StatelessWidget {
                                   isSettingDefault: state.isSettingDefault(
                                     address.id,
                                   ),
+                                  isDeleting: state.isDeleting(address.id),
                                   onTap: () => _selectAddress(context, address),
                                   onDetails: address.id == null
                                       ? null
@@ -158,6 +186,9 @@ class AddressSelectionScreen extends StatelessWidget {
                                       : () => context
                                             .read<AddressListCubit>()
                                             .setDefault(address.id!),
+                                  onDelete: address.id == null
+                                      ? null
+                                      : () => _deleteAddress(context, address),
                                 ),
                               ),
                           ] else if (state.isLoading)

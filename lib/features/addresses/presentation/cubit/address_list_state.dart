@@ -11,6 +11,8 @@ class AddressListState {
     this.defaultAddressId,
     this.settingDefaultId,
     this.defaultError,
+    this.deletingAddressId,
+    this.deleteError,
   });
 
   final AddressListStatus status;
@@ -30,6 +32,12 @@ class AddressListState {
   /// Message returned when the default could not be changed.
   final String? defaultError;
 
+  /// Address whose delete request is in flight.
+  final int? deletingAddressId;
+
+  /// Message returned when the address could not be deleted.
+  final String? deleteError;
+
   bool get isLoading => status == AddressListStatus.loading;
 
   bool get hasAddresses => addresses.isNotEmpty;
@@ -39,6 +47,8 @@ class AddressListState {
   bool isDefault(int? id) => id != null && id == defaultAddressId;
 
   bool isSettingDefault(int? id) => id != null && id == settingDefaultId;
+
+  bool isDeleting(int? id) => id != null && id == deletingAddressId;
 
   AddressListState copyWith({
     AddressListStatus? status,
@@ -51,6 +61,10 @@ class AddressListState {
     bool clearSettingDefault = false,
     String? defaultError,
     bool clearDefaultError = false,
+    int? deletingAddressId,
+    bool clearDeleting = false,
+    String? deleteError,
+    bool clearDeleteError = false,
   }) {
     return AddressListState(
       status: status ?? this.status,
@@ -65,6 +79,10 @@ class AddressListState {
       defaultError: clearDefaultError
           ? null
           : (defaultError ?? this.defaultError),
+      deletingAddressId: clearDeleting
+          ? null
+          : (deletingAddressId ?? this.deletingAddressId),
+      deleteError: clearDeleteError ? null : (deleteError ?? this.deleteError),
     );
   }
 }

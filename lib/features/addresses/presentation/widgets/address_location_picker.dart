@@ -40,6 +40,10 @@ class AddressLocationPicker extends StatefulWidget {
   /// Street-level zoom after "use my location".
   static const double focusZoom = 16;
 
+  /// Zoom limits of the picker.
+  static const double minZoom = 10;
+  static const double maxZoom = 18;
+
   @override
   State<AddressLocationPicker> createState() => _AddressLocationPickerState();
 }
@@ -109,15 +113,21 @@ class _AddressLocationPickerState extends State<AddressLocationPicker> {
                 widget.point.value.longitude,
               ),
               initialZoom: AddressLocationPicker.initialZoom,
-              minZoom: 10,
-              maxZoom: 18,
+              minZoom: AddressLocationPicker.minZoom,
+              maxZoom: AddressLocationPicker.maxZoom,
               // Only Qatar is deliverable; the centre (the pin) can never
               // leave the country no matter how far the customer drags.
               cameraConstraint: CameraConstraint.containCenter(
                 bounds: _qatarBounds,
               ),
               interactionOptions: const InteractionOptions(
-                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                // One finger pans, two fingers pinch to zoom in/out, and a
+                // double tap zooms in one step. Rotation and two-finger
+                // panning are disabled so the map behaves predictably.
+                flags:
+                    InteractiveFlag.drag |
+                    InteractiveFlag.pinchZoom |
+                    InteractiveFlag.doubleTapZoom,
               ),
               onPositionChanged: _handlePositionChanged,
             ),

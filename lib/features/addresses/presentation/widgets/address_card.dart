@@ -12,9 +12,11 @@ class AddressCard extends StatelessWidget {
     required this.onTap,
     this.isDefault = false,
     this.isSettingDefault = false,
+    this.isDeleting = false,
     this.onDetails,
     this.onEdit,
     this.onSetDefault,
+    this.onDelete,
   });
 
   final Address address;
@@ -27,6 +29,9 @@ class AddressCard extends StatelessWidget {
   /// Whether a "set as default" request is running for this address.
   final bool isSettingDefault;
 
+  /// Whether a delete request is running for this address.
+  final bool isDeleting;
+
   /// Opens the read-only details screen for this address.
   final VoidCallback? onDetails;
 
@@ -35,6 +40,9 @@ class AddressCard extends StatelessWidget {
 
   /// Marks this address as the customer's default.
   final VoidCallback? onSetDefault;
+
+  /// Deletes this address after the caller confirms.
+  final VoidCallback? onDelete;
 
   IconData get _kindIcon => switch (address.kind) {
     AddressKind.home => Icons.home_rounded,
@@ -81,14 +89,28 @@ class AddressCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        address.displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: context.appColors.titleColor,
-                          fontWeight: FontWeight.w900,
-                        ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              address.displayName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: context.appColors.titleColor,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                          if (selected) ...[
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.check_circle_rounded,
+                              size: 17,
+                              color: brand,
+                            ),
+                          ],
+                        ],
                       ),
                       if (showSummary) ...[
                         const SizedBox(height: 4),
@@ -114,7 +136,7 @@ class AddressCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                if (isSettingDefault)
+                if (isSettingDefault || isDeleting)
                   const Padding(
                     padding: EdgeInsetsDirectional.only(top: 9, bottom: 9),
                     child: SizedBox(
@@ -125,20 +147,17 @@ class AddressCard extends StatelessWidget {
                   )
                 else if (onDetails != null ||
                     onEdit != null ||
-                    onSetDefault != null)
+                    onSetDefault != null ||
+                    onDelete != null)
                   _AddressMenu(
                     onDetails: onDetails,
                     onEdit: onEdit,
                     onSetDefault: onSetDefault,
+                    onDelete: onDelete,
                     canSetDefault: !isDefault,
                   ),
-                Icon(
-                  selected
-                      ? Icons.check_circle_rounded
-                      : Icons.radio_button_unchecked_rounded,
-                  color: selected ? brand : colors.outline,
-                  size: 24,
-                ),
+                const SizedBox(width: 4),
+                _DefaultCheckbox(isDefault: isDefault, onChanged: onSetDefault),
               ],
             ),
           ),
@@ -173,6 +192,34 @@ class _KindIcon extends StatelessWidget {
         icon,
         size: 21,
         color: selected ? brand : colors.onSurfaceVariant,
+      ),
+    );
+  }
+}
+
+class _DefaultCheckbox extends StatelessWidget {
+  const _DefaultCheckbox({required this.isDefault, required this.onChanged});
+
+  final bool isDefault;
+  final VoidCallback? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final brand = context.appColors.brandGreen;
+    final colors = Theme.of(context).colorScheme;
+
+    return Semantics(
+      label: isDefault ? l10n.addressDefault : l10n.addressSetDefault,
+      child: Checkbox(
+        value: isDefault,
+        onChanged: onChanged == null ? null : (_) => onChanged!(),
+        activeColor: brand,
+        checkColor: colors.onPrimary,
+        side: BorderSide(color: colors.outline, width: 1.6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        visualDensity: VisualDensity.compact,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
     );
   }
@@ -237,19 +284,21 @@ class _DefaultBadge extends StatelessWidget {
   }
 }
 
-enum _AddressAction { details, edit, setDefault }
+enum _AddressAction { details, edit, setDefault, delete }
 
 class _AddressMenu extends StatelessWidget {
   const _AddressMenu({
     this.onDetails,
     this.onEdit,
     this.onSetDefault,
+    this.onDelete,
     this.canSetDefault = false,
   });
 
   final VoidCallback? onDetails;
   final VoidCallback? onEdit;
   final VoidCallback? onSetDefault;
+  final VoidCallback? onDelete;
   final bool canSetDefault;
 
   @override
@@ -269,6 +318,8 @@ class _AddressMenu extends StatelessWidget {
             onEdit?.call();
           case _AddressAction.setDefault:
             onSetDefault?.call();
+          case _AddressAction.delete:
+            onDelete?.call();
         }
       },
       itemBuilder: (context) => [
@@ -305,6 +356,28 @@ class _AddressMenu extends StatelessWidget {
               ],
             ),
           ),
+        if (onDelete != null) ...[
+          const PopupMenuDivider(),
+          PopupMenuItem(
+            value: _AddressAction.delete,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.delete_outline_rounded,
+                  size: 20,
+                  color: colors.error,
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    l10n.addressDelete,
+                    style: TextStyle(color: colors.error),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

@@ -69,6 +69,37 @@ class AddressListCubit extends Cubit<AddressListState> {
     );
   }
 
+  /// Deletes [id] and removes it from the visible list on success.
+  Future<void> deleteAddress(int id) async {
+    if (state.deletingAddressId != null) return;
+
+    emit(state.copyWith(deletingAddressId: id, clearDeleteError: true));
+
+    final result = await _repository.deleteAddress(id: id, lang: lang);
+    if (isClosed) return;
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(clearDeleting: true, deleteError: failure.message),
+      ),
+      (_) {
+        final remaining = state.addresses
+            .where((address) => address.id != id)
+            .toList(growable: false);
+
+        emit(
+          AddressListState(
+            status: AddressListStatus.success,
+            addresses: List.unmodifiable(remaining),
+            defaultAddressId: state.defaultAddressId == id
+                ? null
+                : state.defaultAddressId,
+          ),
+        );
+      },
+    );
+  }
+
   /// Prefers the flag the API returned; otherwise keeps the previous default
   /// when it still exists, so a refresh does not forget the latest change.
   int? _resolveDefaultId(List<Address> addresses) {
