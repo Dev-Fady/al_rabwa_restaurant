@@ -143,7 +143,7 @@ abstract class AppLocalizations {
   /// No description provided for @navStore.
   ///
   /// In en, this message translates to:
-  /// **'Store'**
+  /// **'Restaurant'**
   String get navStore;
 
   /// No description provided for @homeWelcomeTitle.
@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @storeOpenShort.
   ///
   /// In en, this message translates to:
-  /// **'Open'**
+  /// **'Open now'**
   String get storeOpenShort;
 
   /// No description provided for @storeClosed.
@@ -278,6 +278,72 @@ abstract class AppLocalizations {
   /// **'Working hours'**
   String get workingHoursLabel;
 
+  /// No description provided for @storeLanguageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu language'**
+  String get storeLanguageTitle;
+
+  /// No description provided for @storeLanguageArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'العربية'**
+  String get storeLanguageArabic;
+
+  /// No description provided for @storeLanguageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get storeLanguageEnglish;
+
+  /// No description provided for @storePoweredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Powered by SmartMenues'**
+  String get storePoweredBy;
+
+  /// No description provided for @deleteMyDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my data'**
+  String get deleteMyDataTitle;
+
+  /// No description provided for @deleteMyDataConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my data?'**
+  String get deleteMyDataConfirmTitle;
+
+  /// No description provided for @deleteMyDataConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes this device\'s data, including your profile, addresses and orders. It can\'t be undone.'**
+  String get deleteMyDataConfirmMessage;
+
+  /// No description provided for @deleteMyDataConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete data'**
+  String get deleteMyDataConfirmAction;
+
+  /// No description provided for @deleteMyDataCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get deleteMyDataCancelAction;
+
+  /// No description provided for @deleteMyDataSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data was deleted.'**
+  String get deleteMyDataSuccess;
+
+  /// No description provided for @deleteMyDataError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete your data. Please try again.'**
+  String get deleteMyDataError;
+
   /// No description provided for @locationRequiredLabel.
   ///
   /// In en, this message translates to:
@@ -301,6 +367,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contact us'**
   String get contactTitle;
+
+  /// No description provided for @contactEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No contact details available yet.'**
+  String get contactEmpty;
+
+  /// No description provided for @contactEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone numbers and social accounts will appear here once added.'**
+  String get contactEmptyHint;
 
   /// No description provided for @phoneLabel.
   ///

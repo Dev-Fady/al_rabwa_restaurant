@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const arabicLabels = ['الرئيسية', 'المنيو', 'السلة', 'طلباتي', 'المتجر'];
+  const arabicLabels = ['الرئيسية', 'المنيو', 'السلة', 'طلباتي', 'المطعم'];
 
   Future<void> pumpBar(
     WidgetTester tester, {

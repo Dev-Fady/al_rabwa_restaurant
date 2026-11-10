@@ -14,6 +14,10 @@ abstract class ApiService {
     @Header('x-locale') String? xLocale,
   });
 
+  @DELETE(ApiConstants.me)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> deleteMyData();
+
   @GET(ApiConstants.settings)
   Future<HttpResponse<dynamic>> getSettings({
     @Query('lang') String? lang,

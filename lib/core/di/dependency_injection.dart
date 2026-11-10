@@ -30,6 +30,10 @@ import 'package:al_rabwa_restaurant/features/registration/data/datasources/devic
 import 'package:al_rabwa_restaurant/features/registration/data/repositories/device_registration_repository_impl.dart';
 import 'package:al_rabwa_restaurant/features/registration/domain/repositories/device_registration_repository.dart';
 import 'package:al_rabwa_restaurant/features/registration/presentation/cubit/device_registration_cubit.dart';
+import 'package:al_rabwa_restaurant/features/settings/data/datasources/account_remote_data_source.dart';
+import 'package:al_rabwa_restaurant/features/settings/data/repositories/account_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/settings/domain/repositories/account_repository.dart';
+import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/delete_my_data_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -84,6 +88,21 @@ Future<void> setupGetIt() async {
 
   getIt.registerFactory<DeviceRegistrationCubit>(
     () => DeviceRegistrationCubit(getIt<DeviceRegistrationRepository>()),
+  );
+
+  getIt.registerLazySingleton<AccountRemoteDataSource>(
+    () => AccountRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<AccountRepository>(
+    () => AccountRepositoryImpl(
+      remoteDataSource: getIt<AccountRemoteDataSource>(),
+      secureStorage: getIt<FlutterSecureStorage>(),
+    ),
+  );
+
+  getIt.registerFactory<DeleteMyDataCubit>(
+    () => DeleteMyDataCubit(getIt<AccountRepository>()),
   );
 
   getIt.registerLazySingleton<SettingsRemoteDataSource>(

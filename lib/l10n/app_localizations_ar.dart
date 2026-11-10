@@ -30,7 +30,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navOrders => 'طلباتي';
 
   @override
-  String get navStore => 'المتجر';
+  String get navStore => 'المطعم';
 
   @override
   String get homeWelcomeTitle => 'أهلاً بك في مطعم الربوة';
@@ -43,7 +43,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get storeOpenNow => 'مفتوح الآن — نستقبل طلباتك';
 
   @override
-  String get storeOpenShort => 'مفتوح';
+  String get storeOpenShort => 'مفتوح الآن';
 
   @override
   String get storeClosed => 'مغلق حالياً';
@@ -98,7 +98,41 @@ class AppLocalizationsAr extends AppLocalizations {
   String get availableLabel => 'متاح';
 
   @override
-  String get workingHoursLabel => 'ساعات العمل';
+  String get workingHoursLabel => 'أوقات العمل';
+
+  @override
+  String get storeLanguageTitle => 'لغة المنيو';
+
+  @override
+  String get storeLanguageArabic => 'العربية';
+
+  @override
+  String get storeLanguageEnglish => 'English';
+
+  @override
+  String get storePoweredBy => 'بدعم من SmartMenues';
+
+  @override
+  String get deleteMyDataTitle => 'حذف بياناتي';
+
+  @override
+  String get deleteMyDataConfirmTitle => 'حذف بياناتي؟';
+
+  @override
+  String get deleteMyDataConfirmMessage =>
+      'سيتم حذف بيانات هذا الجهاز، بما في ذلك ملفك الشخصي وعناوينك وطلباتك، نهائياً. لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get deleteMyDataConfirmAction => 'حذف البيانات';
+
+  @override
+  String get deleteMyDataCancelAction => 'إلغاء';
+
+  @override
+  String get deleteMyDataSuccess => 'تم حذف بياناتك بنجاح.';
+
+  @override
+  String get deleteMyDataError => 'تعذّر حذف بياناتك، يرجى المحاولة مرة أخرى.';
 
   @override
   String get locationRequiredLabel => 'تحديد الموقع';
@@ -111,6 +145,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contactTitle => 'تواصل معنا';
+
+  @override
+  String get contactEmpty => 'لا توجد بيانات تواصل متاحة حالياً.';
+
+  @override
+  String get contactEmptyHint =>
+      'ستظهر أرقام الهاتف وحسابات التواصل هنا عند إضافتها.';
 
   @override
   String get phoneLabel => 'الهاتف';

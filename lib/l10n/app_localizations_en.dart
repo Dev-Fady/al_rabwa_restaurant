@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navOrders => 'Orders';
 
   @override
-  String get navStore => 'Store';
+  String get navStore => 'Restaurant';
 
   @override
   String get homeWelcomeTitle => 'Welcome to Al Rabwa Restaurant';
@@ -43,7 +43,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get storeOpenNow => 'Open now — taking orders';
 
   @override
-  String get storeOpenShort => 'Open';
+  String get storeOpenShort => 'Open now';
 
   @override
   String get storeClosed => 'Currently closed';
@@ -101,6 +101,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workingHoursLabel => 'Working hours';
 
   @override
+  String get storeLanguageTitle => 'Menu language';
+
+  @override
+  String get storeLanguageArabic => 'العربية';
+
+  @override
+  String get storeLanguageEnglish => 'English';
+
+  @override
+  String get storePoweredBy => 'Powered by SmartMenues';
+
+  @override
+  String get deleteMyDataTitle => 'Delete my data';
+
+  @override
+  String get deleteMyDataConfirmTitle => 'Delete my data?';
+
+  @override
+  String get deleteMyDataConfirmMessage =>
+      'This permanently deletes this device\'s data, including your profile, addresses and orders. It can\'t be undone.';
+
+  @override
+  String get deleteMyDataConfirmAction => 'Delete data';
+
+  @override
+  String get deleteMyDataCancelAction => 'Cancel';
+
+  @override
+  String get deleteMyDataSuccess => 'Your data was deleted.';
+
+  @override
+  String get deleteMyDataError =>
+      'Couldn\'t delete your data. Please try again.';
+
+  @override
   String get locationRequiredLabel => 'Location';
 
   @override
@@ -111,6 +146,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactTitle => 'Contact us';
+
+  @override
+  String get contactEmpty => 'No contact details available yet.';
+
+  @override
+  String get contactEmptyHint =>
+      'Phone numbers and social accounts will appear here once added.';
 
   @override
   String get phoneLabel => 'Phone';

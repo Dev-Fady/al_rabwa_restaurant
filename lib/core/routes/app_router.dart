@@ -16,7 +16,9 @@ import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_cate
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_screen.dart';
 import 'package:al_rabwa_restaurant/features/registration/presentation/cubit/device_registration_cubit.dart';
 import 'package:al_rabwa_restaurant/features/registration/presentation/screens/device_registration_screen.dart';
+import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/delete_my_data_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:al_rabwa_restaurant/features/settings/presentation/screens/settings_screen.dart';
 import 'package:al_rabwa_restaurant/features/shell/presentation/screens/section_placeholder_screen.dart';
 import 'package:al_rabwa_restaurant/features/splash/presentation/screens/splash_screen.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
@@ -199,9 +201,9 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: AppRoutes.store,
-                builder: (context, state) => SectionPlaceholderScreen(
-                  title: AppLocalizations.of(context)!.navStore,
-                  icon: Icons.storefront_outlined,
+                builder: (context, state) => BlocProvider<DeleteMyDataCubit>(
+                  create: (_) => getIt<DeleteMyDataCubit>(),
+                  child: const SettingsScreen(),
                 ),
               ),
             ],

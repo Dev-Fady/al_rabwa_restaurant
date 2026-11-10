@@ -4,6 +4,7 @@ class ApiConstants {
   static const String baseUrl = 'https://sync2027.smartmenues.com/api/';
 
   static const String device = 'device';
+  static const String me = 'me';
   static const String user = 'user';
   static const String deleteAccount = 'user/delete';
   static const String logout = 'logout';
