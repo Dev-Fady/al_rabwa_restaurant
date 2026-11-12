@@ -2,6 +2,7 @@ import 'package:al_rabwa_restaurant/core/di/dependency_injection.dart';
 import 'package:al_rabwa_restaurant/core/routes/app_router.dart';
 import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_quote_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/settings_state.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_categories_cubit.dart';
@@ -16,7 +17,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Optimize Flutter's in-memory image cache to avoid evicting images
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 256 * 1024 * 1024; // 256 MB
+  PaintingBinding.instance.imageCache.maximumSizeBytes =
+      256 * 1024 * 1024; // 256 MB
   PaintingBinding.instance.imageCache.maximumSize = 2000;
   try {
     await setupGetIt();
@@ -48,6 +50,10 @@ class MyApp extends StatelessWidget {
           create: (context) => getIt<CartCubit>(),
           lazy: false,
         ),
+        BlocProvider<CartQuoteCubit>(
+          create: (context) => getIt<CartQuoteCubit>(),
+          lazy: false,
+        ),
       ],
       child: BlocListener<SettingsCubit, SettingsState>(
         listenWhen: (previous, current) =>
@@ -58,6 +64,7 @@ class MyApp extends StatelessWidget {
           final lang = state.locale.languageCode;
           context.read<StoreConfigCubit>().load(lang: lang);
           context.read<HomeCategoriesCubit>().load(lang: lang);
+          context.read<CartQuoteCubit>().setLang(lang);
           final menuCubit = context.read<MenuCubit>();
           if (menuCubit.state.hasLoaded) {
             menuCubit.load(lang: lang);

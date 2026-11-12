@@ -1105,6 +1105,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t get your current location. Move the map manually.'**
   String get addressLocationUnavailable;
+
+  /// No description provided for @cartEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cart is empty'**
+  String get cartEmptyTitle;
+
+  /// No description provided for @cartEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your favorite dishes from the menu to see them here.'**
+  String get cartEmptyMessage;
+
+  /// No description provided for @cartSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order summary'**
+  String get cartSummaryTitle;
+
+  /// No description provided for @cartSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get cartSubtotal;
+
+  /// No description provided for @cartDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get cartDiscount;
+
+  /// No description provided for @cartTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get cartTotal;
+
+  /// No description provided for @cartQuoteLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculating the total...'**
+  String get cartQuoteLoading;
+
+  /// No description provided for @cartQuoteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t calculate the cart total. Please try again.'**
+  String get cartQuoteError;
+
+  /// No description provided for @cartQuoteCached.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the last saved total. Pull to refresh.'**
+  String get cartQuoteCached;
+
+  /// No description provided for @cartAddressRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A delivery address is required to continue.'**
+  String get cartAddressRequired;
+
+  /// No description provided for @cartRemoveItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove item'**
+  String get cartRemoveItem;
 }
 
 class _AppLocalizationsDelegate

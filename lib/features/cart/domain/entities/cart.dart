@@ -4,9 +4,16 @@ import 'cart_line.dart';
 
 /// In-memory cart. Dishes are keyed by their id and keep the chosen quantity.
 class Cart {
-  const Cart({this.lines = const []});
+  const Cart({this.lines = const [], this.orderType = defaultOrderType});
+
+  /// Delivery is the storefront default until the settings load.
+  static const String defaultOrderType = 'delivery';
 
   final List<CartLine> lines;
+
+  /// Order type the cart is quoted and checked out with (`delivery`,
+  /// `takeaway`, `dine_in`, ...). Chosen on the home screen.
+  final String orderType;
 
   bool get isEmpty => lines.isEmpty;
 
@@ -53,19 +60,17 @@ class Cart {
           line.matches(item, option: option, addons: addons, weight: weight),
     );
     if (index == -1) {
-      return Cart(
-        lines: [
-          ...lines,
-          CartLine(
-            item: item,
-            quantity: quantity,
-            notes: notes.trim(),
-            option: option,
-            addons: addons,
-            weight: weight,
-          ),
-        ],
-      );
+      return _copyWithLines([
+        ...lines,
+        CartLine(
+          item: item,
+          quantity: quantity,
+          notes: notes.trim(),
+          option: option,
+          addons: addons,
+          weight: weight,
+        ),
+      ]);
     }
 
     final existing = lines[index];
@@ -102,12 +107,10 @@ class Cart {
 
     final existing = lines[index];
     if (existing.quantity <= 1) {
-      return Cart(
-        lines: [
-          for (var i = 0; i < lines.length; i++)
-            if (i != index) lines[i],
-        ],
-      );
+      return _copyWithLines([
+        for (var i = 0; i < lines.length; i++)
+          if (i != index) lines[i],
+      ]);
     }
 
     return _replaceAt(
@@ -124,17 +127,67 @@ class Cart {
       for (final line in lines)
         if (line.item.id != id) line,
     ];
-    return remaining.length == lines.length ? this : Cart(lines: remaining);
+    return remaining.length == lines.length ? this : _copyWithLines(remaining);
   }
 
-  Cart clear() => const Cart();
+  /// Edits one specific line, so dishes with different selections stay apart.
+  Cart incrementLine(CartLine line) {
+    final index = _indexOfLine(line);
+    if (index == -1) return this;
+    return _replaceAt(index, line.copyWith(quantity: line.quantity + 1));
+  }
+
+  Cart decrementLine(CartLine line) {
+    final index = _indexOfLine(line);
+    if (index == -1) return this;
+    if (line.quantity <= 1) {
+      return _copyWithLines([
+        for (var i = 0; i < lines.length; i++)
+          if (i != index) lines[i],
+      ]);
+    }
+    return _replaceAt(index, line.copyWith(quantity: line.quantity - 1));
+  }
+
+  Cart removeLine(CartLine line) {
+    final index = _indexOfLine(line);
+    if (index == -1) return this;
+    return _copyWithLines([
+      for (var i = 0; i < lines.length; i++)
+        if (i != index) lines[i],
+    ]);
+  }
+
+  int _indexOfLine(CartLine line) {
+    return lines.indexWhere(
+      (candidate) =>
+          candidate.notes == line.notes &&
+          candidate.matches(
+            line.item,
+            option: line.option,
+            addons: line.addons,
+            weight: line.weight,
+          ),
+    );
+  }
+
+  Cart clear() => Cart(orderType: orderType);
+
+  /// Keeps the chosen order type when the cart is re-quoted or edited.
+  Cart withOrderType(String type) {
+    final normalized = type.trim();
+    if (normalized.isEmpty || normalized == orderType) return this;
+    return Cart(lines: lines, orderType: normalized);
+  }
 
   Cart _replaceAt(int index, CartLine line) {
-    return Cart(
-      lines: [
-        for (var i = 0; i < lines.length; i++)
-          if (i == index) line else lines[i],
-      ],
-    );
+    return _copyWithLines([
+      for (var i = 0; i < lines.length; i++)
+        if (i == index) line else lines[i],
+    ]);
+  }
+
+  Cart _copyWithLines(List<CartLine> newLines) {
+    return Cart(lines: newLines, orderType: orderType);
   }
 }

@@ -1,7 +1,12 @@
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_hive.dart';
 import 'package:al_rabwa_restaurant/core/services/api/api_service.dart';
+import 'package:al_rabwa_restaurant/features/cart/data/datasources/cart_quote_local_data_source.dart';
+import 'package:al_rabwa_restaurant/features/cart/data/datasources/cart_quote_remote_data_source.dart';
+import 'package:al_rabwa_restaurant/features/cart/data/repositories/cart_quote_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/cart/domain/repositories/cart_quote_repository.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_quote_cubit.dart';
 import 'package:al_rabwa_restaurant/core/services/api/dio_config.dart';
 import 'package:al_rabwa_restaurant/features/addresses/data/datasources/addresses_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/addresses/data/repositories/addresses_repository_impl.dart';
@@ -73,6 +78,25 @@ Future<void> setupGetIt() async {
   );
 
   getIt.registerLazySingleton<ApiService>(() => ApiService(getIt<Dio>()));
+
+  getIt.registerLazySingleton<CartQuoteRemoteDataSource>(
+    () => CartQuoteRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<CartQuoteLocalDataSource>(
+    CartQuoteLocalDataSourceImpl.new,
+  );
+
+  getIt.registerLazySingleton<CartQuoteRepository>(
+    () => CartQuoteRepositoryImpl(
+      remoteDataSource: getIt<CartQuoteRemoteDataSource>(),
+      localDataSource: getIt<CartQuoteLocalDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<CartQuoteCubit>(
+    () => CartQuoteCubit(getIt<CartQuoteRepository>(), getIt<CartCubit>()),
+  );
 
   getIt.registerLazySingleton<DeviceRegistrationRemoteDataSource>(
     () =>

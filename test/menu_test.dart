@@ -206,6 +206,8 @@ void main() {
       expect(mixedGrill.weightRange?.choices.first, 0.25);
       expect(mixedGrill.weightRange?.choices, hasLength(40));
       expect(mixedGrill.hasOptions, isTrue);
+      expect(mixedGrill.defaultOption?.id, 7);
+      expect(mixedGrill.defaultWeight, 0.25);
       expect(mixedGrill.options.map((option) => option.name), [
         'نفر واحد',
         'نفرين',
@@ -223,6 +225,8 @@ void main() {
       final chicken = payload.items.last;
       expect(chicken.soldByWeight, isFalse);
       expect(chicken.weight, isNull);
+      expect(chicken.defaultOption, isNull);
+      expect(chicken.defaultWeight, 1);
       expect(chicken.hasWeightRange, isFalse);
       expect(chicken.hasOptions, isFalse);
       expect(chicken.hasAddons, isTrue);
@@ -437,6 +441,42 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(cart.state.totalQuantity, 1);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('quick-add uses the default option and starting weight', (
+      tester,
+    ) async {
+      final items = MenuItemsResponse.fromJson(
+        menuItemsPayloadWithWeightRange(),
+      ).toEntity();
+      final cart = CartCubit();
+      await _pumpMenu(
+        tester,
+        categoriesRepository: _FakeCategoriesRepository(
+          result: const [
+            MenuCategory(
+              id: 6,
+              name: 'مشاوي',
+              displayStyle: CategoryDisplayStyle.grid,
+              itemsCount: 2,
+            ),
+          ],
+        ),
+        itemsRepository: _FakeItemsRepository(result: {6: items}),
+        cartCubit: cart,
+      );
+
+      final tile = find.byKey(const ValueKey('menu-grid-31'));
+      await tester.tap(
+        find.descendant(of: tile, matching: find.byIcon(Icons.add)),
+      );
+      await tester.pumpAndSettle();
+
+      final line = cart.state.lines.single;
+      expect(line.option?.id, 7);
+      expect(line.weight, 0.25);
+      expect(cart.state.subtotal, 9.75);
       expect(tester.takeException(), isNull);
     });
 

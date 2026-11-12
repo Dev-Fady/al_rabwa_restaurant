@@ -551,4 +551,38 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get addressLocationUnavailable =>
       'تعذّر تحديد موقعك الحالي. حرّك الخريطة يدويًا.';
+
+  @override
+  String get cartEmptyTitle => 'سلتك فارغة';
+
+  @override
+  String get cartEmptyMessage => 'أضف أطباقك المفضلة من المنيو لتظهر هنا.';
+
+  @override
+  String get cartSummaryTitle => 'ملخص الطلب';
+
+  @override
+  String get cartSubtotal => 'المجموع الفرعي';
+
+  @override
+  String get cartDiscount => 'الخصم';
+
+  @override
+  String get cartTotal => 'الإجمالي';
+
+  @override
+  String get cartQuoteLoading => 'جارٍ حساب الإجمالي...';
+
+  @override
+  String get cartQuoteError =>
+      'تعذّر حساب إجمالي السلة، يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get cartQuoteCached => 'يتم عرض آخر إجمالي محفوظ. اسحب للتحديث.';
+
+  @override
+  String get cartAddressRequired => 'مطلوب عنوان توصيل للمتابعة.';
+
+  @override
+  String get cartRemoveItem => 'إزالة الصنف';
 }

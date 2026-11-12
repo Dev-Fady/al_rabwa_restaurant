@@ -201,5 +201,16 @@
   "addressLocationServiceDisabled": "Location services are off. Turn them on in your device settings and try again.",
   "addressLocationPermissionDenied": "Allow location access to use your current location.",
   "addressLocationPermissionDeniedForever": "Location permission is blocked. You can enable it in the app settings.",
-  "addressLocationUnavailable": "Couldn't get your current location. Move the map manually."
+  "addressLocationUnavailable": "Couldn't get your current location. Move the map manually.",
+  "cartEmptyTitle": "Your cart is empty",
+  "cartEmptyMessage": "Add your favorite dishes from the menu to see them here.",
+  "cartSummaryTitle": "Order summary",
+  "cartSubtotal": "Subtotal",
+  "cartDiscount": "Discount",
+  "cartTotal": "Total",
+  "cartQuoteLoading": "Calculating the total...",
+  "cartQuoteError": "Couldn't calculate the cart total. Please try again.",
+  "cartQuoteCached": "Showing the last saved total. Pull to refresh.",
+  "cartAddressRequired": "A delivery address is required to continue.",
+  "cartRemoveItem": "Remove item"
 }

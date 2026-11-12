@@ -44,6 +44,14 @@ abstract class ApiService {
     @Header('x-locale') String? xLocale,
   });
 
+  @POST(ApiConstants.cartQuote)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> quoteCart({
+    @Body() required Map<String, dynamic> body,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
+
   @GET(ApiConstants.addresses)
   @Extra(<String, Object>{'requiresToken': true})
   Future<HttpResponse<dynamic>> getAddresses({

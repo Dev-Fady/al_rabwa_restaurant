@@ -8,6 +8,7 @@ import 'package:al_rabwa_restaurant/features/addresses/presentation/cubit/addres
 import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/add_address_screen.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/address_details_screen.dart';
 import 'package:al_rabwa_restaurant/features/addresses/presentation/screens/address_selection_screen.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/screens/cart_screen.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_delivery_address_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/screens/home_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_details_cubit.dart';
@@ -179,10 +180,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: AppRoutes.cart,
-                builder: (context, state) => SectionPlaceholderScreen(
-                  title: AppLocalizations.of(context)!.navCart,
-                  icon: Icons.shopping_bag_outlined,
-                ),
+                builder: (context, state) => const CartScreen(),
               ),
             ],
           ),

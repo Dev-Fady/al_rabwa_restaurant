@@ -1,10 +1,10 @@
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
 import 'package:al_rabwa_restaurant/core/widget/app_network_image.dart';
+import 'package:al_rabwa_restaurant/core/widget/dish_add_control.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/menu_category.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/menu_state.dart';
-import 'package:al_rabwa_restaurant/features/menu/presentation/widgets/dish_add_control.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 

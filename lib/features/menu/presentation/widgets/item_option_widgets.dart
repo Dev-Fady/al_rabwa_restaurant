@@ -1,16 +1,9 @@
 import 'package:al_rabwa_restaurant/core/theme/app_colors.dart';
+import 'package:al_rabwa_restaurant/core/utils/number_format.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item.dart';
 import 'package:al_rabwa_restaurant/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-
-/// Weight values without trailing zeros: `0.25`, `0.5`, `10`.
-String formatWeightAmount(double value) {
-  final fixed = value.toStringAsFixed(2);
-  return fixed.contains('.')
-      ? fixed.replaceFirst(RegExp(r'\.?0+$'), '')
-      : fixed;
-}
 
 /// Portion choices of a dish; exactly one can be selected.
 class ItemOptionsSection extends StatelessWidget {

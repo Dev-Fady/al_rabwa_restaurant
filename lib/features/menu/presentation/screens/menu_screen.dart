@@ -271,7 +271,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     onItemTap: _openItem,
                                     quantityOf: (item) =>
                                         cart.quantityOf(item.id),
-                                    onAddItem: cartCubit.add,
+                                    onAddItem: cartCubit.addDefault,
                                     onIncrementItem: cartCubit.increment,
                                     onDecrementItem: cartCubit.decrement,
                                   );

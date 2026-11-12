@@ -2,6 +2,8 @@ import 'package:al_rabwa_restaurant/core/routes/app_routes.dart';
 import 'package:al_rabwa_restaurant/core/utils/auth_helper.dart';
 import 'package:al_rabwa_restaurant/core/widget/app_network_image.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
+import 'package:al_rabwa_restaurant/features/cart/domain/entities/cart.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_delivery_address_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/presentation/cubit/home_delivery_address_state.dart';
@@ -59,24 +61,26 @@ class _HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<_HomeContent> {
-  late String _selectedOrderType;
-
   @override
   void initState() {
     super.initState();
-    final orderTypes = widget.settings.ordering.orderTypes;
-    _selectedOrderType = orderTypes.isNotEmpty
-        ? orderTypes.first.value
-        : 'delivery';
+    _syncOrderType();
   }
 
   @override
   void didUpdateWidget(covariant _HomeContent oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _syncOrderType();
+  }
+
+  /// Keeps the cart's order type valid when the settings load or change.
+  void _syncOrderType() {
     final orderTypes = widget.settings.ordering.orderTypes;
-    if (orderTypes.isNotEmpty &&
-        !orderTypes.any((t) => t.value == _selectedOrderType)) {
-      _selectedOrderType = orderTypes.first.value;
+    if (orderTypes.isEmpty) return;
+
+    final cartCubit = context.read<CartCubit>();
+    if (!orderTypes.any((type) => type.value == cartCubit.state.orderType)) {
+      cartCubit.setOrderType(orderTypes.first.value);
     }
   }
 
@@ -161,13 +165,23 @@ class _HomeContentState extends State<_HomeContent> {
 
                       // 3. Order type toggle (Delivery / Takeaway / ...)
                       if (settings.ordering.orderTypes.isNotEmpty) ...[
-                        HomeOrderTypeSelector(
-                          options: settings.ordering.orderTypes,
-                          selectedType: _selectedOrderType,
-                          onChanged: (type) {
-                            setState(() {
-                              _selectedOrderType = type;
-                            });
+                        BlocSelector<CartCubit, Cart, String>(
+                          selector: (cart) => cart.orderType,
+                          builder: (context, selectedType) {
+                            final orderTypes = settings.ordering.orderTypes;
+                            final effectiveType =
+                                orderTypes.any(
+                                  (type) => type.value == selectedType,
+                                )
+                                ? selectedType
+                                : orderTypes.first.value;
+
+                            return HomeOrderTypeSelector(
+                              options: orderTypes,
+                              selectedType: effectiveType,
+                              onChanged: (type) =>
+                                  context.read<CartCubit>().setOrderType(type),
+                            );
                           },
                         ),
                         const SizedBox(height: 12),

@@ -58,6 +58,12 @@ class MenuItem {
 
   bool get hasDiscount => compareAtPrice != null && compareAtPrice! > price;
 
+  /// Portion used by quick-add buttons when the details page is not opened.
+  MenuItemOption? get defaultOption => options.isEmpty ? null : options.first;
+
+  /// Starting weight used by quick-add; `1` for dishes not sold by weight.
+  double get defaultWeight => soldByWeight ? (weight ?? 1) : 1;
+
   /// Starting weight, kept for callers that only need one value.
   double? get weight => weightRange?.min;
 }

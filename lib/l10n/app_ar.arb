@@ -201,5 +201,16 @@
   "addressLocationServiceDisabled": "خدمة الموقع غير مفعّلة. فعّلها من إعدادات الجهاز ثم حاول مجددًا.",
   "addressLocationPermissionDenied": "يجب السماح بالوصول إلى الموقع لاستخدام موقعك الحالي.",
   "addressLocationPermissionDeniedForever": "إذن الموقع مرفوض. يمكنك تفعيله من إعدادات التطبيق.",
-  "addressLocationUnavailable": "تعذّر تحديد موقعك الحالي. حرّك الخريطة يدويًا."
+  "addressLocationUnavailable": "تعذّر تحديد موقعك الحالي. حرّك الخريطة يدويًا.",
+  "cartEmptyTitle": "سلتك فارغة",
+  "cartEmptyMessage": "أضف أطباقك المفضلة من المنيو لتظهر هنا.",
+  "cartSummaryTitle": "ملخص الطلب",
+  "cartSubtotal": "المجموع الفرعي",
+  "cartDiscount": "الخصم",
+  "cartTotal": "الإجمالي",
+  "cartQuoteLoading": "جارٍ حساب الإجمالي...",
+  "cartQuoteError": "تعذّر حساب إجمالي السلة، يرجى المحاولة مرة أخرى.",
+  "cartQuoteCached": "يتم عرض آخر إجمالي محفوظ. اسحب للتحديث.",
+  "cartAddressRequired": "مطلوب عنوان توصيل للمتابعة.",
+  "cartRemoveItem": "إزالة الصنف"
 }

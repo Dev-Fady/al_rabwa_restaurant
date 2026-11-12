@@ -6,6 +6,7 @@ import 'package:al_rabwa_restaurant/core/theme/app_theme.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/entities/address.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/entities/geo_point.dart';
 import 'package:al_rabwa_restaurant/features/addresses/domain/repositories/addresses_repository.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/menu_category.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/entities/restaurant_settings.dart';
 import 'package:al_rabwa_restaurant/features/home/domain/repositories/menu_categories_repository.dart';
@@ -200,6 +201,8 @@ Future<StoreConfigCubit> _pumpHome(
     const FlutterSecureStorage(),
   )..load();
   addTearDown(deliveryAddressCubit.close);
+  final cartCubit = CartCubit();
+  addTearDown(cartCubit.close);
 
   await tester.pumpWidget(
     MaterialApp(
@@ -218,6 +221,7 @@ Future<StoreConfigCubit> _pumpHome(
           BlocProvider.value(value: cubit),
           BlocProvider.value(value: categoriesCubit),
           BlocProvider.value(value: deliveryAddressCubit),
+          BlocProvider.value(value: cartCubit),
         ],
         child: const HomeScreen(),
       ),
@@ -258,6 +262,8 @@ Future<_HomeRouterHarness> _pumpHomeWithRouter(
     const FlutterSecureStorage(),
   );
   addTearDown(deliveryAddressCubit.close);
+  final cartCubit = CartCubit();
+  addTearDown(cartCubit.close);
 
   final router = GoRouter(
     initialLocation: AppRoutes.home,
@@ -286,6 +292,7 @@ Future<_HomeRouterHarness> _pumpHomeWithRouter(
         BlocProvider.value(value: categoriesCubit),
         BlocProvider.value(value: menuCubit),
         BlocProvider.value(value: deliveryAddressCubit),
+        BlocProvider.value(value: cartCubit),
       ],
       child: MaterialApp.router(
         routerConfig: router,

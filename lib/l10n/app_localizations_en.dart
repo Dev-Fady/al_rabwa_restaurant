@@ -551,4 +551,41 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get addressLocationUnavailable =>
       'Couldn\'t get your current location. Move the map manually.';
+
+  @override
+  String get cartEmptyTitle => 'Your cart is empty';
+
+  @override
+  String get cartEmptyMessage =>
+      'Add your favorite dishes from the menu to see them here.';
+
+  @override
+  String get cartSummaryTitle => 'Order summary';
+
+  @override
+  String get cartSubtotal => 'Subtotal';
+
+  @override
+  String get cartDiscount => 'Discount';
+
+  @override
+  String get cartTotal => 'Total';
+
+  @override
+  String get cartQuoteLoading => 'Calculating the total...';
+
+  @override
+  String get cartQuoteError =>
+      'Couldn\'t calculate the cart total. Please try again.';
+
+  @override
+  String get cartQuoteCached =>
+      'Showing the last saved total. Pull to refresh.';
+
+  @override
+  String get cartAddressRequired =>
+      'A delivery address is required to continue.';
+
+  @override
+  String get cartRemoveItem => 'Remove item';
 }
