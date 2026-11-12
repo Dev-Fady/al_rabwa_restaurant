@@ -180,6 +180,7 @@ class _SummaryRow extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
@@ -194,16 +195,18 @@ class _SummaryRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Text(
-          value,
-          textAlign: TextAlign.end,
-          style: TextStyle(
-            color:
-                valueColor ??
-                (isTotal ? context.appColors.brandGreen : colors.onSurface),
-            fontSize: isTotal ? 16 : 13.5,
-            fontWeight: isTotal ? FontWeight.w900 : FontWeight.w700,
-            height: 1.3,
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: TextStyle(
+              color:
+                  valueColor ??
+                  (isTotal ? context.appColors.brandGreen : colors.onSurface),
+              fontSize: isTotal ? 16 : 13.5,
+              fontWeight: isTotal ? FontWeight.w900 : FontWeight.w700,
+              height: 1.3,
+            ),
           ),
         ),
       ],

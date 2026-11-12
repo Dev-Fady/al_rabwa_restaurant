@@ -212,5 +212,47 @@
   "cartQuoteError": "Couldn't calculate the cart total. Please try again.",
   "cartQuoteCached": "Showing the last saved total. Pull to refresh.",
   "cartAddressRequired": "A delivery address is required to continue.",
-  "cartRemoveItem": "Remove item"
+  "cartRemoveItem": "Remove item",
+  "checkoutTitle": "Checkout",
+  "checkoutOrderType": "How would you prefer to receive your order?",
+  "checkoutOrderTypeUnavailable": "The selected order type isn't available. Choose another one.",
+  "checkoutTable": "Table",
+  "checkoutChooseTable": "Choose your table",
+  "checkoutTableLoading": "Loading tables...",
+  "checkoutTableError": "Couldn't load the tables.",
+  "checkoutNoTables": "No tables are available right now.",
+  "checkoutTableRequired": "Choose a table to continue.",
+  "checkoutDeliveryAddress": "Delivery address",
+  "checkoutChooseAddress": "Choose a delivery address",
+  "checkoutChangeAddress": "Change address",
+  "checkoutAddressLoading": "Loading addresses...",
+  "checkoutAddressError": "Couldn't load your addresses.",
+  "checkoutNoAddress": "Add a delivery address to continue.",
+  "checkoutAddressNotDeliverable": "This address is outside the delivery area.",
+  "checkoutPaymentMethod": "Payment method",
+  "checkoutNoPaymentMethods": "No payment methods are available right now.",
+  "checkoutPaymentRequired": "Choose a payment method to continue.",
+  "checkoutNotes": "Order notes",
+  "checkoutNotesHint": "Any extra instructions for the restaurant (optional)",
+  "checkoutClearNotes": "Clear notes",
+  "checkoutOrderTypeSubtitle": "Choose how you'd like to receive your order",
+  "checkoutDeliveryAddressSubtitle": "We'll deliver your order to this address",
+  "checkoutTableSubtitle": "Choose the table you're seated at",
+  "checkoutPaymentMethodSubtitle": "Choose the payment method that suits you",
+  "checkoutEditCart": "Edit cart",
+  "checkoutItems": "Items",
+  "checkoutPlaceOrder": "Place order",
+  "checkoutSubmitting": "Sending your order...",
+  "checkoutError": "Couldn't place the order. Please try again.",
+  "checkoutOrderPlacedTitle": "Order placed",
+  "checkoutOrderNumber": "Order #{number}",
+  "@checkoutOrderNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "checkoutOrderPlacedMessage": "We'll start preparing your order.",
+  "checkoutDone": "Done"
 }

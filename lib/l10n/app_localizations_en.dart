@@ -36,8 +36,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWelcomeTitle => 'Welcome to Al Rabwa Restaurant';
 
   @override
-  String get homeWelcomeSubtitle =>
-      'Pick your favorite dishes from the menu and enjoy a special dining experience.';
+  String get homeWelcomeSubtitle => 'Pick your favorite dishes from the menu and enjoy a special dining experience.';
 
   @override
   String get storeOpenNow => 'Open now — taking orders';
@@ -67,8 +66,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Try again';
 
   @override
-  String get storeSettingsError =>
-      'Couldn\'t load the restaurant. Check your connection and try again.';
+  String get storeSettingsError => 'Couldn\'t load the restaurant. Check your connection and try again.';
 
   @override
   String get loadingStore => 'Loading the restaurant...';
@@ -119,8 +117,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteMyDataConfirmTitle => 'Delete my data?';
 
   @override
-  String get deleteMyDataConfirmMessage =>
-      'This permanently deletes this device\'s data, including your profile, addresses and orders. It can\'t be undone.';
+  String get deleteMyDataConfirmMessage => 'This permanently deletes this device\'s data, including your profile, addresses and orders. It can\'t be undone.';
 
   @override
   String get deleteMyDataConfirmAction => 'Delete data';
@@ -132,8 +129,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteMyDataSuccess => 'Your data was deleted.';
 
   @override
-  String get deleteMyDataError =>
-      'Couldn\'t delete your data. Please try again.';
+  String get deleteMyDataError => 'Couldn\'t delete your data. Please try again.';
 
   @override
   String get locationRequiredLabel => 'Location';
@@ -151,8 +147,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactEmpty => 'No contact details available yet.';
 
   @override
-  String get contactEmptyHint =>
-      'Phone numbers and social accounts will appear here once added.';
+  String get contactEmptyHint => 'Phone numbers and social accounts will appear here once added.';
 
   @override
   String get phoneLabel => 'Phone';
@@ -283,8 +278,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemDetailsSpecialInstructions => 'Special instructions';
 
   @override
-  String get itemDetailsSpecialInstructionsHint =>
-      'e.g. no onions, cooking level...';
+  String get itemDetailsSpecialInstructionsHint => 'e.g. no onions, cooking level...';
 
   @override
   String get itemDetailsIncreaseQuantity => 'Increase quantity';
@@ -335,8 +329,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerWelcomeTitle => 'Welcome to Al Rabwa';
 
   @override
-  String get registerWelcomeSubtitle =>
-      'Tell us a little about you and start ordering in seconds.';
+  String get registerWelcomeSubtitle => 'Tell us a little about you and start ordering in seconds.';
 
   @override
   String get registerHeroBadge => 'Al Rabwa Restaurant';
@@ -345,8 +338,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerFormTitle => 'Create your profile';
 
   @override
-  String get registerFormSubtitle =>
-      'We\'ll use your details to personalize your orders.';
+  String get registerFormSubtitle => 'We\'ll use your details to personalize your orders.';
 
   @override
   String get registerNameHint => 'e.g. Ahmed Mohamed';
@@ -376,8 +368,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerPhoneInvalid => 'Please enter a valid phone number.';
 
   @override
-  String get registerPrivacyNote =>
-      'Your session is stored securely on this device. By continuing, you agree to our terms and privacy policy.';
+  String get registerPrivacyNote => 'Your session is stored securely on this device. By continuing, you agree to our terms and privacy policy.';
 
   @override
   String get registerFeatureFresh => 'Freshly prepared';
@@ -404,8 +395,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addressDetailsInfo => 'Address information';
 
   @override
-  String get addressDetailsError =>
-      'Couldn\'t load the address details. Please try again.';
+  String get addressDetailsError => 'Couldn\'t load the address details. Please try again.';
 
   @override
   String get addressOptions => 'Address options';
@@ -420,8 +410,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addressDefault => 'Default';
 
   @override
-  String get addressSetDefaultError =>
-      'Couldn\'t set this address as the default. Please try again.';
+  String get addressSetDefaultError => 'Couldn\'t set this address as the default. Please try again.';
 
   @override
   String get addressDelete => 'Delete address';
@@ -441,8 +430,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addressDeleteCancel => 'Cancel';
 
   @override
-  String get addressDeleteError =>
-      'Couldn\'t delete the address. Please try again.';
+  String get addressDeleteError => 'Couldn\'t delete the address. Please try again.';
 
   @override
   String get addressCoordinates => 'Coordinates';
@@ -451,8 +439,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addressSelectTitle => 'Select delivery address';
 
   @override
-  String get addressSelectSubtitle =>
-      'Choose a saved address or add a new one.';
+  String get addressSelectSubtitle => 'Choose a saved address or add a new one.';
 
   @override
   String get addressSavedTitle => 'Saved addresses';
@@ -461,8 +448,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addressListEmpty => 'You haven\'t saved any addresses yet.';
 
   @override
-  String get addressListError =>
-      'Couldn\'t load your saved addresses. Please try again.';
+  String get addressListError => 'Couldn\'t load your saved addresses. Please try again.';
 
   @override
   String get addressOutsideArea => 'Outside the delivery area';
@@ -525,39 +511,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addressBuildingRequired => 'Please enter the building number.';
 
   @override
-  String get addressOutsideQatar =>
-      'That spot is outside Qatar. Move the map to pick a location inside the country.';
+  String get addressOutsideQatar => 'That spot is outside Qatar. Move the map to pick a location inside the country.';
 
   @override
-  String get addressSaveError =>
-      'Couldn\'t save the address. Please try again.';
+  String get addressSaveError => 'Couldn\'t save the address. Please try again.';
 
   @override
-  String get addressNotDeliverable =>
-      'Address saved, but it is outside the current delivery area.';
+  String get addressNotDeliverable => 'Address saved, but it is outside the current delivery area.';
 
   @override
-  String get addressLocationServiceDisabled =>
-      'Location services are off. Turn them on in your device settings and try again.';
+  String get addressLocationServiceDisabled => 'Location services are off. Turn them on in your device settings and try again.';
 
   @override
-  String get addressLocationPermissionDenied =>
-      'Allow location access to use your current location.';
+  String get addressLocationPermissionDenied => 'Allow location access to use your current location.';
 
   @override
-  String get addressLocationPermissionDeniedForever =>
-      'Location permission is blocked. You can enable it in the app settings.';
+  String get addressLocationPermissionDeniedForever => 'Location permission is blocked. You can enable it in the app settings.';
 
   @override
-  String get addressLocationUnavailable =>
-      'Couldn\'t get your current location. Move the map manually.';
+  String get addressLocationUnavailable => 'Couldn\'t get your current location. Move the map manually.';
 
   @override
   String get cartEmptyTitle => 'Your cart is empty';
 
   @override
-  String get cartEmptyMessage =>
-      'Add your favorite dishes from the menu to see them here.';
+  String get cartEmptyMessage => 'Add your favorite dishes from the menu to see them here.';
 
   @override
   String get cartSummaryTitle => 'Order summary';
@@ -575,17 +553,121 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cartQuoteLoading => 'Calculating the total...';
 
   @override
-  String get cartQuoteError =>
-      'Couldn\'t calculate the cart total. Please try again.';
+  String get cartQuoteError => 'Couldn\'t calculate the cart total. Please try again.';
 
   @override
-  String get cartQuoteCached =>
-      'Showing the last saved total. Pull to refresh.';
+  String get cartQuoteCached => 'Showing the last saved total. Pull to refresh.';
 
   @override
-  String get cartAddressRequired =>
-      'A delivery address is required to continue.';
+  String get cartAddressRequired => 'A delivery address is required to continue.';
 
   @override
   String get cartRemoveItem => 'Remove item';
+
+  @override
+  String get checkoutTitle => 'Checkout';
+
+  @override
+  String get checkoutOrderType => 'How would you prefer to receive your order?';
+
+  @override
+  String get checkoutOrderTypeUnavailable => 'The selected order type isn\'t available. Choose another one.';
+
+  @override
+  String get checkoutTable => 'Table';
+
+  @override
+  String get checkoutChooseTable => 'Choose your table';
+
+  @override
+  String get checkoutTableLoading => 'Loading tables...';
+
+  @override
+  String get checkoutTableError => 'Couldn\'t load the tables.';
+
+  @override
+  String get checkoutNoTables => 'No tables are available right now.';
+
+  @override
+  String get checkoutTableRequired => 'Choose a table to continue.';
+
+  @override
+  String get checkoutDeliveryAddress => 'Delivery address';
+
+  @override
+  String get checkoutChooseAddress => 'Choose a delivery address';
+
+  @override
+  String get checkoutChangeAddress => 'Change address';
+
+  @override
+  String get checkoutAddressLoading => 'Loading addresses...';
+
+  @override
+  String get checkoutAddressError => 'Couldn\'t load your addresses.';
+
+  @override
+  String get checkoutNoAddress => 'Add a delivery address to continue.';
+
+  @override
+  String get checkoutAddressNotDeliverable => 'This address is outside the delivery area.';
+
+  @override
+  String get checkoutPaymentMethod => 'Payment method';
+
+  @override
+  String get checkoutNoPaymentMethods => 'No payment methods are available right now.';
+
+  @override
+  String get checkoutPaymentRequired => 'Choose a payment method to continue.';
+
+  @override
+  String get checkoutNotes => 'Order notes';
+
+  @override
+  String get checkoutNotesHint => 'Any extra instructions for the restaurant (optional)';
+
+  @override
+  String get checkoutClearNotes => 'Clear notes';
+
+  @override
+  String get checkoutOrderTypeSubtitle => 'Choose how you\'d like to receive your order';
+
+  @override
+  String get checkoutDeliveryAddressSubtitle => 'We\'ll deliver your order to this address';
+
+  @override
+  String get checkoutTableSubtitle => 'Choose the table you\'re seated at';
+
+  @override
+  String get checkoutPaymentMethodSubtitle => 'Choose the payment method that suits you';
+
+  @override
+  String get checkoutEditCart => 'Edit cart';
+
+  @override
+  String get checkoutItems => 'Items';
+
+  @override
+  String get checkoutPlaceOrder => 'Place order';
+
+  @override
+  String get checkoutSubmitting => 'Sending your order...';
+
+  @override
+  String get checkoutError => 'Couldn\'t place the order. Please try again.';
+
+  @override
+  String get checkoutOrderPlacedTitle => 'Order placed';
+
+  @override
+  String checkoutOrderNumber(String number) {
+    return 'Order #$number';
+  }
+
+  @override
+  String get checkoutOrderPlacedMessage => 'We\'ll start preparing your order.';
+
+  @override
+  String get checkoutDone => 'Done';
 }

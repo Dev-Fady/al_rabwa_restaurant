@@ -5,6 +5,7 @@ import 'package:al_rabwa_restaurant/features/cart/domain/entities/cart_line.dart
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_quote_cubit.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_quote_state.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/widgets/cart_checkout_action.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/widgets/cart_empty_state.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/widgets/cart_line_card.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/widgets/cart_quote_summary.dart';
@@ -100,13 +101,30 @@ class _CartScreenState extends State<CartScreen> {
                                         const SizedBox(width: 20),
                                         SizedBox(
                                           width: 340,
-                                          child: CartQuoteSummary(
-                                            cart: cart,
-                                            state: quoteState,
-                                            currency: currency,
-                                            onRetry: () => context
-                                                .read<CartQuoteCubit>()
-                                                .retry(),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              CartQuoteSummary(
+                                                cart: cart,
+                                                state: quoteState,
+                                                currency: currency,
+                                                onRetry: () => context
+                                                    .read<CartQuoteCubit>()
+                                                    .retry(),
+                                              ),
+                                              const SizedBox(height: 12),
+                                              CartCheckoutAction(
+                                                enabled:
+                                                    storeState
+                                                        .settings
+                                                        ?.isOpenNow ??
+                                                    false,
+                                                onCheckout: () => context.push(
+                                                  AppRoutes.checkout,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
@@ -127,6 +145,14 @@ class _CartScreenState extends State<CartScreen> {
                                           onRetry: () => context
                                               .read<CartQuoteCubit>()
                                               .retry(),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        CartCheckoutAction(
+                                          enabled:
+                                              storeState.settings?.isOpenNow ??
+                                              false,
+                                          onCheckout: () =>
+                                              context.push(AppRoutes.checkout),
                                         ),
                                       ],
                                     ),

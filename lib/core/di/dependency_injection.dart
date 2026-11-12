@@ -1,12 +1,22 @@
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_helper.dart';
 import 'package:al_rabwa_restaurant/core/helper_functions/cache_hive.dart';
 import 'package:al_rabwa_restaurant/core/services/api/api_service.dart';
+import 'package:al_rabwa_restaurant/features/cart/data/datasources/cart_local_data_source.dart';
 import 'package:al_rabwa_restaurant/features/cart/data/datasources/cart_quote_local_data_source.dart';
 import 'package:al_rabwa_restaurant/features/cart/data/datasources/cart_quote_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/cart/data/repositories/cart_quote_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/cart/data/repositories/cart_repository_impl.dart';
 import 'package:al_rabwa_restaurant/features/cart/domain/repositories/cart_quote_repository.dart';
+import 'package:al_rabwa_restaurant/features/cart/domain/repositories/cart_repository.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/cart_quote_cubit.dart';
+import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/checkout_cubit.dart';
+import 'package:al_rabwa_restaurant/features/orders/data/datasources/orders_remote_data_source.dart';
+import 'package:al_rabwa_restaurant/features/orders/data/repositories/orders_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/orders/domain/repositories/orders_repository.dart';
+import 'package:al_rabwa_restaurant/features/tables/data/datasources/tables_remote_data_source.dart';
+import 'package:al_rabwa_restaurant/features/tables/data/repositories/tables_repository_impl.dart';
+import 'package:al_rabwa_restaurant/features/tables/domain/repositories/tables_repository.dart';
 import 'package:al_rabwa_restaurant/core/services/api/dio_config.dart';
 import 'package:al_rabwa_restaurant/features/addresses/data/datasources/addresses_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/addresses/data/repositories/addresses_repository_impl.dart';
@@ -51,9 +61,6 @@ Future<void> setupGetIt() async {
   // initialization below fails.
   getIt.registerFactory<SettingsCubit>(() => SettingsCubit());
 
-  // One cart instance for the whole app (menu, details and nav badge).
-  getIt.registerLazySingleton<CartCubit>(CartCubit.new);
-
   final cacheHelper = CacheHelper();
   await cacheHelper.init();
   getIt.registerSingleton<CacheHelper>(cacheHelper);
@@ -64,6 +71,19 @@ Future<void> setupGetIt() async {
     // Hive is only used for the offline settings cache. If it cannot open,
     // keep the app running and let the repository fall back to the network.
   }
+
+  // Cart persistence — registered AFTER CacheHive.init() so the lazy
+  // singletons can safely open the Hive box on first access.
+  getIt.registerLazySingleton<CartLocalDataSource>(
+    CartLocalDataSourceImpl.new,
+  );
+  getIt.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(getIt<CartLocalDataSource>()),
+  );
+  // One cart instance for the whole app (menu, details and nav badge).
+  getIt.registerLazySingleton<CartCubit>(
+    () => CartCubit(getIt<CartRepository>()),
+  );
 
   getIt.registerLazySingleton<FlutterSecureStorage>(
     () => const FlutterSecureStorage(
@@ -96,6 +116,32 @@ Future<void> setupGetIt() async {
 
   getIt.registerLazySingleton<CartQuoteCubit>(
     () => CartQuoteCubit(getIt<CartQuoteRepository>(), getIt<CartCubit>()),
+  );
+
+  getIt.registerLazySingleton<OrdersRemoteDataSource>(
+    () => OrdersRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<OrdersRepository>(
+    () =>
+        OrdersRepositoryImpl(remoteDataSource: getIt<OrdersRemoteDataSource>()),
+  );
+
+  getIt.registerLazySingleton<TablesRemoteDataSource>(
+    () => TablesRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<TablesRepository>(
+    () =>
+        TablesRepositoryImpl(remoteDataSource: getIt<TablesRemoteDataSource>()),
+  );
+
+  getIt.registerFactory<CheckoutCubit>(
+    () => CheckoutCubit(
+      getIt<OrdersRepository>(),
+      getIt<AddressesRepository>(),
+      getIt<TablesRepository>(),
+    ),
   );
 
   getIt.registerLazySingleton<DeviceRegistrationRemoteDataSource>(

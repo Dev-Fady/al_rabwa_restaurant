@@ -52,6 +52,21 @@ abstract class ApiService {
     @Header('x-locale') String? xLocale,
   });
 
+  @POST(ApiConstants.orders)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> createOrder({
+    @Body() required Map<String, dynamic> body,
+    @Header('Idempotency-Key') required String idempotencyKey,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
+
+  @GET(ApiConstants.tables)
+  Future<HttpResponse<dynamic>> getTables({
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
+
   @GET(ApiConstants.addresses)
   @Extra(<String, Object>{'requiresToken': true})
   Future<HttpResponse<dynamic>> getAddresses({

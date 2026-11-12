@@ -143,6 +143,11 @@ Future<_CartHarness> _pumpCart(
           builder: (context, state) =>
               const Scaffold(body: Text('menu-screen')),
         ),
+        GoRoute(
+          path: AppRoutes.checkout,
+          builder: (context, state) =>
+              const Scaffold(body: Text('checkout-screen')),
+        ),
       ],
     );
     addTearDown(router.dispose);
@@ -223,6 +228,25 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('إعادة المحاولة'), findsOneWidget);
+  });
+
+  testWidgets('opens checkout from the cart summary', (tester) async {
+    await _pumpCart(
+      tester,
+      withItem: true,
+      quote: _sampleQuote(),
+      withRouter: true,
+    );
+
+    final checkoutButton = find.text('إتمام الطلب');
+    expect(checkoutButton, findsOneWidget);
+
+    await tester.ensureVisible(checkoutButton);
+    await tester.pumpAndSettle();
+    await tester.tap(checkoutButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('checkout-screen'), findsOneWidget);
   });
 
   testWidgets('fits a narrow screen with large text without overflow', (

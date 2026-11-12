@@ -36,6 +36,10 @@ class AppRoutes {
   static String addressDetailsPath(int id) => '/addresses/detail/$id';
 
   static const String cart = '/cart';
+
+  /// Cart checkout; pushed above the shell so the order form has focus.
+  static const String checkout = '/checkout';
+
   static const String orders = '/orders';
   static const String store = '/store';
 }

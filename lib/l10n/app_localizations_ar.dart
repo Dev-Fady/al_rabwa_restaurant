@@ -36,8 +36,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeWelcomeTitle => 'أهلاً بك في مطعم الربوة';
 
   @override
-  String get homeWelcomeSubtitle =>
-      'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
+  String get homeWelcomeSubtitle => 'اختر أطباقك المفضلة من المنيو واستمتع بتجربة طعام مميزة.';
 
   @override
   String get storeOpenNow => 'مفتوح الآن — نستقبل طلباتك';
@@ -67,8 +66,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retry => 'إعادة المحاولة';
 
   @override
-  String get storeSettingsError =>
-      'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
+  String get storeSettingsError => 'تعذر تحميل بيانات المطعم، تحقق من اتصالك وحاول مرة أخرى.';
 
   @override
   String get loadingStore => 'جارٍ تحميل المطعم...';
@@ -119,8 +117,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleteMyDataConfirmTitle => 'حذف بياناتي؟';
 
   @override
-  String get deleteMyDataConfirmMessage =>
-      'سيتم حذف بيانات هذا الجهاز، بما في ذلك ملفك الشخصي وعناوينك وطلباتك، نهائياً. لا يمكن التراجع عن هذا الإجراء.';
+  String get deleteMyDataConfirmMessage => 'سيتم حذف بيانات هذا الجهاز، بما في ذلك ملفك الشخصي وعناوينك وطلباتك، نهائياً. لا يمكن التراجع عن هذا الإجراء.';
 
   @override
   String get deleteMyDataConfirmAction => 'حذف البيانات';
@@ -150,8 +147,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contactEmpty => 'لا توجد بيانات تواصل متاحة حالياً.';
 
   @override
-  String get contactEmptyHint =>
-      'ستظهر أرقام الهاتف وحسابات التواصل هنا عند إضافتها.';
+  String get contactEmptyHint => 'ستظهر أرقام الهاتف وحسابات التواصل هنا عند إضافتها.';
 
   @override
   String get phoneLabel => 'الهاتف';
@@ -193,8 +189,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeCategoriesViewAll => 'عرض الكل';
 
   @override
-  String get homeCategoriesHint =>
-      'اسحب الأقسام يمينًا ويسارًا أو اضغط على قسم لفتحه';
+  String get homeCategoriesHint => 'اسحب الأقسام يمينًا ويسارًا أو اضغط على قسم لفتحه';
 
   @override
   String get homeCategoriesError => 'تعذر تحميل أقسام المنيو.';
@@ -286,8 +281,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get itemDetailsSpecialInstructions => 'تعليمات خاصة';
 
   @override
-  String get itemDetailsSpecialInstructionsHint =>
-      'مثل: بدون بصل، مستوى الطهي...';
+  String get itemDetailsSpecialInstructionsHint => 'مثل: بدون بصل، مستوى الطهي...';
 
   @override
   String get itemDetailsIncreaseQuantity => 'زيادة الكمية';
@@ -338,8 +332,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get registerWelcomeTitle => 'أهلاً بك في مطعم الربوة';
 
   @override
-  String get registerWelcomeSubtitle =>
-      'أخبرنا قليلاً عنك وابدأ الطلب في ثوانٍ.';
+  String get registerWelcomeSubtitle => 'أخبرنا قليلاً عنك وابدأ الطلب في ثوانٍ.';
 
   @override
   String get registerHeroBadge => 'مطعم الربوة';
@@ -378,8 +371,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get registerPhoneInvalid => 'يرجى إدخال رقم هاتف صالح.';
 
   @override
-  String get registerPrivacyNote =>
-      'يتم حفظ جلستك بأمان على هذا الجهاز. بالمتابعة، أنت توافق على الشروط وسياسة الخصوصية.';
+  String get registerPrivacyNote => 'يتم حفظ جلستك بأمان على هذا الجهاز. بالمتابعة، أنت توافق على الشروط وسياسة الخصوصية.';
 
   @override
   String get registerFeatureFresh => 'يُحضّر طازجاً';
@@ -406,8 +398,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressDetailsInfo => 'بيانات العنوان';
 
   @override
-  String get addressDetailsError =>
-      'تعذّر تحميل تفاصيل العنوان، يرجى المحاولة مرة أخرى.';
+  String get addressDetailsError => 'تعذّر تحميل تفاصيل العنوان، يرجى المحاولة مرة أخرى.';
 
   @override
   String get addressOptions => 'خيارات العنوان';
@@ -422,8 +413,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressDefault => 'افتراضي';
 
   @override
-  String get addressSetDefaultError =>
-      'تعذّر تعيين هذا العنوان كافتراضي، يرجى المحاولة مرة أخرى.';
+  String get addressSetDefaultError => 'تعذّر تعيين هذا العنوان كافتراضي، يرجى المحاولة مرة أخرى.';
 
   @override
   String get addressDelete => 'حذف العنوان';
@@ -452,8 +442,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressSelectTitle => 'اختر عنوان التوصيل';
 
   @override
-  String get addressSelectSubtitle =>
-      'اختر عنوانًا محفوظًا أو أضف عنوانًا جديدًا.';
+  String get addressSelectSubtitle => 'اختر عنوانًا محفوظًا أو أضف عنوانًا جديدًا.';
 
   @override
   String get addressSavedTitle => 'العناوين المحفوظة';
@@ -462,8 +451,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressListEmpty => 'لم تحفظ أي عنوان بعد.';
 
   @override
-  String get addressListError =>
-      'تعذّر تحميل عناوينك المحفوظة، يرجى المحاولة مرة أخرى.';
+  String get addressListError => 'تعذّر تحميل عناوينك المحفوظة، يرجى المحاولة مرة أخرى.';
 
   @override
   String get addressOutsideArea => 'خارج نطاق التوصيل';
@@ -526,31 +514,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addressBuildingRequired => 'يرجى إدخال رقم المبنى.';
 
   @override
-  String get addressOutsideQatar =>
-      'الموقع المحدد خارج قطر. حرّك الخريطة لاختيار موقع داخل الدولة.';
+  String get addressOutsideQatar => 'الموقع المحدد خارج قطر. حرّك الخريطة لاختيار موقع داخل الدولة.';
 
   @override
   String get addressSaveError => 'تعذّر حفظ العنوان، يرجى المحاولة مرة أخرى.';
 
   @override
-  String get addressNotDeliverable =>
-      'تم حفظ العنوان، لكنه خارج نطاق التوصيل الحالي.';
+  String get addressNotDeliverable => 'تم حفظ العنوان، لكنه خارج نطاق التوصيل الحالي.';
 
   @override
-  String get addressLocationServiceDisabled =>
-      'خدمة الموقع غير مفعّلة. فعّلها من إعدادات الجهاز ثم حاول مجددًا.';
+  String get addressLocationServiceDisabled => 'خدمة الموقع غير مفعّلة. فعّلها من إعدادات الجهاز ثم حاول مجددًا.';
 
   @override
-  String get addressLocationPermissionDenied =>
-      'يجب السماح بالوصول إلى الموقع لاستخدام موقعك الحالي.';
+  String get addressLocationPermissionDenied => 'يجب السماح بالوصول إلى الموقع لاستخدام موقعك الحالي.';
 
   @override
-  String get addressLocationPermissionDeniedForever =>
-      'إذن الموقع مرفوض. يمكنك تفعيله من إعدادات التطبيق.';
+  String get addressLocationPermissionDeniedForever => 'إذن الموقع مرفوض. يمكنك تفعيله من إعدادات التطبيق.';
 
   @override
-  String get addressLocationUnavailable =>
-      'تعذّر تحديد موقعك الحالي. حرّك الخريطة يدويًا.';
+  String get addressLocationUnavailable => 'تعذّر تحديد موقعك الحالي. حرّك الخريطة يدويًا.';
 
   @override
   String get cartEmptyTitle => 'سلتك فارغة';
@@ -574,8 +556,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cartQuoteLoading => 'جارٍ حساب الإجمالي...';
 
   @override
-  String get cartQuoteError =>
-      'تعذّر حساب إجمالي السلة، يرجى المحاولة مرة أخرى.';
+  String get cartQuoteError => 'تعذّر حساب إجمالي السلة، يرجى المحاولة مرة أخرى.';
 
   @override
   String get cartQuoteCached => 'يتم عرض آخر إجمالي محفوظ. اسحب للتحديث.';
@@ -585,4 +566,111 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cartRemoveItem => 'إزالة الصنف';
+
+  @override
+  String get checkoutTitle => 'إتمام الطلب';
+
+  @override
+  String get checkoutOrderType => 'كيف تفضّل استلام طلبك؟';
+
+  @override
+  String get checkoutOrderTypeUnavailable => 'نوع الطلب المحدد غير متاح. اختر نوعًا آخر.';
+
+  @override
+  String get checkoutTable => 'الطاولة';
+
+  @override
+  String get checkoutChooseTable => 'اختر رقم الطاولة';
+
+  @override
+  String get checkoutTableLoading => 'جارٍ تحميل الطاولات...';
+
+  @override
+  String get checkoutTableError => 'تعذّر تحميل الطاولات.';
+
+  @override
+  String get checkoutNoTables => 'لا توجد طاولات متاحة حاليًا.';
+
+  @override
+  String get checkoutTableRequired => 'اختر طاولة للمتابعة.';
+
+  @override
+  String get checkoutDeliveryAddress => 'عنوان التوصيل';
+
+  @override
+  String get checkoutChooseAddress => 'اختر عنوان التوصيل';
+
+  @override
+  String get checkoutChangeAddress => 'تغيير العنوان';
+
+  @override
+  String get checkoutAddressLoading => 'جارٍ تحميل العناوين...';
+
+  @override
+  String get checkoutAddressError => 'تعذّر تحميل العناوين.';
+
+  @override
+  String get checkoutNoAddress => 'أضف عنوان توصيل لإتمام الطلب.';
+
+  @override
+  String get checkoutAddressNotDeliverable => 'هذا العنوان خارج نطاق التوصيل.';
+
+  @override
+  String get checkoutPaymentMethod => 'طريقة الدفع';
+
+  @override
+  String get checkoutNoPaymentMethods => 'لا توجد طرق دفع متاحة حاليًا.';
+
+  @override
+  String get checkoutPaymentRequired => 'اختر طريقة دفع للمتابعة.';
+
+  @override
+  String get checkoutNotes => 'ملاحظات الطلب';
+
+  @override
+  String get checkoutNotesHint => 'أي تعليمات إضافية للمطعم (اختياري)';
+
+  @override
+  String get checkoutClearNotes => 'مسح الملاحظات';
+
+  @override
+  String get checkoutOrderTypeSubtitle => 'اختر كيف تحب أن تستلم طلبك';
+
+  @override
+  String get checkoutDeliveryAddressSubtitle => 'سنوصل طلبك إلى هذا العنوان';
+
+  @override
+  String get checkoutTableSubtitle => 'اختر الطاولة التي تجلس عليها';
+
+  @override
+  String get checkoutPaymentMethodSubtitle => 'اختر طريقة الدفع المناسبة';
+
+  @override
+  String get checkoutEditCart => 'تعديل السلة';
+
+  @override
+  String get checkoutItems => 'الأصناف';
+
+  @override
+  String get checkoutPlaceOrder => 'إرسال الطلب';
+
+  @override
+  String get checkoutSubmitting => 'جارٍ إرسال الطلب...';
+
+  @override
+  String get checkoutError => 'تعذّر إرسال الطلب. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get checkoutOrderPlacedTitle => 'تم استلام طلبك';
+
+  @override
+  String checkoutOrderNumber(String number) {
+    return 'طلب رقم $number';
+  }
+
+  @override
+  String get checkoutOrderPlacedMessage => 'سنبدأ بتجهيز طلبك.';
+
+  @override
+  String get checkoutDone => 'تم';
 }

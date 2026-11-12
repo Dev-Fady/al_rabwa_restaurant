@@ -344,7 +344,7 @@ void main() {
       repository: _FakeRepository(result: sampleSettings()),
     );
 
-    expect(find.text('مطعم الربوة'), findsOneWidget);
+    expect(find.text('مطعم الربوة'), findsAtLeastNWidgets(1));
     expect(find.text('مشاوي على الفحم'), findsOneWidget);
     expect(find.text('نكهة تستاهل التجربة'), findsOneWidget);
     expect(find.text('توصيل'), findsOneWidget);

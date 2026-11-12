@@ -14,4 +14,5 @@ class AppKeys {
   static const String productsData = 'products_data';
   static const String usersData = 'users_data';
   static const String cartQuote = 'cart_quote';
+  static const String cartData = 'cart_data';
 }

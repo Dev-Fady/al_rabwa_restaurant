@@ -62,8 +62,7 @@ import 'app_localizations_en.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -71,8 +70,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -84,18 +82,17 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
-    Locale('en'),
+    Locale('en')
   ];
 
   /// No description provided for @appTitle.
@@ -1171,10 +1168,219 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove item'**
   String get cartRemoveItem;
+
+  /// No description provided for @checkoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get checkoutTitle;
+
+  /// No description provided for @checkoutOrderType.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you prefer to receive your order?'**
+  String get checkoutOrderType;
+
+  /// No description provided for @checkoutOrderTypeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected order type isn\'t available. Choose another one.'**
+  String get checkoutOrderTypeUnavailable;
+
+  /// No description provided for @checkoutTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Table'**
+  String get checkoutTable;
+
+  /// No description provided for @checkoutChooseTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your table'**
+  String get checkoutChooseTable;
+
+  /// No description provided for @checkoutTableLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading tables...'**
+  String get checkoutTableLoading;
+
+  /// No description provided for @checkoutTableError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the tables.'**
+  String get checkoutTableError;
+
+  /// No description provided for @checkoutNoTables.
+  ///
+  /// In en, this message translates to:
+  /// **'No tables are available right now.'**
+  String get checkoutNoTables;
+
+  /// No description provided for @checkoutTableRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a table to continue.'**
+  String get checkoutTableRequired;
+
+  /// No description provided for @checkoutDeliveryAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery address'**
+  String get checkoutDeliveryAddress;
+
+  /// No description provided for @checkoutChooseAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a delivery address'**
+  String get checkoutChooseAddress;
+
+  /// No description provided for @checkoutChangeAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Change address'**
+  String get checkoutChangeAddress;
+
+  /// No description provided for @checkoutAddressLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading addresses...'**
+  String get checkoutAddressLoading;
+
+  /// No description provided for @checkoutAddressError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your addresses.'**
+  String get checkoutAddressError;
+
+  /// No description provided for @checkoutNoAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a delivery address to continue.'**
+  String get checkoutNoAddress;
+
+  /// No description provided for @checkoutAddressNotDeliverable.
+  ///
+  /// In en, this message translates to:
+  /// **'This address is outside the delivery area.'**
+  String get checkoutAddressNotDeliverable;
+
+  /// No description provided for @checkoutPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get checkoutPaymentMethod;
+
+  /// No description provided for @checkoutNoPaymentMethods.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment methods are available right now.'**
+  String get checkoutNoPaymentMethods;
+
+  /// No description provided for @checkoutPaymentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a payment method to continue.'**
+  String get checkoutPaymentRequired;
+
+  /// No description provided for @checkoutNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Order notes'**
+  String get checkoutNotes;
+
+  /// No description provided for @checkoutNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Any extra instructions for the restaurant (optional)'**
+  String get checkoutNotesHint;
+
+  /// No description provided for @checkoutClearNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear notes'**
+  String get checkoutClearNotes;
+
+  /// No description provided for @checkoutOrderTypeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you\'d like to receive your order'**
+  String get checkoutOrderTypeSubtitle;
+
+  /// No description provided for @checkoutDeliveryAddressSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll deliver your order to this address'**
+  String get checkoutDeliveryAddressSubtitle;
+
+  /// No description provided for @checkoutTableSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the table you\'re seated at'**
+  String get checkoutTableSubtitle;
+
+  /// No description provided for @checkoutPaymentMethodSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the payment method that suits you'**
+  String get checkoutPaymentMethodSubtitle;
+
+  /// No description provided for @checkoutEditCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit cart'**
+  String get checkoutEditCart;
+
+  /// No description provided for @checkoutItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get checkoutItems;
+
+  /// No description provided for @checkoutPlaceOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Place order'**
+  String get checkoutPlaceOrder;
+
+  /// No description provided for @checkoutSubmitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending your order...'**
+  String get checkoutSubmitting;
+
+  /// No description provided for @checkoutError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t place the order. Please try again.'**
+  String get checkoutError;
+
+  /// No description provided for @checkoutOrderPlacedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order placed'**
+  String get checkoutOrderPlacedTitle;
+
+  /// No description provided for @checkoutOrderNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Order #{number}'**
+  String checkoutOrderNumber(String number);
+
+  /// No description provided for @checkoutOrderPlacedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll start preparing your order.'**
+  String get checkoutOrderPlacedMessage;
+
+  /// No description provided for @checkoutDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get checkoutDone;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -1183,26 +1389,25 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['ar', 'en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['ar', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'ar':
-      return AppLocalizationsAr();
-    case 'en':
-      return AppLocalizationsEn();
+    case 'ar': return AppLocalizationsAr();
+    case 'en': return AppLocalizationsEn();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

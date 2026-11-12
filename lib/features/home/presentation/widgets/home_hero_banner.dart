@@ -171,7 +171,8 @@ class HomeHeroBanner extends StatelessWidget {
                           // CTA.
                           Row(
                             children: [
-                              Container(
+                              Flexible(
+                               child: Container(
                                 constraints: const BoxConstraints(
                                   minHeight: 42,
                                 ),
@@ -220,6 +221,7 @@ class HomeHeroBanner extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                             ),
                             ],
                           ),
                         ],
