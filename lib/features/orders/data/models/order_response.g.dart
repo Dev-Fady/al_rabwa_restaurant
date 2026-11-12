@@ -36,6 +36,12 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => OrderModel(
       : OrderPaymentModel.fromJson(json['payment'] as Map<String, dynamic>),
   customerName: json['customer_name'] as String?,
   customerPhone: json['customer_phone'] as String?,
+  address: json['address'] == null
+      ? null
+      : OrderAddressModel.fromJson(json['address'] as Map<String, dynamic>),
+  table: json['table'] as String?,
+  carNumber: json['car_number'] as String?,
+  companyName: json['company_name'] as String?,
   notes: json['notes'] as String?,
   couponCode: json['coupon_code'] as String?,
   subtotal: json['subtotal'] as num?,
@@ -59,6 +65,10 @@ Map<String, dynamic> _$OrderModelToJson(OrderModel instance) =>
       'payment': instance.payment?.toJson(),
       'customer_name': instance.customerName,
       'customer_phone': instance.customerPhone,
+      'address': instance.address?.toJson(),
+      'table': instance.table,
+      'car_number': instance.carNumber,
+      'company_name': instance.companyName,
       'notes': instance.notes,
       'coupon_code': instance.couponCode,
       'subtotal': instance.subtotal,
@@ -163,3 +173,67 @@ Map<String, dynamic> _$OrderItemModelToJson(OrderItemModel instance) =>
       'options': instance.options,
       'addons': instance.addons,
     };
+
+OrderAddressModel _$OrderAddressModelFromJson(Map<String, dynamic> json) =>
+    OrderAddressModel(
+      area: json['area'] as String?,
+      street: json['street'] as String?,
+      building: json['building'] as String?,
+      notes: json['notes'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$OrderAddressModelToJson(OrderAddressModel instance) =>
+    <String, dynamic>{
+      'area': instance.area,
+      'street': instance.street,
+      'building': instance.building,
+      'notes': instance.notes,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+    };
+
+OrderListResponse _$OrderListResponseFromJson(Map<String, dynamic> json) =>
+    OrderListResponse(
+      success: json['success'] as bool?,
+      message: json['message'] as String? ?? '',
+      data: (json['data'] as List<dynamic>?)
+          ?.map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      meta: json['meta'] == null
+          ? null
+          : OrderPaginationMetaModel.fromJson(
+              json['meta'] as Map<String, dynamic>,
+            ),
+    );
+
+Map<String, dynamic> _$OrderListResponseToJson(OrderListResponse instance) =>
+    <String, dynamic>{
+      'success': instance.success,
+      'message': instance.message,
+      'data': instance.data?.map((e) => e.toJson()).toList(),
+      'meta': instance.meta?.toJson(),
+    };
+
+OrderPaginationMetaModel _$OrderPaginationMetaModelFromJson(
+  Map<String, dynamic> json,
+) => OrderPaginationMetaModel(
+  currentPage: (json['current_page'] as num?)?.toInt(),
+  lastPage: (json['last_page'] as num?)?.toInt(),
+  perPage: (json['per_page'] as num?)?.toInt(),
+  total: (json['total'] as num?)?.toInt(),
+  from: (json['from'] as num?)?.toInt(),
+  to: (json['to'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$OrderPaginationMetaModelToJson(
+  OrderPaginationMetaModel instance,
+) => <String, dynamic>{
+  'current_page': instance.currentPage,
+  'last_page': instance.lastPage,
+  'per_page': instance.perPage,
+  'total': instance.total,
+  'from': instance.from,
+  'to': instance.to,
+};

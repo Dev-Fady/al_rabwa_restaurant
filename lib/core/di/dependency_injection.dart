@@ -14,6 +14,8 @@ import 'package:al_rabwa_restaurant/features/cart/presentation/cubit/checkout_cu
 import 'package:al_rabwa_restaurant/features/orders/data/datasources/orders_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/orders/data/repositories/orders_repository_impl.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/repositories/orders_repository.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/cubit/order_details_cubit.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:al_rabwa_restaurant/features/tables/data/datasources/tables_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/tables/data/repositories/tables_repository_impl.dart';
 import 'package:al_rabwa_restaurant/features/tables/domain/repositories/tables_repository.dart';
@@ -74,9 +76,7 @@ Future<void> setupGetIt() async {
 
   // Cart persistence — registered AFTER CacheHive.init() so the lazy
   // singletons can safely open the Hive box on first access.
-  getIt.registerLazySingleton<CartLocalDataSource>(
-    CartLocalDataSourceImpl.new,
-  );
+  getIt.registerLazySingleton<CartLocalDataSource>(CartLocalDataSourceImpl.new);
   getIt.registerLazySingleton<CartRepository>(
     () => CartRepositoryImpl(getIt<CartLocalDataSource>()),
   );
@@ -125,6 +125,15 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton<OrdersRepository>(
     () =>
         OrdersRepositoryImpl(remoteDataSource: getIt<OrdersRemoteDataSource>()),
+  );
+
+  getIt.registerFactoryParam<OrdersCubit, String, void>(
+    (lang, _) => OrdersCubit(getIt<OrdersRepository>(), lang: lang),
+  );
+
+  getIt.registerFactoryParam<OrderDetailsCubit, int, String>(
+    (orderId, lang) =>
+        OrderDetailsCubit(getIt<OrdersRepository>(), orderId, lang: lang),
   );
 
   getIt.registerLazySingleton<TablesRemoteDataSource>(

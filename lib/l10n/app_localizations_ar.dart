@@ -673,4 +673,61 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get checkoutDone => 'تم';
+
+  @override
+  String get ordersCurrentFilter => 'الحالية';
+
+  @override
+  String get ordersPastFilter => 'السابقة';
+
+  @override
+  String get ordersEmptyCurrent => 'لا توجد طلبات حالية الآن.';
+
+  @override
+  String get ordersEmptyPast => 'لا توجد طلبات سابقة بعد.';
+
+  @override
+  String get ordersError => 'تعذّر تحميل طلباتك، يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get ordersLoadMoreError => 'تعذّر تحميل المزيد من الطلبات.';
+
+  @override
+  String get ordersShowDetails => 'عرض التفاصيل';
+
+  @override
+  String get ordersHideDetails => 'إخفاء التفاصيل';
+
+  @override
+  String get orderDetailsTitle => 'تفاصيل الطلب';
+
+  @override
+  String get orderDetailsCustomer => 'بيانات العميل';
+
+  @override
+  String get orderDetailsLocation => 'موقع الطلب';
+
+  @override
+  String get orderDetailsItems => 'الأصناف';
+
+  @override
+  String get orderDetailsPayment => 'الدفع';
+
+  @override
+  String get orderDetailsTotals => 'ملخص الفاتورة';
+
+  @override
+  String get orderDetailsCarNumber => 'رقم السيارة';
+
+  @override
+  String get orderDetailsCompany => 'الشركة';
+
+  @override
+  String get orderDetailsCoupon => 'كود الخصم';
+
+  @override
+  String get orderDetailsError => 'تعذّر تحميل تفاصيل الطلب، يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get ordersEmptyItems => 'لا توجد أصناف في هذا الطلب.';
 }

@@ -41,5 +41,11 @@ class AppRoutes {
   static const String checkout = '/checkout';
 
   static const String orders = '/orders';
+
+  /// One order; keep it under the orders branch so the shell stays visible.
+  static const String orderDetailsSegment = ':orderId';
+
+  static String orderDetailsPath(int orderId) => '/orders/$orderId';
+
   static const String store = '/store';
 }

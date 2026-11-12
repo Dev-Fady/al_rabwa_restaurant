@@ -670,4 +670,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checkoutDone => 'Done';
+
+  @override
+  String get ordersCurrentFilter => 'Current';
+
+  @override
+  String get ordersPastFilter => 'Past';
+
+  @override
+  String get ordersEmptyCurrent => 'You have no active orders right now.';
+
+  @override
+  String get ordersEmptyPast => 'You have no past orders yet.';
+
+  @override
+  String get ordersError => 'Couldn\'t load your orders. Please try again.';
+
+  @override
+  String get ordersLoadMoreError => 'Couldn\'t load more orders.';
+
+  @override
+  String get ordersShowDetails => 'Show details';
+
+  @override
+  String get ordersHideDetails => 'Hide details';
+
+  @override
+  String get orderDetailsTitle => 'Order details';
+
+  @override
+  String get orderDetailsCustomer => 'Customer details';
+
+  @override
+  String get orderDetailsLocation => 'Order location';
+
+  @override
+  String get orderDetailsItems => 'Items';
+
+  @override
+  String get orderDetailsPayment => 'Payment';
+
+  @override
+  String get orderDetailsTotals => 'Bill summary';
+
+  @override
+  String get orderDetailsCarNumber => 'Car number';
+
+  @override
+  String get orderDetailsCompany => 'Company';
+
+  @override
+  String get orderDetailsCoupon => 'Coupon';
+
+  @override
+  String get orderDetailsError => 'Couldn\'t load the order details. Please try again.';
+
+  @override
+  String get ordersEmptyItems => 'No items in this order.';
 }

@@ -254,5 +254,24 @@
     }
   },
   "checkoutOrderPlacedMessage": "We'll start preparing your order.",
-  "checkoutDone": "Done"
+  "checkoutDone": "Done",
+  "ordersCurrentFilter": "Current",
+  "ordersPastFilter": "Past",
+  "ordersEmptyCurrent": "You have no active orders right now.",
+  "ordersEmptyPast": "You have no past orders yet.",
+  "ordersError": "Couldn't load your orders. Please try again.",
+  "ordersLoadMoreError": "Couldn't load more orders.",
+  "ordersShowDetails": "Show details",
+  "ordersHideDetails": "Hide details",
+  "orderDetailsTitle": "Order details",
+  "orderDetailsCustomer": "Customer details",
+  "orderDetailsLocation": "Order location",
+  "orderDetailsItems": "Items",
+  "orderDetailsPayment": "Payment",
+  "orderDetailsTotals": "Bill summary",
+  "orderDetailsCarNumber": "Car number",
+  "orderDetailsCompany": "Company",
+  "orderDetailsCoupon": "Coupon",
+  "orderDetailsError": "Couldn't load the order details. Please try again.",
+  "ordersEmptyItems": "No items in this order."
 }

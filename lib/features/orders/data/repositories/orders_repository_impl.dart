@@ -3,6 +3,7 @@ import 'package:al_rabwa_restaurant/features/cart/domain/entities/cart.dart';
 import 'package:al_rabwa_restaurant/features/orders/data/datasources/orders_remote_data_source.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order_draft.dart';
+import 'package:al_rabwa_restaurant/features/orders/domain/entities/orders_page.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/repositories/orders_repository.dart';
 import 'package:dartz/dartz.dart' hide Order;
 import 'package:dio/dio.dart';
@@ -24,6 +25,48 @@ class OrdersRepositoryImpl implements OrdersRepository {
         cart: cart,
         draft: draft,
         idempotencyKey: idempotencyKey,
+        lang: lang,
+      );
+      return Right(order);
+    } on Failure catch (failure) {
+      return Left(failure);
+    } on DioException catch (error) {
+      return Left(ServerFailure.fromDioException(error));
+    } catch (error) {
+      return Left(ServerFailure.fromError(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, OrdersPage>> fetchOrders({
+    required int page,
+    String status = 'current',
+    String lang = 'ar',
+  }) async {
+    try {
+      final orders = await remoteDataSource.fetchOrders(
+        page: page,
+        status: status,
+        lang: lang,
+      );
+      return Right(orders);
+    } on Failure catch (failure) {
+      return Left(failure);
+    } on DioException catch (error) {
+      return Left(ServerFailure.fromDioException(error));
+    } catch (error) {
+      return Left(ServerFailure.fromError(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Order>> fetchOrderDetails({
+    required int orderId,
+    String lang = 'ar',
+  }) async {
+    try {
+      final order = await remoteDataSource.fetchOrderDetails(
+        orderId: orderId,
         lang: lang,
       );
       return Right(order);

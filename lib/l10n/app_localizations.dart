@@ -1378,6 +1378,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get checkoutDone;
+
+  /// No description provided for @ordersCurrentFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get ordersCurrentFilter;
+
+  /// No description provided for @ordersPastFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get ordersPastFilter;
+
+  /// No description provided for @ordersEmptyCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no active orders right now.'**
+  String get ordersEmptyCurrent;
+
+  /// No description provided for @ordersEmptyPast.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no past orders yet.'**
+  String get ordersEmptyPast;
+
+  /// No description provided for @ordersError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your orders. Please try again.'**
+  String get ordersError;
+
+  /// No description provided for @ordersLoadMoreError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more orders.'**
+  String get ordersLoadMoreError;
+
+  /// No description provided for @ordersShowDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Show details'**
+  String get ordersShowDetails;
+
+  /// No description provided for @ordersHideDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide details'**
+  String get ordersHideDetails;
+
+  /// No description provided for @orderDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order details'**
+  String get orderDetailsTitle;
+
+  /// No description provided for @orderDetailsCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer details'**
+  String get orderDetailsCustomer;
+
+  /// No description provided for @orderDetailsLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Order location'**
+  String get orderDetailsLocation;
+
+  /// No description provided for @orderDetailsItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get orderDetailsItems;
+
+  /// No description provided for @orderDetailsPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get orderDetailsPayment;
+
+  /// No description provided for @orderDetailsTotals.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill summary'**
+  String get orderDetailsTotals;
+
+  /// No description provided for @orderDetailsCarNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Car number'**
+  String get orderDetailsCarNumber;
+
+  /// No description provided for @orderDetailsCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get orderDetailsCompany;
+
+  /// No description provided for @orderDetailsCoupon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon'**
+  String get orderDetailsCoupon;
+
+  /// No description provided for @orderDetailsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the order details. Please try again.'**
+  String get orderDetailsError;
+
+  /// No description provided for @ordersEmptyItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No items in this order.'**
+  String get ordersEmptyItems;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

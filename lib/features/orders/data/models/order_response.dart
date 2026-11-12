@@ -1,4 +1,5 @@
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order.dart';
+import 'package:al_rabwa_restaurant/features/orders/domain/entities/orders_page.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'order_response.g.dart';
@@ -46,6 +47,15 @@ class OrderModel {
   @JsonKey(name: 'customer_phone')
   final String? customerPhone;
 
+  final OrderAddressModel? address;
+  final String? table;
+
+  @JsonKey(name: 'car_number')
+  final String? carNumber;
+
+  @JsonKey(name: 'company_name')
+  final String? companyName;
+
   final String? notes;
 
   @JsonKey(name: 'coupon_code')
@@ -76,6 +86,10 @@ class OrderModel {
     this.payment,
     this.customerName,
     this.customerPhone,
+    this.address,
+    this.table,
+    this.carNumber,
+    this.companyName,
     this.notes,
     this.couponCode,
     this.subtotal,
@@ -102,6 +116,10 @@ class OrderModel {
       payment: payment?.toEntity() ?? const OrderPaymentInfo(),
       customerName: customerName?.trim() ?? '',
       customerPhone: customerPhone?.trim() ?? '',
+      address: address?.toEntity(),
+      table: table?.trim() ?? '',
+      carNumber: carNumber?.trim() ?? '',
+      companyName: companyName?.trim() ?? '',
       notes: notes?.trim() ?? '',
       couponCode: couponCode?.trim() ?? '',
       subtotal: (subtotal ?? 0).toDouble(),
@@ -254,6 +272,112 @@ class OrderItemModel {
     options: List.unmodifiable(options ?? const <String>[]),
     addons: List.unmodifiable(addons ?? const <String>[]),
   );
+}
+
+@JsonSerializable(explicitToJson: true)
+class OrderAddressModel {
+  final String? area;
+  final String? street;
+  final String? building;
+  final String? notes;
+  final double? latitude;
+  final double? longitude;
+
+  const OrderAddressModel({
+    this.area,
+    this.street,
+    this.building,
+    this.notes,
+    this.latitude,
+    this.longitude,
+  });
+
+  factory OrderAddressModel.fromJson(Map<String, dynamic> json) =>
+      _$OrderAddressModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OrderAddressModelToJson(this);
+
+  OrderAddress toEntity() => OrderAddress(
+    area: area?.trim() ?? '',
+    street: street?.trim() ?? '',
+    building: building?.trim() ?? '',
+    notes: notes?.trim() ?? '',
+    latitude: latitude,
+    longitude: longitude,
+  );
+}
+
+/// Envelope of `GET /api/orders?lang=ar&status=current&page=1`.
+///
+/// ```json
+/// {"data": [{"id": 25, "number": 12, ...}],
+///  "links": {"first": "...", "last": "...", "prev": null, "next": null},
+///  "meta": {"current_page": 1, "last_page": 1, "per_page": 20, "total": 5}}
+/// ```
+@JsonSerializable(explicitToJson: true)
+class OrderListResponse {
+  final bool? success;
+
+  @JsonKey(defaultValue: '')
+  final String message;
+
+  final List<OrderModel>? data;
+  final OrderPaginationMetaModel? meta;
+
+  const OrderListResponse({
+    this.success,
+    this.message = '',
+    this.data,
+    this.meta,
+  });
+
+  factory OrderListResponse.fromJson(Map<String, dynamic> json) =>
+      _$OrderListResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OrderListResponseToJson(this);
+
+  OrdersPage toEntity() {
+    final orders = [
+      for (final order in data ?? const <OrderModel>[]) order.toEntity(),
+    ];
+
+    return OrdersPage(
+      orders: List.unmodifiable(orders),
+      currentPage: meta?.currentPage ?? 1,
+      lastPage: meta?.lastPage ?? 1,
+      total: meta?.total ?? orders.length,
+    );
+  }
+}
+
+@JsonSerializable()
+class OrderPaginationMetaModel {
+  @JsonKey(name: 'current_page')
+  final int? currentPage;
+
+  @JsonKey(name: 'last_page')
+  final int? lastPage;
+
+  @JsonKey(name: 'per_page')
+  final int? perPage;
+
+  final int? total;
+  final int? from;
+  final int? to;
+
+  const OrderPaginationMetaModel({
+    this.currentPage,
+    this.lastPage,
+    this.perPage,
+    this.total,
+    this.from,
+    this.to,
+  });
+
+  factory OrderPaginationMetaModel.fromJson(Map<String, dynamic> json) =>
+      _$OrderPaginationMetaModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OrderPaginationMetaModelToJson(this);
 }
 
 /// The order response returns option/add-on names as strings; tolerate objects

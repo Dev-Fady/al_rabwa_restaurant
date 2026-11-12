@@ -61,6 +61,28 @@ abstract class ApiService {
     @Header('x-locale') String? xLocale,
   });
 
+  /// Paginated order history.
+  ///
+  /// [status] is `current` for still-open orders, `past` for completed or
+  /// cancelled ones, and omitted for everything.
+  @GET(ApiConstants.orders)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> getOrders({
+    @Query('lang') String? lang,
+    @Query('status') String? status,
+    @Query('page') int? page,
+    @Header('x-locale') String? xLocale,
+  });
+
+  /// One order from the customer's history.
+  @GET(ApiConstants.orderDetails)
+  @Extra(<String, Object>{'requiresToken': true})
+  Future<HttpResponse<dynamic>> getOrderDetails({
+    @Path('id') required int orderId,
+    @Query('lang') String? lang,
+    @Header('x-locale') String? xLocale,
+  });
+
   @GET(ApiConstants.tables)
   Future<HttpResponse<dynamic>> getTables({
     @Query('lang') String? lang,

@@ -17,6 +17,10 @@ import 'package:al_rabwa_restaurant/features/menu/presentation/cubit/item_detail
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/item_details_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_categories_screen.dart';
 import 'package:al_rabwa_restaurant/features/menu/presentation/screens/menu_screen.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/cubit/order_details_cubit.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/screens/order_details_screen.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/screens/orders_screen.dart';
 import 'package:al_rabwa_restaurant/features/registration/presentation/cubit/device_registration_cubit.dart';
 import 'package:al_rabwa_restaurant/features/registration/presentation/screens/device_registration_screen.dart';
 import 'package:al_rabwa_restaurant/features/settings/presentation/cubit/delete_my_data_cubit.dart';
@@ -197,10 +201,40 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: AppRoutes.orders,
-                builder: (context, state) => SectionPlaceholderScreen(
-                  title: AppLocalizations.of(context)!.navOrders,
-                  icon: Icons.receipt_long_outlined,
-                ),
+                builder: (context, state) {
+                  final lang = Localizations.localeOf(context).languageCode;
+
+                  return BlocProvider<OrdersCubit>(
+                    create: (_) => getIt<OrdersCubit>(param1: lang)..load(),
+                    child: const OrdersScreen(),
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    path: AppRoutes.orderDetailsSegment,
+                    builder: (context, state) {
+                      final orderId = int.tryParse(
+                        state.pathParameters['orderId'] ?? '',
+                      );
+                      if (orderId == null) {
+                        return SectionPlaceholderScreen(
+                          title: AppLocalizations.of(context)!.pageNotFound,
+                          icon: Icons.error_outline,
+                        );
+                      }
+
+                      final lang = Localizations.localeOf(context).languageCode;
+
+                      return BlocProvider<OrderDetailsCubit>(
+                        create: (_) => getIt<OrderDetailsCubit>(
+                          param1: orderId,
+                          param2: lang,
+                        )..load(),
+                        child: const OrderDetailsScreen(),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

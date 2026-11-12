@@ -13,6 +13,7 @@ class ApiConstants {
   static const String categoryItems = 'categories/{id}/items';
   static const String itemDetails = 'items/{id}';
   static const String orders = 'orders';
+  static const String orderDetails = 'orders/{id}';
   static const String cartQuote = 'cart/quote';
   static const String tables = 'tables';
   static const String addresses = 'addresses';

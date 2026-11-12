@@ -19,6 +19,7 @@ import 'package:al_rabwa_restaurant/features/menu/domain/entities/menu_item.dart
 import 'package:al_rabwa_restaurant/features/orders/data/models/order_response.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order_draft.dart';
+import 'package:al_rabwa_restaurant/features/orders/domain/entities/orders_page.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/repositories/orders_repository.dart';
 import 'package:al_rabwa_restaurant/features/tables/domain/entities/dining_table.dart';
 import 'package:al_rabwa_restaurant/features/tables/domain/repositories/tables_repository.dart';
@@ -178,6 +179,23 @@ class _FakeOrdersRepository implements OrdersRepository {
       );
     }
     return Right(order ?? _sampleOrder());
+  }
+
+  @override
+  Future<Either<Failure, OrdersPage>> fetchOrders({
+    required int page,
+    String status = 'current',
+    String lang = 'ar',
+  }) async {
+    return const Right(OrdersPage());
+  }
+
+  @override
+  Future<Either<Failure, Order>> fetchOrderDetails({
+    required int orderId,
+    String lang = 'ar',
+  }) async {
+    return Left(ServerFailure('not used'));
   }
 }
 
@@ -412,21 +430,22 @@ void main() {
     expect(find.text('تم استلام طلبك'), findsOneWidget);
   });
 
-  testWidgets('switches from dine-in to takeaway from the order-type selector', (
-    tester,
-  ) async {
-    final harness = await _pumpCheckout(tester, orderType: 'dine_in');
+  testWidgets(
+    'switches from dine-in to takeaway from the order-type selector',
+    (tester) async {
+      final harness = await _pumpCheckout(tester, orderType: 'dine_in');
 
-    final takeawayOption = find.textContaining('استلام من المطعم');
-    expect(takeawayOption, findsOneWidget);
+      final takeawayOption = find.textContaining('استلام من المطعم');
+      expect(takeawayOption, findsOneWidget);
 
-    await tester.tap(takeawayOption);
-    await tester.pumpAndSettle();
+      await tester.tap(takeawayOption);
+      await tester.pumpAndSettle();
 
-    expect(harness.cartCubit.state.orderType, 'takeaway');
-    expect(find.text('الطاولة'), findsNothing);
-    expect(find.text('اختر طاولة للمتابعة.'), findsNothing);
-  });
+      expect(harness.cartCubit.state.orderType, 'takeaway');
+      expect(find.text('الطاولة'), findsNothing);
+      expect(find.text('اختر طاولة للمتابعة.'), findsNothing);
+    },
+  );
 
   testWidgets('a closed store shows its message and blocks checkout', (
     tester,

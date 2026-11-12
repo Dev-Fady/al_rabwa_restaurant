@@ -12,7 +12,12 @@ import 'package:al_rabwa_restaurant/features/orders/data/models/order_response.d
 import 'package:al_rabwa_restaurant/features/orders/data/repositories/orders_repository_impl.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order_draft.dart';
+import 'package:al_rabwa_restaurant/features/orders/domain/entities/orders_page.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/repositories/orders_repository.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/cubit/order_details_cubit.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/cubit/order_details_state.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:al_rabwa_restaurant/features/orders/presentation/cubit/orders_state.dart';
 import 'package:al_rabwa_restaurant/features/tables/domain/entities/dining_table.dart';
 import 'package:al_rabwa_restaurant/features/tables/domain/repositories/tables_repository.dart';
 import 'package:dartz/dartz.dart' hide Order;
@@ -72,6 +77,71 @@ Map<String, dynamic> orderPayload() {
 
 Order sampleOrder() => OrderResponse.fromJson(orderPayload()).toEntity()!;
 
+/// Response copied from `GET /api/orders?lang=ar&status=current&page=1`.
+Map<String, dynamic> orderListPayload({
+  int page = 1,
+  int lastPage = 1,
+  int total = 5,
+  List<Map<String, dynamic>>? data,
+}) {
+  final orders = data ?? [orderPayload()['data'] as Map<String, dynamic>];
+
+  return {
+    'data': orders,
+    'links': {
+      'first': 'https://sync2027.smartmenues.com/api/orders?page=1',
+      'last': 'https://sync2027.smartmenues.com/api/orders?page=$lastPage',
+      'prev': null,
+      'next': page < lastPage
+          ? 'https://sync2027.smartmenues.com/api/orders?page=${page + 1}'
+          : null,
+    },
+    'meta': {
+      'current_page': page,
+      'from': 1,
+      'last_page': lastPage,
+      'links': <dynamic>[],
+      'path': 'https://sync2027.smartmenues.com/api/orders',
+      'per_page': 20,
+      'to': orders.length,
+      'total': total,
+    },
+  };
+}
+
+Order testOrder(int id, {int? number, String type = 'takeaway'}) {
+  return Order(
+    id: id,
+    number: number ?? id,
+    type: OrderTypeInfo(
+      value: type,
+      label: type == 'delivery' ? 'توصيل' : 'استلام من المطعم',
+    ),
+    status: const OrderStatusInfo(value: 'pending', label: 'جديد'),
+    payment: const OrderPaymentInfo(
+      methodValue: 'cash',
+      methodLabel: 'نقدًا',
+      statusValue: 'unpaid',
+      statusLabel: 'غير مدفوع',
+    ),
+    subtotal: 9.75,
+    tax: 0.975,
+    serviceCharge: 0.488,
+    total: 11.213,
+    createdAt: DateTime.utc(2026, 11, 12, 13, 55, 35),
+    items: const [
+      OrderItem(
+        itemId: 31,
+        name: 'مشاوي مشكلة',
+        quantity: 0.25,
+        unitPrice: 39,
+        total: 9.75,
+        options: ['نفر واحد'],
+      ),
+    ],
+  );
+}
+
 const _grill = MenuItem(
   id: 31,
   name: 'مشاوي مشكلة',
@@ -117,6 +187,9 @@ class _FakeApiService implements ApiService {
   String? lastLang;
   String? lastLocale;
   String? lastIdempotencyKey;
+  int? lastOrdersPage;
+  String? lastOrdersStatus;
+  int? lastOrderId;
 
   @override
   Future<HttpResponse<dynamic>> createOrder({
@@ -144,6 +217,54 @@ class _FakeApiService implements ApiService {
   }
 
   @override
+  Future<HttpResponse<dynamic>> getOrders({
+    String? lang,
+    String? status,
+    int? page,
+    String? xLocale,
+  }) async {
+    lastLang = lang;
+    lastLocale = xLocale;
+    lastOrdersStatus = status;
+    lastOrdersPage = page;
+
+    final failure = error;
+    if (failure != null) throw failure;
+
+    return HttpResponse<dynamic>(
+      payload,
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: 'orders'),
+        data: payload,
+        statusCode: 200,
+      ),
+    );
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> getOrderDetails({
+    required int orderId,
+    String? lang,
+    String? xLocale,
+  }) async {
+    lastOrderId = orderId;
+    lastLang = lang;
+    lastLocale = xLocale;
+
+    final failure = error;
+    if (failure != null) throw failure;
+
+    return HttpResponse<dynamic>(
+      payload,
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: 'orders/$orderId'),
+        data: payload,
+        statusCode: 200,
+      ),
+    );
+  }
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -151,11 +272,17 @@ class _FakeOrdersRemoteDataSource implements OrdersRemoteDataSource {
   _FakeOrdersRemoteDataSource({this.order});
 
   Order? order;
+  OrdersPage? ordersPage;
   Object? error;
   Cart? lastCart;
   OrderDraft? lastDraft;
   String? lastLang;
   String? lastIdempotencyKey;
+  int? lastOrdersPage;
+  String? lastOrdersStatus;
+  String? lastOrdersLang;
+  int? lastOrderId;
+  String? lastOrderDetailsLang;
 
   @override
   Future<Order> createOrder({
@@ -168,6 +295,34 @@ class _FakeOrdersRemoteDataSource implements OrdersRemoteDataSource {
     lastDraft = draft;
     lastLang = lang;
     lastIdempotencyKey = idempotencyKey;
+
+    final failure = error;
+    if (failure != null) throw failure;
+    return order ?? sampleOrder();
+  }
+
+  @override
+  Future<OrdersPage> fetchOrders({
+    required int page,
+    String status = 'current',
+    String lang = 'ar',
+  }) async {
+    lastOrdersPage = page;
+    lastOrdersStatus = status;
+    lastOrdersLang = lang;
+
+    final failure = error;
+    if (failure != null) throw failure;
+    return ordersPage ?? const OrdersPage();
+  }
+
+  @override
+  Future<Order> fetchOrderDetails({
+    required int orderId,
+    String lang = 'ar',
+  }) async {
+    lastOrderId = orderId;
+    lastOrderDetailsLang = lang;
 
     final failure = error;
     if (failure != null) throw failure;
@@ -222,12 +377,20 @@ class _FakeOrdersRepository implements OrdersRepository {
   _FakeOrdersRepository({this.order});
 
   Order? order;
+  OrdersPage? ordersPage;
   Object? error;
+  Object? fetchError;
   int calls = 0;
+  int fetchCalls = 0;
   Cart? lastCart;
   OrderDraft? lastDraft;
   String? lastLang;
   String? lastIdempotencyKey;
+  int? lastPage;
+  String? lastStatus;
+  String? lastFetchLang;
+  int? lastDetailsOrderId;
+  String? lastDetailsLang;
 
   @override
   Future<Either<Failure, Order>> createOrder({
@@ -243,6 +406,43 @@ class _FakeOrdersRepository implements OrdersRepository {
     lastIdempotencyKey = idempotencyKey;
 
     final failure = error;
+    if (failure != null) {
+      return Left(
+        failure is Failure ? failure : ServerFailure(failure.toString()),
+      );
+    }
+    return Right(order ?? sampleOrder());
+  }
+
+  @override
+  Future<Either<Failure, OrdersPage>> fetchOrders({
+    required int page,
+    String status = 'current',
+    String lang = 'ar',
+  }) async {
+    fetchCalls++;
+    lastPage = page;
+    lastStatus = status;
+    lastFetchLang = lang;
+
+    final failure = fetchError;
+    if (failure != null) {
+      return Left(
+        failure is Failure ? failure : ServerFailure(failure.toString()),
+      );
+    }
+    return Right(ordersPage ?? const OrdersPage());
+  }
+
+  @override
+  Future<Either<Failure, Order>> fetchOrderDetails({
+    required int orderId,
+    String lang = 'ar',
+  }) async {
+    lastDetailsOrderId = orderId;
+    lastDetailsLang = lang;
+
+    final failure = fetchError ?? error;
     if (failure != null) {
       return Left(
         failure is Failure ? failure : ServerFailure(failure.toString()),
@@ -296,6 +496,61 @@ void main() {
 
       expect(order.displayNumber, 25);
       expect(order.items.single.options, ['نفر واحد']);
+    });
+  });
+
+  group('OrderListResponse', () {
+    test('maps the orders and pagination meta', () {
+      final page = OrderListResponse.fromJson(
+        orderListPayload(lastPage: 3, total: 42),
+      ).toEntity();
+
+      expect(page.orders, hasLength(1));
+      expect(page.orders.single.number, 12);
+      expect(page.currentPage, 1);
+      expect(page.lastPage, 3);
+      expect(page.total, 42);
+      expect(page.hasMore, isTrue);
+      expect(page.isEmpty, isFalse);
+    });
+
+    test('maps delivery address, table and corporate fields', () {
+      final data = orderPayload()['data'] as Map<String, dynamic>;
+      data['address'] = {
+        'area': 'السد',
+        'street': 'شارع 901',
+        'building': 'مبنى 35، الطابق 2',
+        'notes': 'الباب الأخضر',
+        'latitude': 25.2854,
+        'longitude': 51.531,
+      };
+      data['table'] = 'T87';
+      data['car_number'] = 'Q-123';
+      data['company_name'] = 'شركة الربوة';
+
+      final order = OrderResponse.fromJson({'data': data}).toEntity()!;
+
+      expect(order.hasAddress, isTrue);
+      expect(order.address!.area, 'السد');
+      expect(order.address!.summary, 'السد, شارع 901, مبنى 35، الطابق 2');
+      expect(order.hasTable, isTrue);
+      expect(order.table, 'T87');
+      expect(order.hasCarNumber, isTrue);
+      expect(order.carNumber, 'Q-123');
+      expect(order.companyName, 'شركة الربوة');
+    });
+
+    test('treats a missing data list as an empty page', () {
+      final page = OrderListResponse.fromJson({
+        'meta': {'current_page': 2, 'last_page': 4, 'total': 80},
+      }).toEntity();
+
+      expect(page.orders, isEmpty);
+      expect(page.isEmpty, isTrue);
+      expect(page.currentPage, 2);
+      expect(page.lastPage, 4);
+      expect(page.total, 80);
+      expect(page.hasMore, isTrue);
     });
   });
 
@@ -416,6 +671,48 @@ void main() {
         ),
       );
     });
+
+    test('fetches a page with the requested status and language', () async {
+      final api = _FakeApiService(
+        payload: orderListPayload(page: 2, lastPage: 3, total: 42),
+      );
+      final dataSource = OrdersRemoteDataSourceImpl(apiService: api);
+
+      final page = await dataSource.fetchOrders(
+        page: 2,
+        status: 'past',
+        lang: 'en',
+      );
+
+      expect(page.currentPage, 2);
+      expect(page.lastPage, 3);
+      expect(page.total, 42);
+      expect(page.orders.single.number, 12);
+      expect(api.lastOrdersPage, 2);
+      expect(api.lastOrdersStatus, 'past');
+      expect(api.lastLang, 'en');
+      expect(api.lastLocale, 'en');
+    });
+
+    test('surfaces the backend message when the history fails', () async {
+      final payload = orderListPayload();
+      payload['success'] = false;
+      payload['message'] = 'انتهت الجلسة';
+      final dataSource = OrdersRemoteDataSourceImpl(
+        apiService: _FakeApiService(payload: payload),
+      );
+
+      await expectLater(
+        dataSource.fetchOrders(page: 1),
+        throwsA(
+          isA<ServerFailure>().having(
+            (failure) => failure.message,
+            'message',
+            'انتهت الجلسة',
+          ),
+        ),
+      );
+    });
   });
 
   group('OrdersRepository', () {
@@ -461,6 +758,359 @@ void main() {
         (failure) => expect(failure, isA<ServerFailure>()),
         (_) => fail('expected a failure'),
       );
+    });
+
+    test('returns the requested order page', () async {
+      final remote = _FakeOrdersRemoteDataSource()
+        ..ordersPage = const OrdersPage(
+          orders: [Order(id: 25, number: 12)],
+          currentPage: 2,
+          lastPage: 3,
+          total: 42,
+        );
+      final repository = OrdersRepositoryImpl(remoteDataSource: remote);
+
+      final result = await repository.fetchOrders(
+        page: 2,
+        status: 'past',
+        lang: 'en',
+      );
+
+      expect(result.isRight(), isTrue);
+      result.fold((_) => fail('expected an order page'), (page) {
+        expect(page.orders.single.number, 12);
+        expect(page.currentPage, 2);
+        expect(page.lastPage, 3);
+        expect(page.total, 42);
+      });
+      expect(remote.lastOrdersPage, 2);
+      expect(remote.lastOrdersStatus, 'past');
+      expect(remote.lastOrdersLang, 'en');
+    });
+
+    test('maps a history network error to a server failure', () async {
+      final remote = _FakeOrdersRemoteDataSource()
+        ..error = DioException(
+          requestOptions: RequestOptions(path: 'orders'),
+          type: DioExceptionType.connectionError,
+        );
+      final repository = OrdersRepositoryImpl(remoteDataSource: remote);
+
+      final result = await repository.fetchOrders(page: 1);
+
+      expect(result.isLeft(), isTrue);
+      result.fold(
+        (failure) => expect(failure, isA<ServerFailure>()),
+        (_) => fail('expected a failure'),
+      );
+    });
+  });
+
+  group('OrderDetails', () {
+    test('fetches one order with the requested id and language', () async {
+      final api = _FakeApiService(payload: orderPayload());
+      final dataSource = OrdersRemoteDataSourceImpl(apiService: api);
+
+      final order = await dataSource.fetchOrderDetails(orderId: 25, lang: 'en');
+
+      expect(order.id, 25);
+      expect(order.number, 12);
+      expect(order.items.single.name, 'مشاوي مشكلة');
+      expect(api.lastOrderId, 25);
+      expect(api.lastLang, 'en');
+      expect(api.lastLocale, 'en');
+    });
+
+    test('surfaces the backend message when the order cannot load', () async {
+      final payload = orderPayload();
+      payload['success'] = false;
+      payload['message'] = 'الطلب غير موجود';
+      final dataSource = OrdersRemoteDataSourceImpl(
+        apiService: _FakeApiService(payload: payload),
+      );
+
+      await expectLater(
+        dataSource.fetchOrderDetails(orderId: 99),
+        throwsA(
+          isA<ServerFailure>().having(
+            (failure) => failure.message,
+            'message',
+            'الطلب غير موجود',
+          ),
+        ),
+      );
+    });
+
+    test('rejects an empty order body', () async {
+      final dataSource = OrdersRemoteDataSourceImpl(
+        apiService: _FakeApiService(payload: <String, dynamic>{}),
+      );
+
+      await expectLater(
+        dataSource.fetchOrderDetails(orderId: 99),
+        throwsA(isA<ServerFailure>()),
+      );
+    });
+
+    test('repository returns the order and forwards the language', () async {
+      final remote = _FakeOrdersRemoteDataSource(order: sampleOrder());
+      final repository = OrdersRepositoryImpl(remoteDataSource: remote);
+
+      final result = await repository.fetchOrderDetails(
+        orderId: 25,
+        lang: 'en',
+      );
+
+      expect(result.isRight(), isTrue);
+      result.fold(
+        (_) => fail('expected the order'),
+        (order) => expect(order.number, 12),
+      );
+      expect(remote.lastOrderId, 25);
+      expect(remote.lastOrderDetailsLang, 'en');
+    });
+
+    test('repository maps a network error to a server failure', () async {
+      final remote = _FakeOrdersRemoteDataSource()
+        ..error = DioException(
+          requestOptions: RequestOptions(path: 'orders/25'),
+          type: DioExceptionType.connectionError,
+        );
+      final repository = OrdersRepositoryImpl(remoteDataSource: remote);
+
+      final result = await repository.fetchOrderDetails(orderId: 25);
+
+      expect(result.isLeft(), isTrue);
+      result.fold(
+        (failure) => expect(failure, isA<ServerFailure>()),
+        (_) => fail('expected a failure'),
+      );
+    });
+  });
+
+  group('OrderDetailsCubit', () {
+    test('emits loading then the requested order', () async {
+      final repository = _FakeOrdersRepository(order: sampleOrder());
+      final cubit = OrderDetailsCubit(repository, 25, lang: 'en');
+      addTearDown(cubit.close);
+
+      final loading = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          isA<OrderDetailsState>().having(
+            (state) => state.status,
+            'status',
+            OrdersStatus.loading,
+          ),
+          isA<OrderDetailsState>()
+              .having((state) => state.status, 'status', OrdersStatus.success)
+              .having((state) => state.order?.number, 'order number', 12),
+        ]),
+      );
+
+      await cubit.load();
+      await loading;
+
+      expect(cubit.state.hasOrder, isTrue);
+      expect(repository.lastDetailsOrderId, 25);
+      expect(repository.lastDetailsLang, 'en');
+    });
+
+    test('keeps the API message when the order fails to load', () async {
+      final repository = _FakeOrdersRepository()
+        ..fetchError = ServerFailure('الطلب غير موجود');
+      final cubit = OrderDetailsCubit(repository, 99);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+
+      expect(cubit.state.status, OrdersStatus.failure);
+      expect(cubit.state.hasError, isTrue);
+      expect(cubit.state.errorMessage, 'الطلب غير موجود');
+    });
+
+    test('retries the request after a failure', () async {
+      final repository = _FakeOrdersRepository()
+        ..fetchError = ServerFailure('انقطع الاتصال');
+      final cubit = OrderDetailsCubit(repository, 25);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+      repository
+        ..fetchError = null
+        ..order = sampleOrder();
+      await cubit.retry();
+
+      expect(cubit.state.status, OrdersStatus.success);
+      expect(cubit.state.order?.id, 25);
+      expect(repository.lastDetailsOrderId, 25);
+    });
+
+    test('reloads the order when the language changes', () async {
+      final repository = _FakeOrdersRepository(order: sampleOrder());
+      final cubit = OrderDetailsCubit(repository, 25);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+      await cubit.load(lang: 'en');
+
+      expect(cubit.state.lang, 'en');
+      expect(repository.lastDetailsLang, 'en');
+    });
+  });
+
+  group('OrdersCubit', () {
+    test('loads the first page and exposes the pagination state', () async {
+      final repository = _FakeOrdersRepository()
+        ..ordersPage = OrdersPage(
+          orders: [sampleOrder()],
+          currentPage: 1,
+          lastPage: 3,
+          total: 42,
+        );
+      final cubit = OrdersCubit(repository, lang: 'en');
+      addTearDown(cubit.close);
+
+      await cubit.load();
+
+      expect(cubit.state.status, OrdersStatus.success);
+      expect(cubit.state.orders, hasLength(1));
+      expect(cubit.state.orders.single.number, 12);
+      expect(cubit.state.currentPage, 1);
+      expect(cubit.state.lastPage, 3);
+      expect(cubit.state.total, 42);
+      expect(cubit.state.hasMore, isTrue);
+      expect(repository.lastPage, 1);
+      expect(repository.lastStatus, 'current');
+      expect(repository.lastFetchLang, 'en');
+    });
+
+    test('appends the next page without duplicating orders', () async {
+      final repository = _FakeOrdersRepository()
+        ..ordersPage = OrdersPage(
+          orders: [sampleOrder()],
+          currentPage: 1,
+          lastPage: 2,
+          total: 2,
+        );
+      final cubit = OrdersCubit(repository);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+      repository.ordersPage = OrdersPage(
+        orders: [sampleOrder(), testOrder(24, number: 11)],
+        currentPage: 2,
+        lastPage: 2,
+        total: 2,
+      );
+      await cubit.loadMore();
+
+      expect(cubit.state.orders.map((order) => order.id), [25, 24]);
+      expect(cubit.state.currentPage, 2);
+      expect(cubit.state.hasMore, isFalse);
+      expect(cubit.state.isLoadingMore, isFalse);
+      expect(repository.lastPage, 2);
+    });
+
+    test('does not request a page beyond the last one', () async {
+      final repository = _FakeOrdersRepository()
+        ..ordersPage = OrdersPage(
+          orders: [sampleOrder()],
+          currentPage: 1,
+          lastPage: 1,
+          total: 1,
+        );
+      final cubit = OrdersCubit(repository);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+      await cubit.loadMore();
+
+      expect(repository.fetchCalls, 1);
+    });
+
+    test('switching the filter reloads from the first page', () async {
+      final repository = _FakeOrdersRepository()
+        ..ordersPage = OrdersPage(
+          orders: [sampleOrder()],
+          currentPage: 1,
+          lastPage: 1,
+          total: 1,
+        );
+      final cubit = OrdersCubit(repository);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+      repository.ordersPage = OrdersPage(
+        orders: [testOrder(24, number: 11)],
+        currentPage: 1,
+        lastPage: 1,
+        total: 1,
+      );
+      await cubit.changeFilter(OrdersFilter.past);
+
+      expect(cubit.state.filter, OrdersFilter.past);
+      expect(cubit.state.orders.single.id, 24);
+      expect(repository.lastPage, 1);
+      expect(repository.lastStatus, 'past');
+    });
+
+    test('keeps the failure message when the first page fails', () async {
+      final repository = _FakeOrdersRepository()
+        ..fetchError = ServerFailure('انقطع الاتصال');
+      final cubit = OrdersCubit(repository);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+
+      expect(cubit.state.status, OrdersStatus.failure);
+      expect(cubit.state.hasError, isTrue);
+      expect(cubit.state.errorMessage, 'انقطع الاتصال');
+    });
+
+    test('keeps the visible orders when loading more fails', () async {
+      final repository = _FakeOrdersRepository()
+        ..ordersPage = OrdersPage(
+          orders: [sampleOrder()],
+          currentPage: 1,
+          lastPage: 2,
+          total: 2,
+        );
+      final cubit = OrdersCubit(repository);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+      repository.fetchError = ServerFailure('تعذّر تحميل المزيد');
+      await cubit.loadMore();
+
+      expect(cubit.state.orders, hasLength(1));
+      expect(cubit.state.hasLoadMoreError, isTrue);
+      expect(cubit.state.loadMoreError, 'تعذّر تحميل المزيد');
+      expect(cubit.state.isLoadingMore, isFalse);
+    });
+
+    test('refreshes the first page without blanking the list', () async {
+      final repository = _FakeOrdersRepository()
+        ..ordersPage = OrdersPage(
+          orders: [sampleOrder()],
+          currentPage: 1,
+          lastPage: 1,
+          total: 1,
+        );
+      final cubit = OrdersCubit(repository);
+      addTearDown(cubit.close);
+
+      await cubit.load();
+      final refreshed = cubit.refresh();
+
+      expect(cubit.state.isRefreshing, isTrue);
+      expect(cubit.state.orders, hasLength(1));
+
+      await refreshed;
+
+      expect(repository.fetchCalls, 2);
+      expect(repository.lastPage, 1);
+      expect(cubit.state.isRefreshing, isFalse);
     });
   });
 

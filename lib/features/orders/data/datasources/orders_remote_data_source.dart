@@ -6,8 +6,10 @@ import 'package:al_rabwa_restaurant/features/cart/domain/entities/cart.dart';
 import 'package:al_rabwa_restaurant/features/orders/data/models/order_response.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order.dart';
 import 'package:al_rabwa_restaurant/features/orders/domain/entities/order_draft.dart';
+import 'package:al_rabwa_restaurant/features/orders/domain/entities/orders_page.dart';
 
-/// Sends the checkout to `POST /api/orders`.
+/// Sends the checkout to `POST /api/orders` and reads the order history from
+/// `GET /api/orders`.
 abstract class OrdersRemoteDataSource {
   Future<Order> createOrder({
     required Cart cart,
@@ -15,6 +17,14 @@ abstract class OrdersRemoteDataSource {
     required String idempotencyKey,
     String lang = 'ar',
   });
+
+  Future<OrdersPage> fetchOrders({
+    required int page,
+    String status = 'current',
+    String lang = 'ar',
+  });
+
+  Future<Order> fetchOrderDetails({required int orderId, String lang = 'ar'});
 }
 
 class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
@@ -42,6 +52,61 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
     if (raw['success'] == false) {
       throw ServerFailure(
         parsed.message.isEmpty ? 'Failed to place the order.' : parsed.message,
+      );
+    }
+
+    final order = parsed.toEntity();
+    if (order == null) {
+      throw ServerFailure(
+        parsed.message.isEmpty ? 'Empty response from server.' : parsed.message,
+      );
+    }
+
+    return order;
+  }
+
+  @override
+  Future<OrdersPage> fetchOrders({
+    required int page,
+    String status = 'current',
+    String lang = 'ar',
+  }) async {
+    final response = await apiService.getOrders(
+      lang: lang,
+      status: status.trim().isEmpty ? null : status.trim(),
+      page: page,
+      xLocale: lang,
+    );
+
+    final raw = _decodeBody(response.data);
+    final parsed = OrderListResponse.fromJson(raw);
+
+    if (raw['success'] == false) {
+      throw ServerFailure(
+        parsed.message.isEmpty ? 'Failed to load the orders.' : parsed.message,
+      );
+    }
+
+    return parsed.toEntity();
+  }
+
+  @override
+  Future<Order> fetchOrderDetails({
+    required int orderId,
+    String lang = 'ar',
+  }) async {
+    final response = await apiService.getOrderDetails(
+      orderId: orderId,
+      lang: lang,
+      xLocale: lang,
+    );
+
+    final raw = _decodeBody(response.data);
+    final parsed = OrderResponse.fromJson(raw);
+
+    if (raw['success'] == false) {
+      throw ServerFailure(
+        parsed.message.isEmpty ? 'Failed to load the order.' : parsed.message,
       );
     }
 

@@ -8,6 +8,10 @@ class Order {
     this.payment = const OrderPaymentInfo(),
     this.customerName = '',
     this.customerPhone = '',
+    this.address,
+    this.table = '',
+    this.carNumber = '',
+    this.companyName = '',
     this.notes = '',
     this.couponCode = '',
     this.subtotal = 0,
@@ -31,6 +35,19 @@ class Order {
 
   final String customerName;
   final String customerPhone;
+
+  /// Delivery destination; `null` for takeaway and dine-in orders.
+  final OrderAddress? address;
+
+  /// Dining table name such as `T87`; empty for non dine-in orders.
+  final String table;
+
+  /// Curbside pickup car number when the backend collects one.
+  final String carNumber;
+
+  /// Company name for corporate orders.
+  final String companyName;
+
   final String notes;
   final String couponCode;
 
@@ -51,6 +68,14 @@ class Order {
   bool get hasServiceCharge => serviceCharge > 0;
 
   bool get hasDeliveryFee => deliveryFee > 0;
+
+  bool get hasAddress => address?.isEmpty == false;
+
+  bool get hasTable => table.trim().isNotEmpty;
+
+  bool get hasCarNumber => carNumber.trim().isNotEmpty;
+
+  bool get hasNotes => notes.trim().isNotEmpty;
 
   /// Number to show in the confirmation, preferring the backend order number.
   int? get displayNumber => number ?? id;
@@ -133,4 +158,39 @@ class OrderItem {
   bool get hasOptions => options.isNotEmpty;
 
   bool get hasAddons => addons.isNotEmpty;
+}
+
+/// Delivery destination returned inside an order.
+class OrderAddress {
+  const OrderAddress({
+    this.area = '',
+    this.street = '',
+    this.building = '',
+    this.notes = '',
+    this.latitude,
+    this.longitude,
+  });
+
+  final String area;
+  final String street;
+  final String building;
+  final String notes;
+  final double? latitude;
+  final double? longitude;
+
+  bool get isEmpty =>
+      area.trim().isEmpty &&
+      street.trim().isEmpty &&
+      building.trim().isEmpty &&
+      notes.trim().isEmpty;
+
+  /// Human-readable address made of the parts the backend provided.
+  String get summary {
+    final parts = [
+      area.trim(),
+      street.trim(),
+      building.trim(),
+    ].where((part) => part.isNotEmpty);
+    return parts.join(', ');
+  }
 }
