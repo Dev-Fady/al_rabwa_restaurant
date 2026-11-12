@@ -145,9 +145,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           ),
           title: Text(
             _isEditing ? l10n.addressEditTitle : l10n.addressAddTitle,
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: theme.textTheme.titleMedium?.copyWith(
               color: context.appColors.brandGreen,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
             ),
           ),
           centerTitle: true,

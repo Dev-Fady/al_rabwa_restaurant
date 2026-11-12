@@ -109,9 +109,9 @@ class AddressSelectionScreen extends StatelessWidget {
           ),
           title: Text(
             l10n.addressSelectTitle,
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: theme.textTheme.titleMedium?.copyWith(
               color: context.appColors.brandGreen,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
             ),
           ),
           centerTitle: true,

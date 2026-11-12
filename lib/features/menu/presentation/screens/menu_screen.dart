@@ -337,7 +337,7 @@ class _MenuBrowseAll extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Align(
-          alignment: AlignmentDirectional.centerEnd,
+          alignment: AlignmentDirectional.centerStart,
           child: TextButton(
             onPressed: onBrowseAll,
             style: TextButton.styleFrom(
@@ -369,7 +369,7 @@ class _MenuBrowseAll extends StatelessWidget {
         ),
         Text(
           hint,
-          textAlign: TextAlign.end,
+          textAlign: TextAlign.start,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: colors.onSurfaceVariant,
             height: 1.4,
